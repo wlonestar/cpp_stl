@@ -14,9 +14,10 @@ void test_vector_init() {
   v3.print();
   stl::vector<T> v4(v1);
   v4.print();
-  stl::vector<T> v5(v2);
+  stl::vector<T> v5(std::move(v2));
   v5.print();
-  stl::vector<T> v6 {1, 2, 3, 4, 5, 6, 7, 8};
+  std::initializer_list<T> ilist{1, 2, 3, 4, 5, 6, 7};
+  stl::vector<T> v6(ilist);
   v6.print();
 }
 
@@ -43,7 +44,9 @@ void test_vector_assign() {
 template<class T>
 void test_vector_at() {
   stl::vector<T> v1{1, 2, 3, 4, 5};
-  assert(v1.at(0) == 1);
+  v1.at(0) = 3;
+  int const &a = v1.at(0);
+  assert(v1.at(0) == a);
   assert(v1.at(3) == 4);
   assert(v1.at(4) == 5);
 //  try {
@@ -138,12 +141,17 @@ void test_vector_clear() {
 
 template<class T>
 void test_vector_insert() {
-  stl::vector<T> v{1, 2, 3, 4};
-  auto it = v.begin()++;
-  v.insert(it, 5);
-  v.print();
-  v.insert(it, 2, 7);
-  v.print();
+  stl::vector<T> v1{1, 2, 3, 4};
+  v1.print();
+  v1.insert(2, 5);
+  v1.print();
+  v1.insert(2, 12, 7);
+  v1.print();
+  stl::vector<T> v2{1, 2, 3, 4, 5};
+  v2.print();
+  std::initializer_list<T> ilist{1, 2, 3};
+  v2.insert(3, ilist);
+  v2.print();
 }
 
 template<class T>

@@ -179,10 +179,49 @@ public:
    */
   constexpr void clear() noexcept;
 
-  constexpr iterator insert(const size_type pos, const T &value);
-  constexpr iterator insert(const size_type pos, T &&value);
-  constexpr iterator insert(const size_type pos, size_type count, const T &value);
-  constexpr iterator insert(const size_type pos, std::initializer_list<T> ilist);
+  /**
+   * Inserts elements at the specified location in the container.
+   *
+   * @pos - index before which the content will be inserted
+   * @value - element value to insert
+   * @return - pointer to the inserted @value
+   */
+  constexpr pointer insert(size_type pos, const T &value);
+  /**
+   * Inserts elements at the specified location in the container.
+   *
+   * @pos - index before which the content will be inserted
+   * @value - element value to insert
+   * @return - pointer to the inserted @value
+   */
+  constexpr pointer insert(size_type pos, T &&value);
+  /**
+   * Inserts elements at the specified location in the container.
+   *
+   * @pos - index before which the content will be inserted
+   * @count - number of elements to insert
+   * @value - element value to insert
+   * @return - pointer to the inserted @value
+   */
+  constexpr pointer insert(size_type pos, size_type count, const T &value);
+  /**
+   * Inserts elements at the specified location in the container.
+   *
+   * @pos - index before which the content will be inserted
+   * @ilist - initializer list to insert the values from
+   * @return - pointer to the inserted @value
+   */
+  constexpr pointer insert(size_type pos, std::initializer_list<T> ilist);
+
+  /**
+   * Inserts a new element into the container directly before pos.
+   *
+   * @pos - index before which the new element will be constructed
+   * @args - arguments to forward to the constructor of the element
+   * @return - pointer to the emplaced element
+   */
+  template<class... Args>
+  constexpr pointer emplace(size_type pos, Args &&...args);
 
 
   void print() {
@@ -433,7 +472,7 @@ constexpr void vector<T>::reserve(vector::size_type new_cap) {
   assert(new_cap >= _size);
   if (new_cap <= _capacity) {
     _capacity = new_cap;
-    return ;
+    return;
   } else {
     _capacity = new_cap;
     T *old = _elem;
@@ -463,28 +502,49 @@ constexpr void vector<T>::clear() noexcept {
 }
 
 template<class T>
-constexpr vector<T>::iterator vector<T>::insert(const vector::size_type pos, const T &value) {
-  TODO();
-  return nullptr;
+constexpr vector<T>::pointer vector<T>::insert(const vector::size_type pos, const T &value) {
+  expand();
+  for (size_type i = _size; i > pos; i--) {
+    _elem[i] = _elem[i - 1];
+  }
+  _elem[pos] = value;
+  _size++;
+  return _elem + pos;
 }
 
 template<class T>
-constexpr vector<T>::iterator vector<T>::insert(const vector::size_type pos, T &&value) {
-  TODO();
-  return nullptr;
+constexpr vector<T>::pointer vector<T>::insert(const vector::size_type pos, T &&value) {
+  expand();
+  for (size_type i = _size; i > pos; i--) {
+    _elem[i] = _elem[i - 1];
+  }
+  _elem[pos] = value;
+  _size++;
+  return _elem + pos;
 }
 
 template<class T>
-constexpr vector<T>::iterator vector<T>::insert(const vector::size_type pos, vector::size_type count, const T &value) {
-  TODO();
-  return nullptr;
+constexpr vector<T>::pointer vector<T>::insert(const vector::size_type pos, vector::size_type count, const T &value) {
+  for (size_type i = 0; i < count; i++) {
+    insert(pos, value);
+  }
+  return _elem + pos;
 }
 
 template<class T>
-constexpr vector<T>::iterator vector<T>::insert(const vector::size_type pos, std::initializer_list<T> ilist) {
-  TODO();
+constexpr vector<T>::pointer vector<T>::insert(const vector::size_type pos, std::initializer_list<T> ilist) {
+  for (auto it = ilist.end(); it >= ilist.begin(); it--) {
+    insert(pos, *it);
+  }
+  return _elem + pos;
+}
+
+template<class T>
+template<class... Args>
+constexpr vector<T>::pointer vector<T>::emplace(vector::size_type pos, Args &&...args) {
   return nullptr;
 }
+
 
 }// namespace stl
 

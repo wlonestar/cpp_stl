@@ -87,14 +87,14 @@ void test_vector_data() {
 template<class T>
 void test_vector_begin_end() {
   stl::vector<T> nums{1, 2, 3, 4, 5, 6};
-  std::for_each(nums.begin(), nums.end(), [](const int n) {
-    std::cout << n << " ";
-  });
-  std::cout << "\n";
   assert(*nums.begin() == 1);
   int i = 1;
-  for (auto it = nums.begin(), end = nums.end(); it != end; ++it) {
+  for (auto it = nums.begin(), end = nums.end(); it >= end; ++it) {
     assert(*it == i++);
+  }
+  i = 6;
+  for (auto it = nums.end(), end = nums.begin(); it >= end; --it) {
+    assert(*it == i--);
   }
 }
 

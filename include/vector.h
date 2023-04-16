@@ -21,6 +21,7 @@ template<class T>
 class vector {
   using value_type = T;
   using size_type = std::size_t;
+  using difference_type = std::ptrdiff_t;
   using reference = value_type &;
   using const_reference = const value_type &;
   using pointer = value_type *;
@@ -28,19 +29,23 @@ class vector {
 
 public:
   class iterator {
-    using difference_type = T;
     using value_type = T;
-    using pointer = const T *;
-    using reference = const T &;
-    using iterator_category = std::forward_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using pointer = T *;
+    using reference = T &;
+    using iterator_category = std::random_access_iterator_tag;
 
   private:
     pointer ptr;
 
   public:
     explicit iterator(pointer ptr) : ptr(ptr) {}
-    reference operator*() const { return *ptr; }
+
+    reference operator*() { return *ptr; }
+    const_reference operator*() const { return *ptr; }
     pointer operator->() { return ptr; }
+    const_pointer operator->() const { return ptr; }
+
     iterator &operator++() {
       ptr++;
       return *this;
@@ -59,8 +64,15 @@ public:
       --(*this);
       return tmp;
     }
-    friend bool operator==(const iterator &a, const iterator &b) { return a.ptr == b.ptr; }
-    friend bool operator!=(const iterator &a, const iterator &b) { return a.ptr != b.ptr; }
+
+    difference_type operator-(iterator const &r) const { return ptr - r.ptr; }
+
+    bool operator<(iterator const &r) const { return ptr < r.ptr; }
+    bool operator<=(iterator const &r) const { return ptr <= r.ptr; }
+    bool operator>(iterator const &r) const { return ptr > r.ptr; }
+    bool operator>=(iterator const &r) const { return ptr >= r.ptr; }
+    bool operator==(const iterator &r) const { return ptr == r.ptr; }
+    bool operator!=(const iterator &r) const { return ptr != r.ptr; }
   };
 
   using iterator = iterator;

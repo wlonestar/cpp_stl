@@ -6,6 +6,7 @@
 
 template<class T>
 void test_vector_init() {
+  Log("test vector init");
   stl::vector<T> v1;
   v1.print();
   stl::vector<T> v2(5, 1);
@@ -86,15 +87,20 @@ void test_vector_data() {
 
 template<class T>
 void test_vector_begin_end() {
+  Log("test vector begin");
   stl::vector<T> nums{1, 2, 3, 4, 5, 6};
   assert(*nums.begin() == 1);
   int i = 1;
-  for (auto it = nums.begin(), end = nums.end(); it >= end; ++it) {
+  for (auto it = nums.begin(); it < nums.end(); ++it) {
     assert(*it == i++);
   }
   i = 6;
-  for (auto it = nums.end(), end = nums.begin(); it >= end; --it) {
+  for (auto it = nums.rbegin(); it < nums.rend(); ++it) {
     assert(*it == i--);
+  }
+  i = 1;
+  for (auto &it: nums) {
+    assert(it == i++);
   }
 }
 
@@ -141,16 +147,19 @@ void test_vector_clear() {
 
 template<class T>
 void test_vector_insert() {
+  Log("==> test vector insert");
   stl::vector<T> v1{1, 2, 3, 4};
   v1.print();
-  v1.insert(2, 5);
+  v1.insert(v1.begin(), 5);
   v1.print();
-  v1.insert(2, 12, 7);
+  v1.reserve(20);
+  v1.insert(v1.begin(), 12, 7);
   v1.print();
   stl::vector<T> v2{1, 2, 3, 4, 5};
   v2.print();
+  v2.reserve(10);
   std::initializer_list<T> ilist{1, 2, 3};
-  v2.insert(3, ilist);
+  v2.insert(v2.begin()+=2, ilist);
   v2.print();
 }
 

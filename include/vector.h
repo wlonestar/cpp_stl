@@ -65,6 +65,26 @@ public:
       return tmp;
     }
 
+    iterator operator+=(int n) {
+      ptr += n;
+      return *this;
+    }
+    iterator operator-=(int n) {
+      ptr -= n;
+      return *this;
+    }
+
+    iterator operator+(int n) {
+      iterator tmp = *this;
+      tmp.ptr += n;
+      return tmp;
+    }
+    iterator operator-(int n) {
+      iterator tmp = *this;
+      tmp.ptr -= n;
+      return tmp;
+    }
+
     difference_type operator-(iterator const &r) const { return ptr - r.ptr; }
 
     bool operator<(iterator const &r) const { return ptr < r.ptr; }
@@ -75,7 +95,73 @@ public:
     bool operator!=(const iterator &r) const { return ptr != r.ptr; }
   };
 
+  class reverse_iterator {
+    using value_type = T;
+    using difference_type = std::ptrdiff_t;
+    using pointer = T *;
+    using reference = T &;
+    using iterator_category = std::random_access_iterator_tag;
+
+  private:
+    pointer ptr;
+
+  public:
+    explicit reverse_iterator(pointer ptr) : ptr(ptr) {}
+
+    reference operator*() { return *ptr; }
+    const_reference operator*() const { return *ptr; }
+    pointer operator->() { return ptr; }
+    const_pointer operator->() const { return ptr; }
+
+    reverse_iterator &operator++() {
+      ptr--;
+      return *this;
+    }
+    reverse_iterator operator++(int) {
+      iterator tmp = *this;
+      --(*this);
+      return tmp;
+    }
+    reverse_iterator &operator--() {
+      ptr++;
+      return *this;
+    }
+    reverse_iterator operator--(int) {
+      iterator tmp = *this;
+      ++(*this);
+      return tmp;
+    }
+
+    reverse_iterator operator+=(int n) {
+      (*this) -= n;
+      return *this;
+    }
+    reverse_iterator operator-=(int n) {
+      (*this) += n;
+      return *this;
+    }
+
+    reverse_iterator operator+(int n) {
+      reverse_iterator tmp(*this);
+      return tmp - n;
+    }
+    reverse_iterator operator-(int n) {
+      reverse_iterator tmp(*this);
+      return tmp + n;
+    }
+
+    difference_type operator-(reverse_iterator const &r) const { return ptr - r.ptr; }
+
+    bool operator<(reverse_iterator const &r) const { return ptr < r.ptr; }
+    bool operator<=(reverse_iterator const &r) const { return ptr <= r.ptr; }
+    bool operator>(reverse_iterator const &r) const { return ptr > r.ptr; }
+    bool operator>=(reverse_iterator const &r) const { return ptr >= r.ptr; }
+    bool operator==(const reverse_iterator &r) const { return ptr == r.ptr; }
+    bool operator!=(const reverse_iterator &r) const { return ptr != r.ptr; }
+  };
+
   using iterator = iterator;
+  using reverse_iterator = reverse_iterator;
 
   static const size_type default_capacity = 5;
 
@@ -156,6 +242,8 @@ public:
 
   constexpr iterator begin() noexcept;
   constexpr iterator end() noexcept;
+  constexpr reverse_iterator rbegin() noexcept;
+  constexpr reverse_iterator rend() noexcept;
 
   [[nodiscard]] constexpr bool empty() const noexcept;
   [[nodiscard]] constexpr size_type size() const noexcept;
@@ -198,7 +286,7 @@ public:
    * @value - element value to insert
    * @return - pointer to the inserted @value
    */
-  constexpr pointer insert(size_type pos, const T &value);
+  constexpr iterator insert(iterator pos, const T &value);
   /**
    * Inserts elements at the specified location in the container.
    *
@@ -206,7 +294,7 @@ public:
    * @value - element value to insert
    * @return - pointer to the inserted @value
    */
-  constexpr pointer insert(size_type pos, T &&value);
+  constexpr iterator insert(iterator pos, T &&value);
   /**
    * Inserts elements at the specified location in the container.
    *
@@ -215,7 +303,7 @@ public:
    * @value - element value to insert
    * @return - pointer to the inserted @value
    */
-  constexpr pointer insert(size_type pos, size_type count, const T &value);
+  constexpr iterator insert(iterator pos, size_type count, const T &value);
   /**
    * Inserts elements at the specified location in the container.
    *
@@ -223,7 +311,7 @@ public:
    * @ilist - initializer list to insert the values from
    * @return - pointer to the inserted @value
    */
-  constexpr pointer insert(size_type pos, std::initializer_list<T> ilist);
+  constexpr iterator insert(iterator pos, std::initializer_list<T> ilist);
 
   /**
    * Inserts a new element into the container directly before pos.
@@ -466,7 +554,17 @@ constexpr vector<T>::iterator vector<T>::begin() noexcept {
 
 template<class T>
 constexpr vector<T>::iterator vector<T>::end() noexcept {
-  return iterator(&_elem[_size - 1]);
+  return iterator(&_elem[_size]);
+}
+
+template<class T>
+constexpr vector<T>::reverse_iterator vector<T>::rbegin() noexcept {
+  return reverse_iterator(&_elem[_size - 1]);
+}
+
+template<class T>
+constexpr vector<T>::reverse_iterator vector<T>::rend() noexcept {
+  return reverse_iterator(&_elem[-1]);
 }
 
 template<class T>
@@ -514,41 +612,43 @@ constexpr void vector<T>::clear() noexcept {
 }
 
 template<class T>
-constexpr vector<T>::pointer vector<T>::insert(const vector::size_type pos, const T &value) {
-  expand();
-  for (size_type i = _size; i > pos; i--) {
-    _elem[i] = _elem[i - 1];
+constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, const T &value) {
+  for (iterator i = ++end(); i > pos; i--) {
+    value_type t = *(i - 1);
+//    Log("pointer = %p, value = %d", i, t);
+    *i = t;
   }
-  _elem[pos] = value;
+  *pos = value;
   _size++;
-  return _elem + pos;
+  return pos;
 }
 
 template<class T>
-constexpr vector<T>::pointer vector<T>::insert(const vector::size_type pos, T &&value) {
-  expand();
-  for (size_type i = _size; i > pos; i--) {
-    _elem[i] = _elem[i - 1];
+constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, T &&value) {
+  for (iterator i = ++end(); i > pos; i--) {
+    value_type t = *(i - 1);
+//    Log("pointer = %p, value = %d", i, t);
+    *i = t;
   }
-  _elem[pos] = value;
+  *pos = value;
   _size++;
-  return _elem + pos;
+  return pos;
 }
 
 template<class T>
-constexpr vector<T>::pointer vector<T>::insert(const vector::size_type pos, vector::size_type count, const T &value) {
+constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, vector::size_type count, const T &value) {
   for (size_type i = 0; i < count; i++) {
     insert(pos, value);
   }
-  return _elem + pos;
+  return pos;
 }
 
 template<class T>
-constexpr vector<T>::pointer vector<T>::insert(const vector::size_type pos, std::initializer_list<T> ilist) {
-  for (auto it = ilist.end(); it >= ilist.begin(); it--) {
+constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, std::initializer_list<T> ilist) {
+  for (auto it = ilist.end() - 1; it >= ilist.begin(); it--) {
     insert(pos, *it);
   }
-  return _elem + pos;
+  return pos;
 }
 
 template<class T>

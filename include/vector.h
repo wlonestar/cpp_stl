@@ -14,20 +14,21 @@
 #include <initializer_list>
 #include <iostream>
 #include <memory>
+#include <utility>
 
 namespace stl {
 
 template<class T>
 class vector {
-  using value_type = T;
-  using size_type = std::size_t;
-  using difference_type = std::ptrdiff_t;
-  using reference = value_type &;
-  using const_reference = const value_type &;
-  using pointer = value_type *;
-  using const_pointer = const value_type *;
-
 public:
+  typedef T value_type;
+  typedef std::size_t size_type;
+  typedef std::ptrdiff_t difference_type;
+  typedef value_type&  reference;
+  typedef const value_type& const_reference;
+  typedef value_type* pointer;
+  typedef const value_type * const_pointer;
+
   class iterator {
     using value_type = T;
     using difference_type = std::ptrdiff_t;
@@ -160,8 +161,8 @@ public:
     bool operator!=(const reverse_iterator &r) const { return ptr != r.ptr; }
   };
 
-  using iterator = iterator;
-  using reverse_iterator = reverse_iterator;
+  typedef iterator iterator;
+  typedef reverse_iterator reverse_iterator;
 
   static const size_type default_capacity = 5;
 
@@ -170,7 +171,6 @@ private:
   size_type _size;
   T *_elem;
 
-  void expand();
   void shrink();
   bool range_check(size_type n);
 
@@ -321,8 +321,97 @@ public:
    * @return - pointer to the emplaced element
    */
   template<class... Args>
-  constexpr pointer emplace(size_type pos, Args &&...args);
+  constexpr iterator emplace(iterator pos, Args &&...args);
 
+  /**
+   * Erases the specified elements from the container.
+   * Removes the element at @pos.
+   *
+   * @pos - iterator to the element to remove
+   * @return - if @pos refers to the last element, then the end() iterator
+   *    is returned.
+   */
+  constexpr iterator erase(iterator pos);
+  /**
+   * Erases the specified elements from the container.
+   * Removes the elements in the range [@first, @last).
+   *
+   * @first, @last - range of elements to remove
+   * @return - if @last == end() prior to removal, then the updated end()
+   *    iterator is returned.
+   *    if [@first, @last) is an empty range, then @last is returned.
+   */
+  constexpr iterator erase(iterator first, iterator last);
+
+  /**
+   * Appends the given element value to the end of the container.
+   *
+   * If the new size() is greater than capacity() then all iterators and
+   * references (including the end() iterator) are invalidated.
+   * Otherwise only the end() iterator is invalidated.
+   *
+   * @value - the value of the element to append
+   */
+  constexpr void push_back(const T &value);
+  constexpr void push_back(T &&value);
+
+  /**
+   * Appends a new element to the end of the container.
+   *
+   * If the new size() is greater than capacity() then all iterators and
+   * references (including the end() iterator) are invalidated.
+   * Otherwise only the end() iterator is invalidated.
+   *
+   * @args - arguments to forward to the constructor of the element
+   */
+  template<class... Args>
+  constexpr reference emplace_back(Args &&...args);
+
+  /**
+   * Removes the last element of the container.
+   *
+   * Calling pop_back on an empty container results in undefined behavior.
+   * Iterators and references to the last element, as well as the end()
+   * iterator, are invalidated.
+   */
+  constexpr void pop_back();
+
+  /**
+   * Resizes the container to contain @count element, does nothing
+   * if @count == size().
+   *
+   * If the current size is greater than @count, the container is reduced to
+   * its first @count elements.
+   * If the current size is less than @count, additional default-inserted
+   * elements are appended.
+   *
+   * @count - new size of the container
+   */
+  constexpr void resize(size_type count);
+  /**
+   * Resizes the container to contain @count element, does nothing
+   * if @count == size().
+   *
+   * If the current size is greater than @count, the container is reduced to
+   * its first @count elements.
+   * If the current size is less than @count, additional copies of @value are
+   * appended.
+   *
+   * @count - new size of the container
+   * @value - the value to initialize the new elements with
+   */
+  constexpr void resize(size_type count, const value_type &value);
+
+  /**
+   * Exchanges the contents and capacity of the container with those of @other.
+   * Does not invoke any move, copy, or swap operations on individual elements.
+   *
+   * All iterators and references remain valid.
+   * The end() iterator is invalidated.
+   *
+   * @other - container to exchange the contents with
+   */
+  constexpr void swap(vector &other) noexcept;
 
   void print() {
     std::cout << "vector(" << _capacity << ", " << _size << "): [ ";
@@ -333,21 +422,74 @@ public:
   }
 };
 
+/**
+ * Compares the contents of two vectors.
+ *
+ * @lhs, @rhs - vectors whose contents to compare
+ * @return - true if the contents of the vectors are equal, false otherwise
+ */
 template<class T>
-void vector<T>::expand() {
-  if (_size < _capacity) {
-    return;
+constexpr bool operator==(const stl::vector<T> &lhs, const stl::vector<T> &rhs) {
+  if (lhs.size() != rhs.size()) {
+    return false;
   }
-  if (_capacity < default_capacity) {
-    _capacity = default_capacity;
+  for (auto liter = lhs.begin(), riter = rhs.begin(); liter < lhs.end(); liter++, riter++) {
+    if (std::cmp_not_equal(*liter, *riter)) {
+      return false;
+    }
   }
-  _capacity *= 2;
-  T *old = _elem;
-  _elem = new T[_capacity];
-  for (size_type i = 0; i < _size; i++) {
-    _elem[i] = old[i];
+  return true;
+}
+
+/**
+ * Specializes the std::swap algorithm for stl::vector.
+ * Swaps the contents of lhs and rhs. Calls lhs.swap(rhs).
+ *
+ * @lhs, @rhs - containers whose contents to swap
+ */
+template<class T>
+constexpr void swap(stl::vector<T> &lhs, stl::vector<T> &rhs) noexcept {
+  lhs.swap(rhs);
+}
+
+/**
+ * Erases all elements that compare equal to value from the container.
+ *
+ * @c - container from which to erase
+ * @value - value to be removed
+ * @return - the number of erased elements
+ */
+template<class T, class U>
+constexpr typename stl::vector<T>::size_type erase(stl::vector<T> &c, const U &value) {
+  typename stl::vector<T>::size_type size = 0;
+  for (typename vector<T>::iterator it = c.begin(); it < c.end(); it++) {
+    if (*it == value) {
+      size++;
+      c.erase(it);
+      it--;
+    }
   }
-  delete[] old;
+  return size;
+}
+
+/**
+ * Erases all elements that satisfy the predicate pred from the container.
+ *
+ * @c - container from which to erase
+ * @pred - unary predicate which returns true if the element should be erased
+ * @return - the number of erased elements
+ */
+template<class T, class Pred>
+constexpr typename stl::vector<T>::size_type erase_if(stl::vector<T> &c, Pred pred) {
+  typename stl::vector<T>::size_type size = 0;
+  for (typename vector<T>::iterator it = c.begin(); it < c.end(); it++) {
+    if (pred(*it)) {
+      size++;
+      c.erase(it);
+      it--;
+    }
+  }
+  return size;
 }
 
 template<class T>
@@ -615,7 +757,7 @@ template<class T>
 constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, const T &value) {
   for (iterator i = ++end(); i > pos; i--) {
     value_type t = *(i - 1);
-//    Log("pointer = %p, value = %d", i, t);
+    //    Log("pointer = %p, value = %d", i, t);
     *i = t;
   }
   *pos = value;
@@ -627,10 +769,10 @@ template<class T>
 constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, T &&value) {
   for (iterator i = ++end(); i > pos; i--) {
     value_type t = *(i - 1);
-//    Log("pointer = %p, value = %d", i, t);
+    //    Log("pointer = %p, value = %d", i, t);
     *i = t;
   }
-  *pos = value;
+  *pos = std::move(value);
   _size++;
   return pos;
 }
@@ -653,10 +795,101 @@ constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, std::initi
 
 template<class T>
 template<class... Args>
-constexpr vector<T>::pointer vector<T>::emplace(vector::size_type pos, Args &&...args) {
-  return nullptr;
+constexpr vector<T>::iterator vector<T>::emplace(vector::iterator pos, Args &&...args) {
+  auto value = new T(std::forward<Args>(args)...);
+  return insert(pos, *value);
 }
 
+template<class T>
+constexpr vector<T>::iterator vector<T>::erase(vector::iterator pos) {
+  for (iterator i = pos; i < end(); i++) {
+    value_type t = *(i + 1);
+    *i = t;
+  }
+  _size--;
+  return pos == (end() - 1) ? end() : pos;
+}
+
+template<class T>
+constexpr vector<T>::iterator vector<T>::erase(vector::iterator first, vector::iterator last) {
+  size_type removed = last - first;
+  for (iterator i = first; i < end(); i++) {
+    value_type t = *(i + removed);
+    *i = t;
+  }
+  _size -= removed;
+  if (last == end()) {
+    return end();
+  }
+  if (first == last) {
+    return last;
+  }
+  return last;
+}
+
+template<class T>
+constexpr void vector<T>::push_back(const T &value) {
+  if (_size + 1 > _capacity) {
+    reserve(_size * 2);
+  }
+  _elem[_size] = value;
+  _size++;
+}
+
+template<class T>
+constexpr void vector<T>::push_back(T &&value) {
+  if (_size + 1 > _capacity) {
+    reserve(_size * 2);
+  }
+  _elem[_size] = std::move(value);
+  _size++;
+}
+
+template<class T>
+template<class... Args>
+constexpr vector<T>::reference vector<T>::emplace_back(Args &&...args) {
+  auto value = new T(std::forward<Args>(args)...);
+  push_back(*value);
+  return *value;
+}
+
+template<class T>
+constexpr void vector<T>::pop_back() {
+  _size--;
+}
+
+template<class T>
+constexpr void vector<T>::resize(vector::size_type count) {
+  if (_size >= count) {
+    _size = count;
+  } else {
+    reserve(count);
+    size_type oldSize = _size;
+    for (size_type i = 0; i < count - oldSize; i++) {
+      push_back(0);
+    }
+  }
+}
+
+template<class T>
+constexpr void vector<T>::resize(vector::size_type count, const value_type &value) {
+  if (_size >= count) {
+    _size = count;
+  } else {
+    reserve(count);
+    size_type oldSize = _size;
+    for (size_type i = 0; i < count - oldSize; i++) {
+      push_back(value);
+    }
+  }
+}
+
+template<class T>
+constexpr void vector<T>::swap(vector &other) noexcept {
+  std::swap(_elem, other._elem);
+  std::swap(_capacity, other._capacity);
+  std::swap(_size, other._size);
+}
 
 }// namespace stl
 

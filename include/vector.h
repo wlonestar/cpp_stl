@@ -485,13 +485,28 @@ public:
    */
   constexpr void swap(vector &other) noexcept;
 
-  void print() {
-    std::cout << "vector(" << _capacity << ", " << _size << "): [ ";
-    for (size_type i = 0; i < _size; i++) {
-      std::cout << _elem[i] << " ";
-    }
-    std::cout << "]\n";
-  }
+  /**
+   * Applies the given function object lambda to the result of dereferencing
+   * every iterator in the range [@first, @last), in order.
+   *
+   * @first, @last - the range to apply the function to
+   * @lambda - function object, to be applied to the result of dereferencing
+   *           every iterator in the range [@first, @last)
+   */
+  template<class Lambda>
+  void for_each(iterator first, iterator last, Lambda &&lambda);
+  template<class Lambda>
+  void for_each(const_iterator first, const_iterator last, Lambda &&lambda);
+  template<class Lambda>
+  void for_each(reverse_iterator first, reverse_iterator last, Lambda &&lambda);
+  template<class Lambda>
+  void for_each(const_reverse_iterator first, const_reverse_iterator last, Lambda &&lambda);
+
+  /**
+   * print vector using lambda to custom print element behavior
+   */
+  template<class Lambda>
+  void print(Lambda &&lambda);
 };
 
 /**
@@ -992,6 +1007,49 @@ constexpr void vector<T>::swap(vector &other) noexcept {
   std::swap(_elem, other._elem);
   std::swap(_capacity, other._capacity);
   std::swap(_size, other._size);
+}
+
+template<class T>
+template<class Lambda>
+void vector<T>::for_each(iterator first, iterator last, Lambda &&lambda) {
+  for (auto it = first; it != last; ++it) {
+    lambda(*it);
+  }
+}
+
+template<class T>
+template<class Lambda>
+void vector<T>::for_each(vector::const_iterator first, vector::const_iterator last, Lambda &&lambda) {
+  for (auto it = first; it != last; ++it) {
+    lambda(*it);
+  }
+}
+
+template<class T>
+template<class Lambda>
+void vector<T>::for_each(vector::reverse_iterator first, vector::reverse_iterator last, Lambda &&lambda) {
+  for (auto it = first; it != last; ++it) {
+    lambda(*it);
+  }
+}
+
+template<class T>
+template<class Lambda>
+void vector<T>::for_each(const_reverse_iterator first, const_reverse_iterator last, Lambda &&lambda) {
+  for (auto it = first; it != last; ++it) {
+    lambda(*it);
+  }
+}
+
+template<class T>
+template<class Lambda>
+void vector<T>::print(Lambda &&lambda) {
+  std::cout << "vector(" << _capacity << ", " << _size << "): [ ";
+  for (size_type i = 0; i < _size; i++) {
+    lambda(_elem[i]);
+    std::cout << " ";
+  }
+  std::cout << "]\n";
 }
 
 }// namespace stl

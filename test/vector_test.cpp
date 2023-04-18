@@ -253,7 +253,7 @@ void test_vector_emplace_back() {
     int y;
     Point() = default;
     Point(int x, int y) : x(x), y(y) {}
-    Point(Point &&other)  noexcept : x(other.x), y(other.y) {}
+    Point(Point &&other) noexcept : x(other.x), y(other.y) {}
     Point &operator=(const Point &other) = default;
   };
   stl::vector<Point> v;
@@ -364,7 +364,40 @@ void test_vector() {
   test_erase_if();
 }
 
+void test_vector_print() {
+  class Point3d {
+  public:
+    double x;
+    double y;
+    double z;
+    Point3d() = default;
+    Point3d(double x, double y, double z) : x(x), y(y), z(z) {}
+    Point3d(Point3d &&other) noexcept : x(other.x), y(other.y), z(other.z) {}
+    Point3d &operator=(const Point3d &other) = default;
+  };
+
+  stl::vector<Point3d> v;
+  for (int i = 0; i < 5; i++) {
+    double rand = 0.05 * i;
+    v.emplace_back(i * rand, (i + 1) * rand, (i + 2) * rand);
+  }
+
+  auto lambda = [](const Point3d &p) {
+    printf("(%g, %g, %g)\n", p.x, p.y, p.z);
+  };
+
+  v.for_each(v.begin(), v.end(), lambda);
+  v.for_each(v.cbegin(), v.cend(), lambda);
+  v.for_each(v.rbegin(), v.rend(), lambda);
+  v.for_each(v.crbegin(), v.crend(), lambda);
+
+  v.print([](const Point3d &p) {
+    printf("(%.4g, %.4g, %.4g)", p.x, p.y, p.z);
+  });
+}
+
 int main() {
   test_vector<int>();
+  test_vector_print();
   return 0;
 }

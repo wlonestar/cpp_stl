@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "iterator.h"
 #include "util.h"
 
 #include <cassert>
@@ -61,140 +62,10 @@ public:
   typedef value_type *pointer;
   typedef const value_type *const_pointer;
 
-  class iterator {
-    using value_type = T;
-    using difference_type = std::ptrdiff_t;
-    using pointer = T *;
-    using reference = T &;
-    using iterator_category = std::random_access_iterator_tag;
-
-  private:
-    pointer ptr;
-
-  public:
-    explicit iterator(pointer ptr) : ptr(ptr) {}
-
-    reference operator*() { return *ptr; }
-    const_reference operator*() const { return *ptr; }
-    pointer operator->() { return ptr; }
-    const_pointer operator->() const { return ptr; }
-
-    iterator &operator++() {
-      ptr++;
-      return *this;
-    }
-    iterator operator++(int) {
-      iterator tmp = *this;
-      ++(*this);
-      return tmp;
-    }
-    iterator &operator--() {
-      ptr--;
-      return *this;
-    }
-    iterator operator--(int) {
-      iterator tmp = *this;
-      --(*this);
-      return tmp;
-    }
-
-    iterator operator+=(int n) {
-      ptr += n;
-      return *this;
-    }
-    iterator operator-=(int n) {
-      ptr -= n;
-      return *this;
-    }
-
-    iterator operator+(int n) {
-      iterator tmp = *this;
-      tmp.ptr += n;
-      return tmp;
-    }
-    iterator operator-(int n) {
-      iterator tmp = *this;
-      tmp.ptr -= n;
-      return tmp;
-    }
-
-    difference_type operator-(iterator const &r) const { return ptr - r.ptr; }
-
-    bool operator<(iterator const &r) const { return ptr < r.ptr; }
-    bool operator<=(iterator const &r) const { return ptr <= r.ptr; }
-    bool operator>(iterator const &r) const { return ptr > r.ptr; }
-    bool operator>=(iterator const &r) const { return ptr >= r.ptr; }
-    bool operator==(const iterator &r) const { return ptr == r.ptr; }
-    bool operator!=(const iterator &r) const { return ptr != r.ptr; }
-  };
-
-  class reverse_iterator {
-    using value_type = T;
-    using difference_type = std::ptrdiff_t;
-    using pointer = T *;
-    using reference = T &;
-    using iterator_category = std::random_access_iterator_tag;
-
-  private:
-    pointer ptr;
-
-  public:
-    explicit reverse_iterator(pointer ptr) : ptr(ptr) {}
-
-    reference operator*() { return *ptr; }
-    const_reference operator*() const { return *ptr; }
-    pointer operator->() { return ptr; }
-    const_pointer operator->() const { return ptr; }
-
-    reverse_iterator &operator++() {
-      ptr--;
-      return *this;
-    }
-    reverse_iterator operator++(int) {
-      iterator tmp = *this;
-      --(*this);
-      return tmp;
-    }
-    reverse_iterator &operator--() {
-      ptr++;
-      return *this;
-    }
-    reverse_iterator operator--(int) {
-      iterator tmp = *this;
-      ++(*this);
-      return tmp;
-    }
-
-    reverse_iterator operator+=(int n) {
-      (*this) -= n;
-      return *this;
-    }
-    reverse_iterator operator-=(int n) {
-      (*this) += n;
-      return *this;
-    }
-
-    reverse_iterator operator+(int n) {
-      reverse_iterator tmp(*this);
-      return tmp - n;
-    }
-    reverse_iterator operator-(int n) {
-      reverse_iterator tmp(*this);
-      return tmp + n;
-    }
-
-    difference_type operator-(reverse_iterator const &r) const { return ptr - r.ptr; }
-
-    bool operator<(reverse_iterator const &r) const { return ptr < r.ptr; }
-    bool operator<=(reverse_iterator const &r) const { return ptr <= r.ptr; }
-    bool operator>(reverse_iterator const &r) const { return ptr > r.ptr; }
-    bool operator>=(reverse_iterator const &r) const { return ptr >= r.ptr; }
-    bool operator==(const reverse_iterator &r) const { return ptr == r.ptr; }
-    bool operator!=(const reverse_iterator &r) const { return ptr != r.ptr; }
-  };
-
-  typedef iterator iterator;
-  typedef reverse_iterator reverse_iterator;
+  typedef _iterator<pointer, vector> iterator;
+  typedef _iterator<const_pointer, vector> const_iterator;
+  typedef std::reverse_iterator<iterator> reverse_iterator;
+  typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
   static const size_type default_capacity = 5;
 
@@ -365,6 +236,8 @@ public:
    * @return - iterator to the first element
    */
   constexpr iterator begin() noexcept;
+  constexpr const_iterator begin() const noexcept;
+  constexpr const_iterator cbegin() const noexcept;
 
   /**
    * Returns an iterator to the element following the last element of the vector.
@@ -374,6 +247,8 @@ public:
    * @return - iterator to the element following the last element.
    */
   constexpr iterator end() noexcept;
+  constexpr const_iterator end() const noexcept;
+  constexpr const_iterator cend() const noexcept;
 
   /**
    * Returns a reverse iterator to the first element of the reserved vector.
@@ -383,6 +258,8 @@ public:
    * @return - reverse iterator to the first element
    */
   constexpr reverse_iterator rbegin() noexcept;
+  constexpr const_reverse_iterator rbegin() const noexcept;
+  constexpr const_reverse_iterator crbegin() const noexcept;
 
   /**
    * Returns a reverse iterator to the element following the last element of the
@@ -393,6 +270,8 @@ public:
    * @return - reverse iterator to the element following the last element
    */
   constexpr reverse_iterator rend() noexcept;
+  constexpr const_reverse_iterator rend() const noexcept;
+  constexpr const_reverse_iterator crend() const noexcept;
 
   /**
    * Capacity
@@ -655,7 +534,7 @@ constexpr void swap(stl::vector<T> &lhs, stl::vector<T> &rhs) noexcept {
 template<class T, class U>
 constexpr typename stl::vector<T>::size_type erase(stl::vector<T> &c, const U &value) {
   typename stl::vector<T>::size_type size = 0;
-  for (typename vector<T>::iterator it = c.begin(); it < c.end(); it++) {
+  for (typename vector<T>::iterator it = c.begin(); it != c.end(); it++) {
     if (*it == value) {
       size++;
       c.erase(it);
@@ -675,7 +554,7 @@ constexpr typename stl::vector<T>::size_type erase(stl::vector<T> &c, const U &v
 template<class T, class Pred>
 constexpr typename stl::vector<T>::size_type erase_if(stl::vector<T> &c, Pred pred) {
   typename stl::vector<T>::size_type size = 0;
-  for (typename vector<T>::iterator it = c.begin(); it < c.end(); it++) {
+  for (typename vector<T>::iterator it = c.begin(); it != c.end(); it++) {
     if (pred(*it)) {
       size++;
       c.erase(it);
@@ -749,14 +628,8 @@ constexpr vector<T>::vector(const vector &other) {
 }
 
 template<class T>
-constexpr vector<T>::vector(const vector &&other) noexcept {
-  _capacity = other._capacity;
-  _size = other._size;
-  _elem = new T[_capacity];
-  for (size_type i = 0; i < _size; i++) {
-    _elem[i] = other._elem[i];
-  }
-}
+constexpr vector<T>::vector(const vector &&other) noexcept
+    : _capacity(other._capacity), _size(other._size), _elem(other._elem) {}
 
 template<class T>
 constexpr vector<T>::vector(std::initializer_list<T> init) {
@@ -828,75 +701,115 @@ constexpr void vector<T>::assign(std::initializer_list<T> ilist) {
 }
 
 template<class T>
-constexpr vector<T>::reference vector<T>::at(vector::size_type pos) {
+constexpr typename vector<T>::reference vector<T>::at(vector::size_type pos) {
   range_check(pos);
   return _elem[pos];
 }
 
 template<class T>
-constexpr vector<T>::const_reference vector<T>::at(vector::size_type pos) const {
+constexpr typename vector<T>::const_reference vector<T>::at(vector::size_type pos) const {
   range_check(pos);
   return _elem[pos];
 }
 
 template<class T>
-constexpr vector<T>::reference vector<T>::operator[](vector::size_type pos) {
+constexpr typename vector<T>::reference vector<T>::operator[](vector::size_type pos) {
   return _elem[pos];
 }
 
 template<class T>
-constexpr vector<T>::const_reference vector<T>::operator[](vector::size_type pos) const {
+constexpr typename vector<T>::const_reference vector<T>::operator[](vector::size_type pos) const {
   return _elem[pos];
 }
 
 template<class T>
-constexpr vector<T>::reference vector<T>::front() {
+constexpr typename vector<T>::reference vector<T>::front() {
   return _elem[0];
 }
 
 template<class T>
-constexpr vector<T>::const_reference vector<T>::front() const {
+constexpr typename vector<T>::const_reference vector<T>::front() const {
   return _elem[0];
 }
 
 template<class T>
-constexpr vector<T>::reference vector<T>::back() {
+constexpr typename vector<T>::reference vector<T>::back() {
   return _elem[_size - 1];
 }
 
 template<class T>
-constexpr vector<T>::const_reference vector<T>::back() const {
+constexpr typename vector<T>::const_reference vector<T>::back() const {
   return _elem[_size - 1];
 }
 
 template<class T>
-constexpr vector<T>::pointer vector<T>::data() noexcept {
+constexpr typename vector<T>::pointer vector<T>::data() noexcept {
   return _elem;
 }
 
 template<class T>
-constexpr vector<T>::const_pointer vector<T>::data() const noexcept {
+constexpr typename vector<T>::const_pointer vector<T>::data() const noexcept {
   return _elem;
 }
 
 template<class T>
-constexpr vector<T>::iterator vector<T>::begin() noexcept {
-  return iterator(&_elem[0]);
+constexpr typename vector<T>::iterator vector<T>::begin() noexcept {
+  return iterator(_elem + 0);
 }
 
 template<class T>
-constexpr vector<T>::iterator vector<T>::end() noexcept {
-  return iterator(&_elem[_size]);
+constexpr typename vector<T>::const_iterator vector<T>::begin() const noexcept {
+  return const_iterator(_elem + 0);
 }
 
 template<class T>
-constexpr vector<T>::reverse_iterator vector<T>::rbegin() noexcept {
-  return reverse_iterator(&_elem[_size - 1]);
+constexpr typename vector<T>::const_iterator vector<T>::cbegin() const noexcept {
+  return const_iterator(_elem + 0);
 }
 
 template<class T>
-constexpr vector<T>::reverse_iterator vector<T>::rend() noexcept {
-  return reverse_iterator(&_elem[-1]);
+constexpr typename vector<T>::iterator vector<T>::end() noexcept {
+  return iterator(_elem + _size);
+}
+
+template<class T>
+constexpr typename vector<T>::const_iterator vector<T>::end() const noexcept {
+  return const_iterator(_elem + _size);
+}
+
+template<class T>
+constexpr typename vector<T>::const_iterator vector<T>::cend() const noexcept {
+  return const_iterator(_elem + _size);
+}
+
+template<class T>
+constexpr typename vector<T>::reverse_iterator vector<T>::rbegin() noexcept {
+  return reverse_iterator(end());
+}
+
+template<class T>
+constexpr typename vector<T>::const_reverse_iterator vector<T>::rbegin() const noexcept {
+  return const_reverse_iterator(end());
+}
+
+template<class T>
+constexpr typename vector<T>::const_reverse_iterator vector<T>::crbegin() const noexcept {
+  return const_reverse_iterator(cend());
+}
+
+template<class T>
+constexpr typename vector<T>::reverse_iterator vector<T>::rend() noexcept {
+  return reverse_iterator(begin());
+}
+
+template<class T>
+constexpr typename vector<T>::const_reverse_iterator vector<T>::rend() const noexcept {
+  return const_reverse_iterator(cbegin());
+}
+
+template<class T>
+constexpr typename vector<T>::const_reverse_iterator vector<T>::crend() const noexcept {
+  return const_reverse_iterator(cbegin());
 }
 
 template<class T>
@@ -905,7 +818,7 @@ constexpr bool vector<T>::empty() const noexcept {
 }
 
 template<class T>
-constexpr vector<T>::size_type vector<T>::size() const noexcept {
+constexpr typename vector<T>::size_type vector<T>::size() const noexcept {
   return _size;
 }
 
@@ -927,7 +840,7 @@ constexpr void vector<T>::reserve(vector::size_type new_cap) {
 }
 
 template<class T>
-constexpr vector<T>::size_type vector<T>::capacity() const noexcept {
+constexpr typename vector<T>::size_type vector<T>::capacity() const noexcept {
   return _capacity;
 }
 
@@ -944,8 +857,8 @@ constexpr void vector<T>::clear() noexcept {
 }
 
 template<class T>
-constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, const T &value) {
-  for (iterator i = ++end(); i > pos; i--) {
+constexpr typename vector<T>::iterator vector<T>::insert(vector::iterator pos, const T &value) {
+  for (iterator i = ++end(); i != pos; i--) {
     value_type t = *(i - 1);
     //    Log("pointer = %p, value = %d", i, t);
     *i = t;
@@ -956,8 +869,8 @@ constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, const T &v
 }
 
 template<class T>
-constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, T &&value) {
-  for (iterator i = ++end(); i > pos; i--) {
+constexpr typename vector<T>::iterator vector<T>::insert(vector::iterator pos, T &&value) {
+  for (iterator i = ++end(); i != pos; i--) {
     value_type t = *(i - 1);
     //    Log("pointer = %p, value = %d", i, t);
     *i = t;
@@ -968,7 +881,7 @@ constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, T &&value)
 }
 
 template<class T>
-constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, vector::size_type count, const T &value) {
+constexpr typename vector<T>::iterator vector<T>::insert(vector::iterator pos, vector::size_type count, const T &value) {
   for (size_type i = 0; i < count; i++) {
     insert(pos, value);
   }
@@ -976,7 +889,7 @@ constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, vector::si
 }
 
 template<class T>
-constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, std::initializer_list<T> ilist) {
+constexpr typename vector<T>::iterator vector<T>::insert(vector::iterator pos, std::initializer_list<T> ilist) {
   for (auto it = ilist.end() - 1; it >= ilist.begin(); it--) {
     insert(pos, *it);
   }
@@ -985,14 +898,14 @@ constexpr vector<T>::iterator vector<T>::insert(vector::iterator pos, std::initi
 
 template<class T>
 template<class... Args>
-constexpr vector<T>::iterator vector<T>::emplace(vector::iterator pos, Args &&...args) {
+constexpr typename vector<T>::iterator vector<T>::emplace(vector::iterator pos, Args &&...args) {
   auto value = new T(std::forward<Args>(args)...);
   return insert(pos, *value);
 }
 
 template<class T>
-constexpr vector<T>::iterator vector<T>::erase(vector::iterator pos) {
-  for (iterator i = pos; i < end(); i++) {
+constexpr typename vector<T>::iterator vector<T>::erase(vector::iterator pos) {
+  for (iterator i = pos; i != end(); i++) {
     value_type t = *(i + 1);
     *i = t;
   }
@@ -1001,9 +914,9 @@ constexpr vector<T>::iterator vector<T>::erase(vector::iterator pos) {
 }
 
 template<class T>
-constexpr vector<T>::iterator vector<T>::erase(vector::iterator first, vector::iterator last) {
+constexpr typename vector<T>::iterator vector<T>::erase(vector::iterator first, vector::iterator last) {
   size_type removed = last - first;
-  for (iterator i = first; i < end(); i++) {
+  for (iterator i = first; i != end(); i++) {
     value_type t = *(i + removed);
     *i = t;
   }
@@ -1037,7 +950,7 @@ constexpr void vector<T>::push_back(T &&value) {
 
 template<class T>
 template<class... Args>
-constexpr vector<T>::reference vector<T>::emplace_back(Args &&...args) {
+constexpr typename vector<T>::reference vector<T>::emplace_back(Args &&...args) {
   auto value = new T(std::forward<Args>(args)...);
   push_back(*value);
   return *value;

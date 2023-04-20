@@ -114,6 +114,85 @@ void test_list_clear() {
 }
 
 template<class T>
+void test_list_insert() {
+  Log("==> test list insert()");
+  stl::list<T> l{2, 3, 4};
+  l.print();
+  l.insert(l.begin(), 4);
+  T a = 9;
+  l.insert(l.begin(), std::move(a));
+  l.print();
+  l.insert(l.begin(), 4, 2);
+  l.print();
+  std::initializer_list<T> ilist{9, 8, 7};
+  l.insert(l.begin(), ilist);
+  l.print();
+  Log("==> pass!");
+}
+
+void test_list_emplace() {
+  Log("==> test list emplace()");
+  struct Point2d {
+    int x, y;
+    Point2d() = default;
+    Point2d(int x, int y) : x(x), y(y) {}
+  };
+  stl::list<Point2d> l{
+    {1, 1},
+    {2, 2},
+    {3, 3}
+  };
+  l.emplace(l.end(), 5, 5);
+  assert(l.back().x == 5 && l.back().y == 5);
+  Log("==> pass!");
+}
+
+template<class T>
+void test_list_erase() {
+  Log("==> test list erase()");
+  stl::list<T> l{1, 3, 5, 7, 9};
+  l.print();
+  auto last = l.end();
+  last--;
+  l.erase(last);
+  l.print();
+  l.erase(l.begin(), l.end());
+  l.print();
+  Log("==> pass!");
+}
+
+template<class T>
+void test_list_push_back() {
+  Log("==> test list push_back()");
+  stl::list<T> l{1, 2, 3};
+  for (int i = 0; i < 3; i++) {
+    l.push_back(i);
+  }
+  T a = 10;
+  l.push_back(std::move(a));
+  l.print();
+  Log("==> pass!");
+}
+
+void test_list_emplace_back() {
+  Log("==> test list emplace_back()");
+  struct Point2d {
+    int x, y;
+    Point2d() = default;
+    Point2d(int x, int y) : x(x), y(y) {}
+  };
+  stl::list<Point2d> l{
+    {1, 1},
+    {2, 2},
+    {3, 3}
+  };
+  auto p = l.emplace_back(5, 5);
+  std::cout << p.x << ":" << p.y << "\n";
+  assert(l.back().x == 5 && l.back().y == 5);
+  Log("==> pass!");
+}
+
+template<class T>
 void test_list() {
   test_list_init<T>();
   test_list_operator_equal<T>();
@@ -122,6 +201,11 @@ void test_list() {
   test_list_iterator<T>();
   test_list_capacity<T>();
   test_list_clear<T>();
+  test_list_insert<T>();
+  test_list_emplace();
+  test_list_erase<T>();
+  test_list_push_back<T>();
+  test_list_emplace_back();
 }
 
 int main() {

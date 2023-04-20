@@ -263,10 +263,24 @@ public:
 
   void clear() noexcept;
 
-  iterator insert(const_iterator pos, const T &value);
-  iterator insert(const_iterator pos, T &&value);
-  iterator insert(const_iterator pos, size_type count, const T &value);
-  iterator insert(const_iterator pos, std::initializer_list<T> ilist);
+  iterator insert(iterator pos, const T &value);
+  iterator insert(iterator pos, T &&value);
+  iterator insert(iterator pos, size_type count, const T &value);
+  iterator insert(iterator pos, std::initializer_list<T> ilist);
+
+  template<class... Args>
+  iterator emplace(iterator pos, Args &&...args);
+
+  iterator erase(iterator pos);
+  iterator erase(iterator first, iterator last);
+
+  void push_back(const T &value);
+  void push_back(T &&value);
+
+  template<class... Args>
+  reference emplace_back(Args&&...args);
+
+  void pop_back();
 
 
   void print() {
@@ -516,22 +530,94 @@ void list<T>::clear() noexcept {
 }
 
 template<class T>
-list<T>::iterator list<T>::insert(list::const_iterator pos, const T &value) {
-  TODO();
+list<T>::iterator list<T>::insert(list::iterator pos, const T &value) {
+  node *newp = new list_node<T>(value);
+  newp->insert(pos._node->prev, pos._node);
+  _size++;
+  return pos;
 }
 
 template<class T>
-list<T>::iterator list<T>::insert(list::const_iterator pos, T &&value) {
-  TODO();
+list<T>::iterator list<T>::insert(list::iterator pos, T &&value) {
+  node *newp = new list_node<T>(std::move(value));
+  newp->insert(pos._node->prev, pos._node);
+  _size++;
+  return pos;
 }
 
 template<class T>
-list<T>::iterator list<T>::insert(list::const_iterator pos, list::size_type count, const T &value) {
-  TODO();
+list<T>::iterator list<T>::insert(list::iterator pos, list::size_type count, const T &value) {
+  for (size_type i = 0; i < count; i++) {
+    node *newp = new list_node<T>(value);
+    newp->insert(pos._node->prev, pos._node);
+    _size++;
+  }
+  return pos;
 }
 
 template<class T>
-list<T>::iterator list<T>::insert(list::const_iterator pos, std::initializer_list<T> ilist) {
+list<T>::iterator list<T>::insert(list::iterator pos, std::initializer_list<T> ilist) {
+  for (auto it = ilist.begin(); it != ilist.end(); ++it) {
+    node *newp = new list_node<T>(*it);
+    newp->insert(pos._node->prev, pos._node);
+    _size++;
+  }
+  return pos;
+}
+
+template<class T>
+template<class... Args>
+list<T>::iterator list<T>::emplace(list::iterator pos, Args &&...args) {
+  auto value = new T(std::forward<Args>(args)...);
+  return insert(pos, *value);
+}
+
+template<class T>
+list<T>::iterator list<T>::erase(list::iterator pos) {
+  auto removep = pos._node;
+  removep->remove(removep->prev, removep->next);
+  _size--;
+  return pos == (end()) ? end() : pos;
+}
+
+template<class T>
+list<T>::iterator list<T>::erase(list::iterator first, list::iterator last) {
+  auto firstp = first._node;
+  auto lastp = last._node;
+  firstp->prev->next = lastp;
+  lastp->prev = firstp->prev;
+  _size -= std::distance(first, last);
+  if (last == end()) {
+    return end();
+  }
+  if (first == last) {
+    return last;
+  }
+  return last;
+}
+
+template<class T>
+void list<T>::push_back(const T &value) {
+  auto newp = new list_node<T>(value);
+  newp->insert(_head->prev, _head);
+}
+
+template<class T>
+void list<T>::push_back(T &&value) {
+  auto newp = new list_node<T>(std::move(value));
+  newp->insert(_head->prev, _head);
+}
+
+template<class T>
+template<class... Args>
+list<T>::reference list<T>::emplace_back(Args &&...args) {
+  auto value = new T(std::forward<Args>(args)...);
+  push_back(*value);
+  return *value;
+}
+
+template<class T>
+void list<T>::pop_back() {
   TODO();
 }
 

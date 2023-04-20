@@ -7,7 +7,9 @@
 
 namespace stl {
 
-#define TODO() printf("Not implemented!"); exit(-1)
+#define TODO() \
+  printf("Not implemented!"); \
+  exit(-1)
 
 #define Log(format, ...) printf(format "\n", ##__VA_ARGS__)
 

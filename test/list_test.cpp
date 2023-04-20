@@ -140,8 +140,7 @@ void test_list_emplace() {
   stl::list<Point2d> l{
     {1, 1},
     {2, 2},
-    {3, 3}
-  };
+    {3, 3}};
   l.emplace(l.end(), 5, 5);
   assert(l.back().x == 5 && l.back().y == 5);
   Log("==> pass!");
@@ -184,11 +183,160 @@ void test_list_emplace_back() {
   stl::list<Point2d> l{
     {1, 1},
     {2, 2},
-    {3, 3}
-  };
+    {3, 3}};
   auto p = l.emplace_back(5, 5);
-  std::cout << p.x << ":" << p.y << "\n";
+  assert(p.x == 5 && p.y == 5);
   assert(l.back().x == 5 && l.back().y == 5);
+  Log("==> pass!");
+}
+
+template<class T>
+void test_list_pop_back() {
+  Log("==> test list pop_back()");
+  stl::list<T> l{1, 2, 3};
+  assert(l.back() == 3);
+  l.pop_back();
+  assert(l.back() == 2);
+  l.pop_back();
+  assert(l.back() == 1);
+  l.pop_back();
+  assert(l.empty() == true);
+  Log("==> pass!");
+}
+
+template<class T>
+void test_list_push_front() {
+  Log("==> test list push_front()");
+  stl::list<T> l{1, 2, 3};
+  for (int i = 1; i <= 3; i++) {
+    l.push_front(i);
+  }
+  assert(l.size() == 6);
+  assert(l.front() == 3);
+  T a = 9;
+  l.push_front(std::move(a));
+  assert(l.front() == 9);
+  Log("==> pass!");
+}
+
+void test_list_emplace_front() {
+  Log("==> test list emplace_front()");
+  struct Point2d {
+    int x, y;
+    Point2d() = default;
+    Point2d(int x, int y) : x(x), y(y) {}
+  };
+  stl::list<Point2d> l{
+    {1, 1},
+    {2, 2},
+    {3, 3}};
+  auto p = l.emplace_front(5, 5);
+  assert(p.x == 5 && p.y == 5);
+  assert(l.front().x == 5 && l.front().y == 5);
+  Log("==> pass!");
+}
+
+template<class T>
+void test_list_pop_front() {
+  Log("==> test list pop_front()");
+  stl::list<T> l{1, 2, 3};
+  assert(l.front() == 1);
+  l.pop_front();
+  assert(l.front() == 2);
+  l.pop_front();
+  assert(l.front() == 3);
+  l.pop_front();
+  assert(l.empty() == true);
+  Log("==> pass!");
+}
+
+template<class T>
+void test_list_resize() {
+  Log("==> test list resize()");
+  stl::list<T> l{1, 2, 3};
+  assert(l.size() == 3);
+  l.print();
+  l.resize(2);
+  assert(l.size() == 2);
+  l.print();
+  l.resize(5, 9);
+  assert(l.size() == 5);
+  l.print();
+  Log("==> pass!");
+}
+
+template<class T>
+void test_list_swap() {
+  Log("==> test list swap()");
+  stl::list<T> l1{1, 2, 3, 4, 5};
+  stl::list<T> l2{6, 7, 8, 9};
+  assert(l1.front() == 1 && l1.size() == 5);
+  assert(l2.front() == 6 && l2.size() == 4);
+  l1.swap(l2);
+  assert(l1.front() == 6 && l1.size() == 4);
+  assert(l2.front() == 1 && l2.size() == 5);
+  Log("==> pass!");
+}
+
+template<class T>
+void test_list_merge() {
+  Log("==> test list merge()");
+  stl::list<T> l1{1, 2, 3, 4, 5};
+  stl::list<T> l2{6, 7, 8, 9};
+  l1.print();
+  l2.print();
+  // TODO
+  l1.merge(l2);
+  l1.print();
+  l2.print();
+  Log("==> pass!");
+}
+
+template<class T>
+void test_list_splice() {
+  // TODO
+}
+
+template<class T>
+void test_list_remove() {
+  Log("==> test list remove()");
+  stl::list<T> l{1, 1, 4, 5, 1, 4};
+  l.remove(1);
+  l.print();
+  l.assign({4, 5, 3, 6, 2, 5, 1});
+  l.remove_if([](int n) { return n > 2; });
+  l.print();
+  Log("==> pass!");
+}
+
+template<class T>
+void test_list_reverse() {
+  Log("==> test list reverse()");
+  stl::list<T> l{1, 1, 4, 5, 1, 4};
+  l.print();
+  l.reverse();
+  l.print();
+  Log("==> pass!");
+}
+
+template<class T>
+void test_list_unique() {
+  Log("==> test list unique()");
+  stl::list<T> l{1, 1, 4, 5, 1, 4, 4, 7, 7, 7, 7, 8, 9};
+  l.unique();
+  assert(l.size() == 8);
+  l.print();
+  l.assign({1, 2, 12, 23, 3, 2, 51, 1, 2, 2});
+  l.print();
+  l.unique([mod=10](int n, int m) { return (n % mod) == (m % mod); });
+  l.print();
+  Log("==> pass!");
+}
+
+template<class T>
+void test_list_sort() {
+  Log("==> test list sort()");
+  // TODO
   Log("==> pass!");
 }
 
@@ -206,6 +354,18 @@ void test_list() {
   test_list_erase<T>();
   test_list_push_back<T>();
   test_list_emplace_back();
+  test_list_pop_back<T>();
+  test_list_push_front<T>();
+  test_list_emplace_front();
+  test_list_pop_front<T>();
+  test_list_resize<T>();
+  test_list_swap<T>();
+  test_list_merge<T>();
+  test_list_splice<T>();
+  test_list_remove<T>();
+  test_list_reverse<T>();
+  test_list_unique<T>();
+  test_list_sort<T>();
 }
 
 int main() {

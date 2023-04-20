@@ -9,6 +9,7 @@
 
 #include "util.h"
 
+#include <cassert>
 #include <cstddef>
 #include <iostream>
 #include <iterator>
@@ -199,6 +200,8 @@ private:
   node *_head;
   size_type _size;
 
+  bool sorted();
+
 public:
   /**
    * Member functions
@@ -278,9 +281,54 @@ public:
   void push_back(T &&value);
 
   template<class... Args>
-  reference emplace_back(Args&&...args);
+  reference emplace_back(Args &&...args);
 
   void pop_back();
+
+  void push_front(const T &value);
+  void push_front(T &&value);
+
+  template<class... Args>
+  reference emplace_front(Args &&...args);
+
+  void pop_front();
+
+  void resize(size_type count);
+  void resize(size_type count, const value_type &value);
+
+  void swap(list &other) noexcept;
+
+  /**
+   * Operations
+   */
+
+  void merge(list &other);
+  void merge(list &&other);
+  template<class Compare>
+  void merge(list &other, Compare comp);
+  template<class Compare>
+  void merge(list &&other, Compare comp);
+
+  void splice(iterator pos, list &other);
+  void splice(iterator pos, list &&other);
+  void splice(iterator pos, list &other, iterator it);
+  void splice(iterator pos, list &&other, iterator it);
+  void splice(iterator pos, list &other, iterator first, iterator last);
+  void splice(iterator pos, list &&other, iterator first, iterator last);
+
+  size_type remove(const T &value);
+  template<class UnaryPredicate>
+  size_type remove_if(UnaryPredicate p);
+
+  void reverse() noexcept;
+
+  size_type unique();
+  template<class BinaryPredicate>
+  size_type unique(BinaryPredicate p);
+
+  void sort();
+  template<class Compare>
+  void sort(Compare comp);
 
 
   void print() {
@@ -291,6 +339,20 @@ public:
     std::cout << "]\n";
   }
 };
+
+template<class T>
+bool list<T>::sorted() {
+  auto last = end();
+  last--;
+  for (auto it = begin(); it != last; ++it) {
+    auto next = it;
+    next++;
+    if (*it > *next) {
+      return false;
+    }
+  }
+  return true;
+}
 
 template<class T>
 list<T>::list() {
@@ -600,12 +662,14 @@ template<class T>
 void list<T>::push_back(const T &value) {
   auto newp = new list_node<T>(value);
   newp->insert(_head->prev, _head);
+  _size++;
 }
 
 template<class T>
 void list<T>::push_back(T &&value) {
   auto newp = new list_node<T>(std::move(value));
   newp->insert(_head->prev, _head);
+  _size++;
 }
 
 template<class T>
@@ -618,6 +682,246 @@ list<T>::reference list<T>::emplace_back(Args &&...args) {
 
 template<class T>
 void list<T>::pop_back() {
+  auto last = _head->prev;
+  last->remove(last->prev, last->next);
+  _size--;
+}
+
+template<class T>
+void list<T>::push_front(const T &value) {
+  auto newp = new list_node<T>(value);
+  newp->insert(_head, _head->next);
+  _size++;
+}
+
+template<class T>
+void list<T>::push_front(T &&value) {
+  auto newp = new list_node<T>(std::move(value));
+  newp->insert(_head, _head->next);
+  _size++;
+}
+
+template<class T>
+template<class... Args>
+list<T>::reference list<T>::emplace_front(Args &&...args) {
+  auto value = new T(std::forward<Args>(args)...);
+  push_front(*value);
+  return *value;
+}
+
+template<class T>
+void list<T>::pop_front() {
+  auto first = _head->next;
+  first->remove(first->prev, first->next);
+  _size--;
+}
+
+template<class T>
+void list<T>::resize(list::size_type count) {
+  size_type oldSize = size();
+  if (count > oldSize) {
+    for (size_type i = 0; i < (count - oldSize); i++) {
+      push_back(0);
+    }
+  } else if (count < oldSize) {
+    for (size_type i = 0; i < (oldSize - count); i++) {
+      pop_back();
+    }
+  }
+  // else, do nothing
+}
+
+template<class T>
+void list<T>::resize(list::size_type count, const value_type &value) {
+  size_type oldSize = size();
+  if (count > oldSize) {
+    for (size_type i = 0; i < (count - oldSize); i++) {
+      push_back(value);
+    }
+  } else if (count < oldSize) {
+    for (size_type i = 0; i < (oldSize - count); i++) {
+      pop_back();
+    }
+  }
+}
+
+template<class T>
+void list<T>::swap(list &other) noexcept {
+  std::swap(_head, other._head);
+  std::swap(_size, other._size);
+}
+
+template<class T>
+void list<T>::merge(list &other) {
+  if (this->_head != other._head) {
+    assert(this->sorted() && other.sorted());
+    auto it1 = this->begin();
+    auto it2 = other.begin();
+    TODO();
+  }
+  // else, do nothing
+}
+
+template<class T>
+void list<T>::merge(list &&other) {
+  TODO();
+}
+
+template<class T>
+template<class Compare>
+void list<T>::merge(list &other, Compare comp) {
+  TODO();
+}
+
+template<class T>
+template<class Compare>
+void list<T>::merge(list &&other, Compare comp) {
+  TODO();
+}
+
+template<class T>
+void list<T>::splice(list::iterator pos, list &other) {
+  TODO();
+}
+
+template<class T>
+void list<T>::splice(list::iterator pos, list &&other) {
+  TODO();
+}
+
+template<class T>
+void list<T>::splice(list::iterator pos, list &other, list::iterator it) {
+  TODO();
+}
+
+template<class T>
+void list<T>::splice(list::iterator pos, list &&other, list::iterator it) {
+  TODO();
+}
+
+template<class T>
+void list<T>::splice(list::iterator pos, list &other, list::iterator first, list::iterator last) {
+  TODO();
+}
+
+template<class T>
+void list<T>::splice(list::iterator pos, list &&other, list::iterator first, list::iterator last) {
+  TODO();
+}
+
+template<class T>
+list<T>::size_type list<T>::remove(const T &value) {
+  size_type removal = 0;
+  auto it = begin();
+  while (it != end()) {
+    if (*it == value) {
+      removal++;
+      auto *currp = it._node;
+      currp->prev->next = currp->next;
+      currp->next->prev = currp->prev;
+      _size--;
+    }
+    it++;
+  }
+  return removal;
+}
+
+template<class T>
+template<class UnaryPredicate>
+list<T>::size_type list<T>::remove_if(UnaryPredicate p) {
+  size_type removal = 0;
+  auto it = begin();
+  while (it != end()) {
+    if (p(*it) == true) {
+      removal++;
+      auto *currp = it._node;
+      currp->prev->next = currp->next;
+      currp->next->prev = currp->prev;
+      _size--;
+    }
+    it++;
+  }
+  return removal;
+}
+
+template<class T>
+void list<T>::reverse() noexcept {
+  auto i = _head->next;
+  auto j = _head->prev;
+  while (i < j) {
+    std::swap(i->data, j->data);
+    i = i->next;
+    j = j->prev;
+  }
+}
+
+template<class T>
+list<T>::size_type list<T>::unique() {
+  size_type count = 0;
+  auto it = this->begin();
+  while (it != this->end()) {
+    auto next = it;
+    next++;
+    while (next != this->end()) {
+      if (*it == *next) {
+        next++;
+      } else {
+        break;
+      }
+    }
+    size_type size = std::distance(it, next);
+    if (size > 1) {
+      for (size_type i = 0; i < size - 1; i++) {
+        auto p = it;
+        p++;
+        p._node->remove(p._node->prev, p._node->next);
+        count++;
+      }
+    }
+    it = next;
+  }
+  this->_size -= count;
+  return count;
+}
+
+template<class T>
+template<class BinaryPredicate>
+list<T>::size_type list<T>::unique(BinaryPredicate p) {
+  size_type count = 0;
+  auto it = this->begin();
+  while (it != this->end()) {
+    auto next = it;
+    next++;
+    while (next != this->end()) {
+      if (p(*it, *next) == true) {
+        next++;
+      } else {
+        break;
+      }
+    }
+    size_type size = std::distance(it, next);
+    if (size > 1) {
+      for (size_type i = 0; i < size - 1; i++) {
+        auto p = it;
+        p++;
+        p._node->remove(p._node->prev, p._node->next);
+        count++;
+      }
+    }
+    it = next;
+  }
+  this->_size -= count;
+  return count;
+}
+
+template<class T>
+void list<T>::sort() {
+  TODO();
+}
+
+template<class T>
+template<class Compare>
+void list<T>::sort(Compare comp) {
   TODO();
 }
 

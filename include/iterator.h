@@ -12,7 +12,7 @@
 namespace stl {
 
 template<class Iterator, typename Container>
-class _iterator {
+class base_iterator {
 protected:
   Iterator current;
 
@@ -26,60 +26,60 @@ public:
   typedef typename traits_type::reference reference;
   typedef typename traits_type::pointer pointer;
 
-  _iterator() : current(Iterator()) {}
-  explicit _iterator(const Iterator &i) : current(i) {}
+  base_iterator() : current(Iterator()) {}
+  explicit base_iterator(const Iterator &i) : current(i) {}
 
   reference operator*() const { return *current; }
   pointer operator->() const { return current; }
-  _iterator &operator++() {
+  base_iterator &operator++() {
     ++current;
     return *this;
   }
-  _iterator operator++(int) { return _iterator(current++); }
-  _iterator &operator--() {
+  base_iterator operator++(int) { return base_iterator(current++); }
+  base_iterator &operator--() {
     --current;
     return *this;
   }
-  _iterator operator--(int) { return _iterator(current--); }
+  base_iterator operator--(int) { return base_iterator(current--); }
 
   reference operator[](difference_type n) const { return current[n]; }
-  _iterator &operator+=(difference_type n) {
+  base_iterator &operator+=(difference_type n) {
     current += n;
     return *this;
   }
-  _iterator operator+(difference_type n) const { return _iterator(current + n); }
-  _iterator &operator-=(difference_type n) {
+  base_iterator operator+(difference_type n) const { return base_iterator(current + n); }
+  base_iterator &operator-=(difference_type n) {
     current -= n;
     return *this;
   }
-  _iterator operator-(difference_type n) const { return _iterator(current - n); }
+  base_iterator operator-(difference_type n) const { return base_iterator(current - n); }
 
   const Iterator &base() const { return current; }
 };
 
 template<typename IteratorL, typename IteratorR, typename Container>
-constexpr bool operator==(const _iterator<IteratorL, Container> &lhs,
-                          const _iterator<IteratorR, Container> &rhs) {
+constexpr bool operator==(const base_iterator<IteratorL, Container> &lhs,
+                          const base_iterator<IteratorR, Container> &rhs) {
   return lhs.base() == rhs.base();
 }
 
 template<typename IteratorL, typename IteratorR, typename Container>
-inline auto operator-(const _iterator<IteratorL, Container> &lhs,
-                      const _iterator<IteratorR, Container> &rhs) noexcept {
+inline auto operator-(const base_iterator<IteratorL, Container> &lhs,
+                      const base_iterator<IteratorR, Container> &rhs) noexcept {
   return lhs.base() - rhs.base();
 }
 
 template<typename Iterator, typename Container>
-inline typename _iterator<Iterator, Container>::difference_type
-operator-(const _iterator<Iterator, Container> &lhs,
-          const _iterator<Iterator, Container> &rhs) {
+inline typename base_iterator<Iterator, Container>::difference_type
+operator-(const base_iterator<Iterator, Container> &lhs,
+          const base_iterator<Iterator, Container> &rhs) {
   return lhs.base() - rhs.base();
 }
 
 template<typename Iterator, typename Container>
-inline _iterator<Iterator, Container> operator+(typename _iterator<Iterator, Container>::difference_type n,
-                                                const _iterator<Iterator, Container> &i) {
-  return _iterator<Iterator, Container>(i.base() + n);
+inline base_iterator<Iterator, Container> operator+(typename base_iterator<Iterator, Container>::difference_type n,
+                                                const base_iterator<Iterator, Container> &i) {
+  return base_iterator<Iterator, Container>(i.base() + n);
 }
 
 }// namespace stl

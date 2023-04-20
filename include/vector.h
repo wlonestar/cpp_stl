@@ -62,8 +62,8 @@ public:
   typedef value_type *pointer;
   typedef const value_type *const_pointer;
 
-  typedef _iterator<pointer, vector> iterator;
-  typedef _iterator<const_pointer, vector> const_iterator;
+  typedef base_iterator<pointer, vector> iterator;
+  typedef base_iterator<const_pointer, vector> const_iterator;
   typedef std::reverse_iterator<iterator> reverse_iterator;
   typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 

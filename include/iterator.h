@@ -29,32 +29,57 @@ public:
   base_iterator() : current(Iterator()) {}
   explicit base_iterator(const Iterator &i) : current(i) {}
 
-  reference operator*() const { return *current; }
-  pointer operator->() const { return current; }
+  reference operator*() const {
+    return *current;
+  }
+
+  pointer operator->() const {
+    return current;
+  }
+
   base_iterator &operator++() {
     ++current;
     return *this;
   }
-  base_iterator operator++(int) { return base_iterator(current++); }
+
+  base_iterator operator++(int) {
+    return base_iterator(current++);
+  }
+
   base_iterator &operator--() {
     --current;
     return *this;
   }
-  base_iterator operator--(int) { return base_iterator(current--); }
 
-  reference operator[](difference_type n) const { return current[n]; }
+  base_iterator operator--(int) {
+    return base_iterator(current--);
+  }
+
+  reference operator[](difference_type n) const {
+    return current[n];
+  }
+
   base_iterator &operator+=(difference_type n) {
     current += n;
     return *this;
   }
-  base_iterator operator+(difference_type n) const { return base_iterator(current + n); }
+
+  base_iterator operator+(difference_type n) const {
+    return base_iterator(current + n);
+  }
+
   base_iterator &operator-=(difference_type n) {
     current -= n;
     return *this;
   }
-  base_iterator operator-(difference_type n) const { return base_iterator(current - n); }
 
-  const Iterator &base() const { return current; }
+  base_iterator operator-(difference_type n) const {
+    return base_iterator(current - n);
+  }
+
+  const Iterator &base() const {
+    return current;
+  }
 };
 
 template<typename IteratorL, typename IteratorR, typename Container>
@@ -77,8 +102,9 @@ operator-(const base_iterator<Iterator, Container> &lhs,
 }
 
 template<typename Iterator, typename Container>
-inline base_iterator<Iterator, Container> operator+(typename base_iterator<Iterator, Container>::difference_type n,
-                                                const base_iterator<Iterator, Container> &i) {
+inline base_iterator<Iterator, Container> operator+(
+  typename base_iterator<Iterator, Container>::difference_type n,
+  const base_iterator<Iterator, Container> &i) {
   return base_iterator<Iterator, Container>(i.base() + n);
 }
 

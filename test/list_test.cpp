@@ -3,27 +3,23 @@
 //
 
 #include "list.h"
-#include <list>
-#include <vector>
-
-#include <cassert>
 
 template<class T>
 void test_list_init() {
   Log("==> test list constructor");
   stl::list<T> l1;
-  l1.print();
+  assert(l1.empty() == true);
   stl::list<T> l2(5, 1);
-  l2.print();
+  assert(l2.size() == 5 && l2.front() == 1);
   stl::list<T> l3(3);
-  l3.print();
+  assert(l3.size() == 3 && l3.front() == 0);
   stl::list<T> l4(l2);
-  l4.print();
+  assert(l2 == l4);
   stl::list<T> l5(std::move(l2));
-  l5.print();
+  assert(l5.size() == 5 && l5.front() == 1);
   std::initializer_list<T> ilist{1, 2, 3, 4, 5};
   stl::list<T> l6(ilist);
-  l6.print();
+  assert(l6.size() == 5 && l6.front() == 1 && l6.back() == 5);
   Log("==> pass!");
 }
 
@@ -31,13 +27,12 @@ template<class T>
 void test_list_operator_equal() {
   Log("==> test list operator =");
   stl::list<T> l1{1, 2, 3};
-  l1.print();
   stl::list<T> l2 = l1;
-  l2.print();
+  assert(l2.size() == 3 && l2.front() == 1 && l2.back() == 3);
   stl::list<T> l3 = std::move(l2);
-  l3.print();
+  assert(l3.size() == 3 && l3.front() == 1 && l3.back() == 3);
   stl::list<T> l4 = {1, 3, 5};
-  l4.print();
+  assert(l4.size() == 3 && l4.front() == 1 && l4.back() == 5);
   Log("==> pass!");
 }
 
@@ -45,17 +40,16 @@ template<class T>
 void test_list_assign() {
   Log("==> test list assign()");
   stl::list<T> l{1, 2, 3, 4, 5};
-  l.print();
   l.assign(2, 3);
-  l.print();
+  assert(l.size() == 2 && l.front() == 3 && l.back() == 3);
   l.assign(5, 6);
-  l.print();
+  assert(l.size() == 5 && l.front() == 6 && l.back() == 6);
   std::initializer_list<T> ilist1{3, 2, 1};
   l.assign(ilist1);
-  l.print();
+  assert(l.size() == 3 && l.front() == 3 && l.back() == 1);
   std::initializer_list<T> ilist2{9, 7, 5, 3, 1};
   l.assign(ilist2);
-  l.print();
+  assert(l.size() == 5 && l.front() == 9 && l.back() == 1);
   Log("==> pass!");
 }
 
@@ -63,33 +57,31 @@ template<class T>
 void test_list_front_back() {
   Log("==> test list front() back()");
   stl::list<T> l{5, 3, 7};
-  auto front = l.front();
-  auto back = l.back();
-  assert(front == 5);
-  assert(back == 7);
+  assert(l.front() == 5);
+  assert(l.back() == 7);
   Log("==> pass!");
 }
 
 template<class T>
 void test_list_iterator() {
   Log("==> test list iterator");
-  stl::list<T> l{5, 3, 7, 9};
+  stl::list<T> l{1, 2, 3, 4, 5};
+  T i = 1;
   for (auto p = l.begin(); p != l.end(); ++p) {
-    std::cout << *p << " ";
+    assert(*p == i++);
   }
-  std::cout << "\n";
+  i = 1;
   for (auto p = l.cbegin(); p != l.cend(); ++p) {
-    std::cout << *p << " ";
+    assert(*p == i++);
   }
-  std::cout << "\n";
+  i = 5;
   for (auto p = l.rbegin(); p != l.rend(); ++p) {
-    std::cout << *p << " ";
+    assert(*p == i--);
   }
-  std::cout << "\n";
+  i = 5;
   for (auto p = l.crbegin(); p != l.crend(); ++p) {
-    std::cout << *p << " ";
+    assert(*p == i--);
   }
-  std::cout << "\n";
   Log("==> pass!");
 }
 
@@ -110,7 +102,6 @@ void test_list_clear() {
   assert(l.size() == 3);
   l.clear();
   assert(l.empty() == true);
-  l.print();
   Log("==> pass!");
 }
 
@@ -118,16 +109,17 @@ template<class T>
 void test_list_insert() {
   Log("==> test list insert()");
   stl::list<T> l{2, 3, 4};
-  l.print();
+  assert(l.front() == 2);
   l.insert(l.begin(), 4);
+  assert(l.front() == 4);
   T a = 9;
   l.insert(l.begin(), std::move(a));
-  l.print();
+  assert(l.front() == 9);
   l.insert(l.begin(), 4, 2);
-  l.print();
+  assert(l.size() == 9 && l.front() == 2);
   std::initializer_list<T> ilist{9, 8, 7};
   l.insert(l.begin(), ilist);
-  l.print();
+  assert(l.size() == 12 && l.front() == 9);
   Log("==> pass!");
 }
 
@@ -151,13 +143,13 @@ template<class T>
 void test_list_erase() {
   Log("==> test list erase()");
   stl::list<T> l{1, 3, 5, 7, 9};
-  l.print();
+  assert(l.back() == 9);
   auto last = l.end();
   last--;
   l.erase(last);
-  l.print();
+  assert(l.back() == 7);
   l.erase(l.begin(), l.end());
-  l.print();
+  assert(l.empty() == true);
   Log("==> pass!");
 }
 
@@ -167,10 +159,11 @@ void test_list_push_back() {
   stl::list<T> l{1, 2, 3};
   for (int i = 0; i < 3; i++) {
     l.push_back(i);
+    assert(l.back() == i);
   }
   T a = 10;
   l.push_back(std::move(a));
-  l.print();
+  assert(l.back() == 10);
   Log("==> pass!");
 }
 
@@ -256,13 +249,11 @@ void test_list_resize() {
   Log("==> test list resize()");
   stl::list<T> l{1, 2, 3};
   assert(l.size() == 3);
-  l.print();
+  assert(l.back() == 3);
   l.resize(2);
-  assert(l.size() == 2);
-  l.print();
+  assert(l.size() == 2 && l.back() == 2);
   l.resize(5, 9);
-  assert(l.size() == 5);
-  l.print();
+  assert(l.size() == 5 && l.front() == 1 && l.back() == 9);
   Log("==> pass!");
 }
 
@@ -284,14 +275,13 @@ void test_list_merge() {
   Log("==> test list merge()");
   stl::list<T> l1{1, 3, 5, 7, 9};
   stl::list<T> l2{2, 4, 6, 8, 10};
-  l1.print();
-  l2.print();
+  assert(l1.size() == 5 && l2.size() == 5);
   l1.merge(l2);
-  l1.print();
+  assert(l1.back() == 10 && l1.size() == 10);
   l1.assign({1, 3, 7});
   stl::list<T> l3{2, 5, 6};
   l1.merge(std::move(l3));
-  l1.print();
+  assert(l1.size() == 6 && l1.back() == 7);
 
   struct Point2d {
     int x, y;
@@ -316,7 +306,18 @@ void test_list_merge() {
 
 template<class T>
 void test_list_splice() {
-  // TODO
+  Log("==> test list splice()");
+  stl::list<T> l1{1, 2, 3};
+  stl::list<T> l2{4, 5, 6};
+  l1.splice(l1.begin(), l2);
+  assert(l1.front() == 4 && l1.size() == 6);
+  l2.assign({7, 8, 9});
+  l1.splice(l1.end(), l2, l2.begin());
+  assert(l1.size() == 7 && l1.back() == 7);
+  assert(l2.front() == 8 && l2.back() == 9);
+  l1.splice(l1.end(), l2, l2.begin(), l2.end());
+  assert(l1.size() == 9 && l1.back() == 9);
+  Log("==> pass!");
 }
 
 template<class T>
@@ -324,10 +325,10 @@ void test_list_remove() {
   Log("==> test list remove()");
   stl::list<T> l{1, 1, 4, 5, 1, 4};
   l.remove(1);
-  l.print();
+  assert(l.size() == 3);
   l.assign({4, 5, 3, 6, 2, 5, 1});
   l.remove_if([](int n) { return n > 2; });
-  l.print();
+  assert(l.size() == 2 && l.front() == 2 && l.back() == 1);
   Log("==> pass!");
 }
 
@@ -335,9 +336,9 @@ template<class T>
 void test_list_reverse() {
   Log("==> test list reverse()");
   stl::list<T> l{1, 1, 4, 5, 1, 4};
-  l.print();
+  assert(l.front() == 1 && l.back() == 4);
   l.reverse();
-  l.print();
+  assert(l.front() == 4 && l.back() == 1);
   Log("==> pass!");
 }
 
@@ -347,18 +348,49 @@ void test_list_unique() {
   stl::list<T> l{1, 1, 4, 5, 1, 4, 4, 7, 7, 7, 7, 8, 9};
   l.unique();
   assert(l.size() == 8);
-  l.print();
   l.assign({1, 2, 12, 23, 3, 2, 51, 1, 2, 2});
-  l.print();
   l.unique([mod=10](int n, int m) { return (n % mod) == (m % mod); });
-  l.print();
+  assert(l.size() == 6);
   Log("==> pass!");
 }
 
 template<class T>
 void test_list_sort() {
   Log("==> test list sort()");
-  // TODO
+  stl::list<T> l{4, 5, 3, 6, 2, 1};
+  l.print();
+  l.sort();
+  l.print();
+  Log("==> pass!");
+}
+
+template<class T>
+void test_operator_equal_equal() {
+  Log("==> test operator ==");
+  stl::list<T> l1{1, 2, 3};
+  stl::list<T> l2{4, 5, 6};
+  stl::list<T> l3{1, 2, 3};
+  assert(!(l1 == l2));
+  assert(l1 == l3);
+  Log("==> pass!");
+}
+
+void test_erase_if() {
+  Log("==> test erase_if()");
+  stl::list<char> cnt;
+  for (char i = '0'; i <= '9'; i++) {
+    cnt.push_back(i);
+  }
+  assert(cnt.size() == 10 && cnt.back() == '9');
+  cnt.print();
+  stl::erase(cnt, '3');
+  cnt.print();
+  assert(cnt.size() == 9);
+  auto erased = stl::erase_if(cnt, [](char x) {
+    return (x - '0') % 2 == 0;
+  });
+  cnt.print();
+  assert(erased == 5);
   Log("==> pass!");
 }
 
@@ -388,9 +420,40 @@ void test_list() {
   test_list_reverse<T>();
   test_list_unique<T>();
   test_list_sort<T>();
+  test_operator_equal_equal<T>();
+  test_erase_if();
+}
+
+void test_list_print() {
+  class Point3d {
+  public:
+    double x;
+    double y;
+    double z;
+    Point3d() = default;
+    Point3d(double x, double y, double z) : x(x), y(y), z(z) {}
+    Point3d(Point3d &&other) noexcept : x(other.x), y(other.y), z(other.z) {}
+    Point3d &operator=(const Point3d &other) = default;
+  };
+  stl::list<Point3d> l;
+  for (int i = 0; i < 5; i++) {
+    double rand = 0.05 * i;
+    l.emplace_back(i * rand, (i + 1) * rand, (i + 2) * rand);
+  }
+  auto lambda = [](const Point3d &p) {
+    printf("(%g, %g, %g)\n", p.x, p.y, p.z);
+  };
+  l.for_each(l.begin(), l.end(), lambda);
+  l.for_each(l.cbegin(), l.cend(), lambda);
+  l.for_each(l.rbegin(), l.rend(), lambda);
+  l.for_each(l.crbegin(), l.crend(), lambda);
+  l.print([](const Point3d &p) {
+    printf("(%.4g, %.4g, %.4g)", p.x, p.y, p.z);
+  });
 }
 
 int main() {
   test_list<int>();
+  test_list_print();
   return 0;
 }

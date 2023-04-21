@@ -204,6 +204,12 @@ private:
   template<class Compare>
   bool sorted(Compare comp);
 
+  iterator select_max(iterator first, iterator last);
+  template<class Compare>
+  iterator select_max(iterator first, iterator last, Compare comp);
+
+  void remove(iterator pos);
+
 public:
   /**
    * Member functions
@@ -332,6 +338,17 @@ public:
   template<class Compare>
   void sort(Compare comp);
 
+  template<class Lambda>
+  void for_each(iterator first, iterator last, Lambda &&lambda);
+  template<class Lambda>
+  void for_each(const_iterator first, const_iterator last, Lambda &&lambda);
+  template<class Lambda>
+  void for_each(reverse_iterator first, reverse_iterator last, Lambda &&lambda);
+  template<class Lambda>
+  void for_each(const_reverse_iterator first, const_reverse_iterator last, Lambda &&lambda);
+
+  template<class Lambda>
+  void print(Lambda &&lambda);
 
   void print() {
     std::cout << "list: [ ";
@@ -341,6 +358,66 @@ public:
     std::cout << "]\n";
   }
 };
+
+/**
+ * Non-member functions
+ */
+
+template<class T>
+bool operator==(const stl::list<T> &lhs, const stl::list<T> &rhs) {
+  if (lhs.size() != rhs.size()) {
+    return false;
+  }
+  for (auto liter = lhs.begin(), riter = rhs.begin(); liter != lhs.end(); ++liter, ++riter) {
+    if (!(*liter == *riter)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template<class T>
+void swap(stl::list<T> &lhs, stl::list<T> &rhs) noexcept {
+  lhs.swap(rhs);
+}
+
+template<class T, class U>
+typename stl::list<T>::size_type erase(stl::list<T> &c, const U &value) {
+  typename stl::list<T>::size_type size = 0;
+  auto it = c.begin();
+  auto next = it;
+  while (it != c.end()) {
+    if (*it == value) {
+      size++;
+      next = it;
+      next++;
+      c.erase(it);
+      it = next;
+    } else {
+      it++;
+    }
+  }
+  return size;
+}
+
+template<class T, class Pred>
+typename stl::list<T>::size_type erase_if(stl::list<T> &c, Pred pred) {
+  typename stl::list<T>::size_type size = 0;
+  auto it = c.begin();
+  auto next = it;
+  while (it != c.end()) {
+    if (pred(*it)) {
+      size++;
+      next = it;
+      next++;
+      c.erase(it);
+      it = next;
+    } else {
+      it++;
+    }
+  }
+  return size;
+}
 
 template<class T>
 bool list<T>::sorted() {
@@ -369,6 +446,39 @@ bool list<T>::sorted(Compare comp) {
     }
   }
   return true;
+}
+
+template<class T>
+list<T>::iterator list<T>::select_max(list::iterator first, list::iterator last) {
+  auto max = first;
+  auto it = first;
+  it++;
+  for (; it != last; ++it) {
+    if (*it > *max) {
+      max = it;
+    }
+  }
+  return max;
+}
+
+template<class T>
+template<class Compare>
+list<T>::iterator list<T>::select_max(list::iterator first, list::iterator last, Compare comp) {
+  auto max = first;
+  auto it = first;
+  it++;
+  for (; it != last; ++it) {
+    if (comp(*max, *it) == true) {
+      max = it;
+    }
+  }
+  return max;
+}
+
+template<class T>
+void list<T>::remove(list::iterator pos) {
+  pos._node->remove(pos._node->prev, pos._node->next);
+  _size--;
 }
 
 template<class T>
@@ -653,9 +763,10 @@ list<T>::iterator list<T>::emplace(list::iterator pos, Args &&...args) {
 
 template<class T>
 list<T>::iterator list<T>::erase(list::iterator pos) {
-  auto removep = pos._node;
-  removep->remove(removep->prev, removep->next);
-  _size--;
+//  auto removep = pos._node;
+  remove(pos);
+//  removep->remove(removep->prev, removep->next);
+//  _size--;
   return pos == (end()) ? end() : pos;
 }
 
@@ -924,33 +1035,60 @@ void list<T>::merge(list &&other, Compare comp) {
 
 template<class T>
 void list<T>::splice(list::iterator pos, list &other) {
-
-  TODO();
+  for (auto it = other.begin(); it != other.end(); ++it) {
+    this->insert(pos, std::move(*it));
+  }
+  other.clear();
 }
 
 template<class T>
 void list<T>::splice(list::iterator pos, list &&other) {
-  TODO();
+  for (auto it = other.begin(); it != other.end(); ++it) {
+    this->insert(pos, std::move(*it));
+  }
+  other.clear();
 }
 
 template<class T>
 void list<T>::splice(list::iterator pos, list &other, list::iterator it) {
-  TODO();
+  this->insert(pos, std::move(*it));
+  auto itp = other.begin();
+  while (itp != it) {
+    itp++;
+  }
+  itp._node->remove(itp._node->prev, itp._node->next);
 }
 
 template<class T>
 void list<T>::splice(list::iterator pos, list &&other, list::iterator it) {
-  TODO();
+  this->insert(pos, std::move(*it));
+  auto itp = other.begin();
+  while (itp != it) {
+    itp++;
+  }
+  itp._node->remove(itp._node->prev, itp._node->next);
 }
 
 template<class T>
 void list<T>::splice(list::iterator pos, list &other, list::iterator first, list::iterator last) {
-  TODO();
+  for (auto it = first; it != last; ++it) {
+    this->insert(pos, *it);
+  }
+  auto p1 = first._node->prev;
+  auto p2 = last._node;
+  p1->next = p2;
+  p2->prev = p1;
 }
 
 template<class T>
 void list<T>::splice(list::iterator pos, list &&other, list::iterator first, list::iterator last) {
-  TODO();
+  for (auto it = first; it != last; ++it) {
+    this->insert(pos, std::move(*it));
+  }
+  auto p1 = first._node->prev;
+  auto p2 = last._node;
+  p1->next = p2;
+  p2->prev = p1;
 }
 
 template<class T>
@@ -1060,13 +1198,68 @@ list<T>::size_type list<T>::unique(BinaryPredicate p) {
 
 template<class T>
 void list<T>::sort() {
-  TODO();
+  auto sorted = end();
+  while (begin() != sorted) {
+    auto max = select_max(begin(), sorted);
+    insert(sorted, *max);
+    remove(max);
+    sorted--;
+  }
 }
 
 template<class T>
 template<class Compare>
 void list<T>::sort(Compare comp) {
-  TODO();
+  auto sorted = end();
+  while (begin() != sorted) {
+    auto max = select_max(begin(), sorted, comp);
+    insert(sorted, *max);
+    remove(max);
+    sorted--;
+  }
+}
+
+template<class T>
+template<class Lambda>
+void list<T>::for_each(list::iterator first, list::iterator last, Lambda &&lambda) {
+  for (auto it = first; it != last; ++it) {
+    lambda(*it);
+  }
+}
+
+template<class T>
+template<class Lambda>
+void list<T>::for_each(list::const_iterator first, list::const_iterator last, Lambda &&lambda) {
+  for (auto it = first; it != last; ++it) {
+    lambda(*it);
+  }
+}
+
+template<class T>
+template<class Lambda>
+void list<T>::for_each(list::reverse_iterator first, list::reverse_iterator last, Lambda &&lambda) {
+  for (auto it = first; it != last; ++it) {
+    lambda(*it);
+  }
+}
+
+template<class T>
+template<class Lambda>
+void list<T>::for_each(list::const_reverse_iterator first, list::const_reverse_iterator last, Lambda &&lambda) {
+  for (auto it = first; it != last; ++it) {
+    lambda(*it);
+  }
+}
+
+template<class T>
+template<class Lambda>
+void list<T>::print(Lambda &&lambda) {
+  std::cout << "list(" << _size << "): [ ";
+  for (auto it = begin(); it != end(); ++it) {
+    lambda(*it);
+    std::cout << " ";
+  }
+  std::cout << "]\n";
 }
 
 }// namespace stl

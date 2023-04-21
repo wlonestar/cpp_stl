@@ -520,8 +520,8 @@ constexpr bool operator==(const stl::vector<T> &lhs, const stl::vector<T> &rhs) 
   if (lhs.size() != rhs.size()) {
     return false;
   }
-  for (auto liter = lhs.begin(), riter = rhs.begin(); liter < lhs.end(); liter++, riter++) {
-    if (std::cmp_not_equal(*liter, *riter)) {
+  for (auto liter = lhs.begin(), riter = rhs.begin(); liter != lhs.end(); ++liter, ++riter) {
+    if (!(*liter == *riter)) {
       return false;
     }
   }

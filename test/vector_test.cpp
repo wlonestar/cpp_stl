@@ -3,9 +3,6 @@
 //
 
 #include "vector.h"
-#include <iomanip>
-#include <numeric>
-#include <vector>
 
 template<class T>
 void test_vector_init() {
@@ -314,9 +311,9 @@ void test_vector_swap() {
 template<class T>
 void test_operator_equal_equal() {
   Log("==> test operator ==");
-  std::vector<T> alice{1, 2, 3};
-  std::vector<T> bob{7, 8, 9, 10};
-  std::vector<T> eve{1, 2, 3};
+  stl::vector<T> alice{1, 2, 3};
+  stl::vector<T> bob{7, 8, 9, 10};
+  stl::vector<T> eve{1, 2, 3};
   assert(!(alice == bob));
   assert(alice == eve);
   Log("==> pass!");
@@ -375,22 +372,18 @@ void test_vector_print() {
     Point3d(Point3d &&other) noexcept : x(other.x), y(other.y), z(other.z) {}
     Point3d &operator=(const Point3d &other) = default;
   };
-
   stl::vector<Point3d> v;
   for (int i = 0; i < 5; i++) {
     double rand = 0.05 * i;
     v.emplace_back(i * rand, (i + 1) * rand, (i + 2) * rand);
   }
-
   auto lambda = [](const Point3d &p) {
     printf("(%g, %g, %g)\n", p.x, p.y, p.z);
   };
-
   v.for_each(v.begin(), v.end(), lambda);
   v.for_each(v.cbegin(), v.cend(), lambda);
   v.for_each(v.rbegin(), v.rend(), lambda);
   v.for_each(v.crbegin(), v.crend(), lambda);
-
   v.print([](const Point3d &p) {
     printf("(%.4g, %.4g, %.4g)", p.x, p.y, p.z);
   });

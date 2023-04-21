@@ -201,6 +201,8 @@ private:
   size_type _size;
 
   bool sorted();
+  template<class Compare>
+  bool sorted(Compare comp);
 
 public:
   /**
@@ -348,6 +350,21 @@ bool list<T>::sorted() {
     auto next = it;
     next++;
     if (*it > *next) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template<class T>
+template<class Compare>
+bool list<T>::sorted(Compare comp) {
+  auto last = end();
+  last--;
+  for (auto it = begin(); it != last; ++it) {
+    auto next = it;
+    next++;
+    if (comp(*next, *it) == true) {
       return false;
     }
   }
@@ -755,32 +772,159 @@ template<class T>
 void list<T>::merge(list &other) {
   if (this->_head != other._head) {
     assert(this->sorted() && other.sorted());
-    auto it1 = this->begin();
+    list<T> old(std::move(*this));
+    this->_head = new list_node<T>();
+    auto it1 = old.begin();
     auto it2 = other.begin();
-    TODO();
+    while (it1 != old.end() && it2 != other.end()) {
+      if (*it1 < *it2) {
+        auto newp = new list_node<T>(*it1);
+        newp->insert(this->_head->prev, this->_head);
+        it1++;
+      } else {
+        auto newp = new list_node<T>(*it2);
+        newp->insert(this->_head->prev, this->_head);
+        other.remove(*it2);
+        it2++;
+      }
+      this->_size++;
+    }
+    while (it1 != old.end()) {
+      auto newp = new list_node<T>(*it1);
+      newp->insert(this->_head->prev, this->_head);
+      it1++;
+      this->_size++;
+    }
+    while (it2 != other.end()) {
+      auto newp = new list_node<T>(*it2);
+      newp->insert(this->_head->prev, this->_head);
+      other.remove(*it2);
+      it2++;
+      this->_size++;
+    }
   }
   // else, do nothing
 }
 
 template<class T>
 void list<T>::merge(list &&other) {
-  TODO();
+  if (this->_head != other._head) {
+    assert(this->sorted() && other.sorted());
+    list<T> old(std::move(*this));
+    this->_head = new list_node<T>();
+    auto it1 = old.begin();
+    auto it2 = other.begin();
+    while (it1 != old.end() && it2 != other.end()) {
+      if (*it1 < *it2) {
+        auto newp = new list_node<T>(*it1);
+        newp->insert(this->_head->prev, this->_head);
+        it1++;
+      } else {
+        auto newp = new list_node<T>(*it2);
+        newp->insert(this->_head->prev, this->_head);
+        other.remove(*it2);
+        it2++;
+      }
+      this->_size++;
+    }
+    while (it1 != old.end()) {
+      auto newp = new list_node<T>(*it1);
+      newp->insert(this->_head->prev, this->_head);
+      it1++;
+      this->_size++;
+    }
+    while (it2 != other.end()) {
+      auto newp = new list_node<T>(*it2);
+      newp->insert(this->_head->prev, this->_head);
+      other.remove(*it2);
+      it2++;
+      this->_size++;
+    }
+  }
+  // else, do nothing
 }
 
 template<class T>
 template<class Compare>
 void list<T>::merge(list &other, Compare comp) {
-  TODO();
+  if (this->_head != other._head) {
+    assert(this->sorted(comp) && other.sorted(comp));
+    list<T> old(std::move(*this));
+    this->_head = new list_node<T>();
+    auto it1 = old.begin();
+    auto it2 = other.begin();
+    while (it1 != old.end() && it2 != other.end()) {
+      if (comp(*it1, *it2) == true) {
+        auto newp = new list_node<T>(*it1);
+        newp->insert(this->_head->prev, this->_head);
+        it1++;
+      } else {
+        auto newp = new list_node<T>(*it2);
+        newp->insert(this->_head->prev, this->_head);
+        other.remove(*it2);
+        it2++;
+      }
+      this->_size++;
+    }
+    while (it1 != old.end()) {
+      auto newp = new list_node<T>(*it1);
+      newp->insert(this->_head->prev, this->_head);
+      it1++;
+      this->_size++;
+    }
+    while (it2 != other.end()) {
+      auto newp = new list_node<T>(*it2);
+      newp->insert(this->_head->prev, this->_head);
+      other.remove(*it2);
+      it2++;
+      this->_size++;
+    }
+  }
+  // else, do nothing
 }
 
 template<class T>
 template<class Compare>
 void list<T>::merge(list &&other, Compare comp) {
-  TODO();
+  if (this->_head != other._head) {
+    assert(this->sorted(comp) && other.sorted(comp));
+    list<T> old(std::move(*this));
+    this->_head = new list_node<T>();
+    auto it1 = old.begin();
+    auto it2 = other.begin();
+    while (it1 != old.end() && it2 != other.end()) {
+      if (comp(*it1, *it2)) {
+        auto newp = new list_node<T>(*it1);
+        newp->insert(this->_head->prev, this->_head);
+        it1++;
+      } else {
+        auto newp = new list_node<T>(*it2);
+        newp->insert(this->_head->prev, this->_head);
+        other.remove(*it2);
+        it2++;
+      }
+      this->_size++;
+    }
+    while (it1 != old.end()) {
+      auto newp = new list_node<T>(*it1);
+      newp->insert(this->_head->prev, this->_head);
+      it1++;
+      this->_size++;
+    }
+    while (it2 != other.end()) {
+      auto newp = new list_node<T>(*it2);
+      newp->insert(this->_head->prev, this->_head);
+      other.remove(*it2);
+      it2++;
+      this->_size++;
+    }
+  }
+  // else, do nothing
 }
 
 template<class T>
 void list<T>::splice(list::iterator pos, list &other) {
+
   TODO();
 }
 
@@ -902,9 +1046,9 @@ list<T>::size_type list<T>::unique(BinaryPredicate p) {
     size_type size = std::distance(it, next);
     if (size > 1) {
       for (size_type i = 0; i < size - 1; i++) {
-        auto p = it;
-        p++;
-        p._node->remove(p._node->prev, p._node->next);
+        auto currp = it;
+        currp++;
+        currp._node->remove(currp._node->prev, currp._node->next);
         count++;
       }
     }

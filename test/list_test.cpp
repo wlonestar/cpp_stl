@@ -4,6 +4,7 @@
 
 #include "list.h"
 #include <list>
+#include <vector>
 
 #include <cassert>
 
@@ -281,14 +282,35 @@ void test_list_swap() {
 template<class T>
 void test_list_merge() {
   Log("==> test list merge()");
-  stl::list<T> l1{1, 2, 3, 4, 5};
-  stl::list<T> l2{6, 7, 8, 9};
+  stl::list<T> l1{1, 3, 5, 7, 9};
+  stl::list<T> l2{2, 4, 6, 8, 10};
   l1.print();
   l2.print();
-  // TODO
   l1.merge(l2);
   l1.print();
-  l2.print();
+  l1.assign({1, 3, 7});
+  stl::list<T> l3{2, 5, 6};
+  l1.merge(std::move(l3));
+  l1.print();
+
+  struct Point2d {
+    int x, y;
+    Point2d() = default;
+    Point2d(int x, int y) : x(x), y(y) {}
+    bool operator==(const Point2d &other) {
+      return this->x == other.x && this->y == other.y;
+    }
+  };
+  stl::list<Point2d> p1{
+    {1, 1},
+    {3, 3},
+    {5, 5}};
+  stl::list<Point2d> p2{
+    {2, 2},
+    {3, 4},
+    {5, 6}};
+  p1.merge(p2, [](const Point2d &p1, const Point2d &p2) { return (p1.x + p1.y) < (p2.x + p2.y); });
+  assert(p1.size() == 6);
   Log("==> pass!");
 }
 

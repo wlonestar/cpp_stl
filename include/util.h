@@ -5,6 +5,8 @@
 #ifndef CPP_STL_UTIL_H
 #define CPP_STL_UTIL_H
 
+#include <cstdio>
+
 namespace stl {
 
 #define TODO() \

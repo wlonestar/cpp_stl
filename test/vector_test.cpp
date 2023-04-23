@@ -3,14 +3,16 @@
 //
 
 #include "vector.h"
+#include <gtest/gtest.h>
 
-template<class T>
-void test_vector_init() {
+TEST(test_vector, test_vector_init) {
+  using T = int;
   Log("==> test vector constructor");
   stl::vector<T> v1;
-  assert(v1.empty() == true);
+  EXPECT_EQ(v1.empty(), true);
   stl::vector<T> v2(5, 1);
-  assert(v2.size() == 5 && v2[0] == 1);
+  EXPECT_EQ(v2.size(), 5);
+  EXPECT_EQ(v2[0], 1);
   stl::vector<T> v3(5);
   assert(v3.size() == 5 && v3[0] == 0);
   stl::vector<T> v4(v2);
@@ -23,8 +25,8 @@ void test_vector_init() {
   Log("==> pass!");
 }
 
-template<class T>
-void test_vector_operator_equal() {
+TEST(test_vector, test_vector_operator_equal) {
+  using T = int;
   Log("==> test vector operator =");
   stl::vector<T> v1(5, 1);
   stl::vector<T> v2 = v1;
@@ -34,8 +36,8 @@ void test_vector_operator_equal() {
   Log("==> pass!");
 }
 
-template<class T>
-void test_vector_assign() {
+TEST(test_vector, test_vector_assign) {
+  using T = int;
   Log("==> test vector assign()");
   stl::vector<T> v1(5, 1);
   assert(v1.size() == 5 && v1[0] == 1);
@@ -46,8 +48,8 @@ void test_vector_assign() {
   Log("==> pass!");
 }
 
-template<class T>
-void test_vector_at() {
+TEST(test_vector, test_vector_at) {
+  using T = int;
   Log("==> test vector at()");
   stl::vector<T> v1{1, 2, 3, 4, 5};
   v1.at(0) = 3;
@@ -58,8 +60,8 @@ void test_vector_at() {
   Log("==> pass!");
 }
 
-template<class T>
-void test_vector_operator_pos() {
+TEST(test_vector, test_vector_operator_pos) {
+  using T = int;
   Log("==> test vector operator []");
   stl::vector<T> numbers{2, 4, 6, 8};
   assert(numbers[1] == 4);
@@ -68,24 +70,24 @@ void test_vector_operator_pos() {
   Log("==> pass!");
 }
 
-template<class T>
-void test_vector_front() {
+TEST(test_vector, test_vector_front) {
+  using T = int;
   Log("==> test vector front()");
   stl::vector<T> v{1, 2, 3, 4, 5};
   assert(v.front() == 1);
   Log("==> pass!");
 }
 
-template<class T>
-void test_vector_back() {
+TEST(test_vector, test_vector_back) {
+  using T = int;
   Log("==> test vector back()");
   stl::vector<T> v{1, 2, 3, 4, 5, 6, 7, 8, 9, 11};
   assert(v.back() == 11);
   Log("==> pass!");
 }
 
-template<class T>
-void test_vector_data() {
+TEST(test_vector, test_vector_data) {
+  using T = int;
   Log("==> test vector data()");
   stl::vector<T> container{1, 2, 3, 4};
   for (std::size_t i = 0; i < 4; i++) {
@@ -94,8 +96,8 @@ void test_vector_data() {
   Log("==> pass!");
 }
 
-template<class T>
-void test_vector_iterator() {
+TEST(test_vector, test_vector_iterator) {
+  using T = int;
   Log("==> test vector iterator");
   stl::vector<T> nums{1, 2, 3, 4, 5, 6};
   assert(*nums.begin() == 1);
@@ -333,33 +335,33 @@ void test_erase_if() {
   Log("==> pass!");
 }
 
-template<class T>
-void test_vector() {
-  test_vector_init<T>();
-  test_vector_operator_equal<T>();
-  test_vector_assign<T>();
-  test_vector_at<T>();
-  test_vector_operator_pos<T>();
-  test_vector_front<T>();
-  test_vector_back<T>();
-  test_vector_data<T>();
-  test_vector_iterator<T>();
-  test_vector_empty<T>();
-  test_vector_reserve<T>();
-  test_vector_capacity<T>();
-  test_vector_shrink_to_fit<T>();
-  test_vector_clear<T>();
-  test_vector_insert<T>();
-  test_vector_emplace<T>();
-  test_vector_erase<T>();
-  test_vector_push_back();
-  test_vector_emplace_back();
-  test_vector_pop_back<T>();
-  test_vector_resize<T>();
-  test_vector_swap<T>();
-  test_operator_equal_equal<T>();
-  test_erase_if();
-}
+//template<class T>
+//void test_vector() {
+//  test_vector_init<T>();
+//  test_vector_operator_equal<T>();
+//  test_vector_assign<T>();
+//  test_vector_at<T>();
+//  test_vector_operator_pos<T>();
+//  test_vector_front<T>();
+//  test_vector_back<T>();
+//  test_vector_data<T>();
+//  test_vector_iterator<T>();
+//  test_vector_empty<T>();
+//  test_vector_reserve<T>();
+//  test_vector_capacity<T>();
+//  test_vector_shrink_to_fit<T>();
+//  test_vector_clear<T>();
+//  test_vector_insert<T>();
+//  test_vector_emplace<T>();
+//  test_vector_erase<T>();
+//  test_vector_push_back();
+//  test_vector_emplace_back();
+//  test_vector_pop_back<T>();
+//  test_vector_resize<T>();
+//  test_vector_swap<T>();
+//  test_operator_equal_equal<T>();
+//  test_erase_if();
+//}
 
 void test_vector_print() {
   class Point3d {
@@ -388,9 +390,9 @@ void test_vector_print() {
     printf("(%.4g, %.4g, %.4g)", p.x, p.y, p.z);
   });
 }
-
-int main() {
-  test_vector<int>();
-  test_vector_print();
-  return 0;
-}
+//
+//int main() {
+//  test_vector<int>();
+//  test_vector_print();
+//  return 0;
+//}

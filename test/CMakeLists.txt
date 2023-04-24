@@ -14,3 +14,6 @@ target_link_libraries(vector_test gtest gtest_main pthread)
 
 add_executable(list_test list_test.cpp)
 add_executable(deque_test deque_test.cpp)
+
+add_executable(tree_test tree_test.cpp)
+target_link_libraries(tree_test gtest gtest_main pthread)

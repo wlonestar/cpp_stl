@@ -27,7 +27,7 @@ TEST(tree_test, test_tree_pre_order) {
 }
 
 TEST(tree_test, test_tree_in_order) {
-  Log("==> test tree inorder()");
+  Log("==> test tree in_order()");
   stl::tree<char> t;
   t.insert_root('A');
   t.root()->insert_left('B');
@@ -48,7 +48,7 @@ TEST(tree_test, test_tree_in_order) {
 }
 
 TEST(tree_test, test_tree_post_order) {
-  Log("==> test tree postorder()");
+  Log("==> test tree post_order()");
   stl::tree<char> t;
   t.insert_root('A');
   t.root()->insert_left('B');
@@ -65,5 +65,26 @@ TEST(tree_test, test_tree_post_order) {
   EXPECT_EQ(l1, l);
 
   t.post_order();
+  Log("==> pass!");
+}
+
+TEST(tree_test, test_tree_level_order) {
+  Log("==> test tree level_order()");
+  stl::tree<char> t;
+  t.insert_root('A');
+  t.root()->insert_left('B');
+  t.root()->insert_right('C');
+  t.root()->left->insert_right('E');
+  t.root()->right->insert_left('F');
+
+  stl::list<char> l;
+  auto lambda = [&l](const char &value) {
+    l.push_back(value);
+  };
+  t.level_order(lambda);
+  stl::list<char> l1{'A', 'B', 'C', 'E', 'F'};
+  EXPECT_EQ(l1, l);
+
+  t.level_order();
   Log("==> pass!");
 }

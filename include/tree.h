@@ -85,25 +85,6 @@ struct tree_node {
     return newp;
   }
 
-  void pre_order(tree_node<T> *p) {
-    if (!p) {
-      return;
-    }
-    stack<tree_node<T> *> s;
-    s.push(p);
-    while (!s.empty()) {
-      tree_node<T> *pp = s.top();
-      std::cout << pp->data << " ";
-      s.pop();
-      if (pp->has_right()) {
-        s.push(pp->right);
-      }
-      if (pp->has_left()) {
-        s.push(pp->left);
-      }
-    }
-  }
-
   template<class Lambda>
   void pre_order(tree_node<T> *p, Lambda &&lambda) {
     if (!p) {
@@ -124,32 +105,18 @@ struct tree_node {
     }
   }
 
-  void pre_order() {
-    std::cout << "tree(pre order): [ ";
-    pre_order(this);
-    std::cout << "]\n";
-  }
-
   template<class Lambda>
   void pre_order(Lambda &&lambda) {
     pre_order(this, lambda);
   }
 
-  void in_order(tree_node<T> *p) {
-    if (!p) {
-      return;
-    }
-    stack<tree_node<T> *> s;
-    left_most(p, s);
-    while (!s.empty()) {
-      tree_node<T> *pp = s.top();
-      std::cout << pp->data << " ";
-      s.pop();
-      if (pp->has_right()) {
-        // pp only has right child
-        left_most(pp->right, s);
-      }
-    }
+  void pre_order() {
+    std::cout << "tree(pre order): [ ";
+    auto lambda = [](const value_type &value) {
+      std::cout << value << " ";
+    };
+    pre_order(this, lambda);
+    std::cout << "]\n";
   }
 
   template<class Lambda>
@@ -170,31 +137,18 @@ struct tree_node {
     }
   }
 
-  void in_order() {
-    std::cout << "tree(in order): [ ";
-    in_order(this);
-    std::cout << "]\n";
-  }
-
   template<class Lambda>
   void in_order(Lambda &&lambda) {
     in_order(this, lambda);
   }
 
-  void post_order(tree_node<T> *p) {
-    if (!p) {
-      return;
-    }
-    stack<tree_node<T> *> s;
-    s.push(p);
-    while (!s.empty()) {
-      if (s.top() != p->parent) {
-        highest_leaf(s);
-      }
-      p = s.top();
-      s.pop();
-      std::cout << p->data << " ";
-    }
+  void in_order() {
+    std::cout << "tree(in order): [ ";
+    auto lambda = [](const value_type &value) {
+      std::cout << value << " ";
+    };
+    in_order(this, lambda);
+    std::cout << "]\n";
   }
 
   template<class Lambda>
@@ -214,15 +168,52 @@ struct tree_node {
     }
   }
 
+  template<class Lambda>
+  void post_order(Lambda &&lambda) {
+    post_order(this, lambda);
+  }
+
   void post_order() {
     std::cout << "tree(post order): [ ";
-    post_order(this);
+    auto lambda = [](const value_type &value) {
+      std::cout << value << " ";
+    };
+    post_order(this, lambda);
     std::cout << "]\n";
   }
 
   template<class Lambda>
-  void post_order(Lambda &&lambda) {
-    post_order(this, lambda);
+  void level_order(tree_node<T> *p, Lambda &&lambda) {
+    if (!p) {
+      return;
+    }
+    queue<tree_node<T> *> q;
+    q.push(p);
+    while (!q.empty()) {
+      tree_node<T> *pp = q.front();
+      lambda(pp->data);
+      q.pop();
+      if (pp->has_left()) {
+        q.push(pp->left);
+      }
+      if (pp->has_right()) {
+        q.push(pp->right);
+      }
+    }
+  }
+
+  template<class Lambda>
+  void level_order(Lambda &&lambda) {
+    level_order(this, lambda);
+  }
+
+  void level_order() {
+    std::cout << "tree(level order): [ ";
+    auto lambda = [](const value_type &value) {
+      std::cout << value << " ";
+    };
+    level_order(this, lambda);
+    std::cout << "]\n";
   }
 };
 
@@ -296,17 +287,13 @@ public:
     return p->left;
   }
 
-  void pre_order() {
-    _root->pre_order();
-  }
-
   template<class Lambda>
   void pre_order(Lambda &&lambda) {
     _root->pre_order(lambda);
   }
 
-  void in_order() {
-    _root->in_order();
+  void pre_order() {
+    _root->pre_order();
   }
 
   template<class Lambda>
@@ -314,13 +301,26 @@ public:
     _root->in_order(lambda);
   }
 
-  void post_order() {
-    _root->post_order();
+  void in_order() {
+    _root->in_order();
   }
 
   template<class Lambda>
   void post_order(Lambda &&lambda) {
     _root->post_order(lambda);
+  }
+
+  void post_order() {
+    _root->post_order();
+  }
+
+  template<class Lambda>
+  void level_order(Lambda &&lambda) {
+    _root->level_order(lambda);
+  }
+
+  void level_order() {
+    _root->level_order();
   }
 };
 

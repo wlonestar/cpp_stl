@@ -109,16 +109,6 @@ struct tree_node {
   void pre_order(Lambda &&lambda) {
     pre_order(this, lambda);
   }
-
-  void pre_order() {
-    std::cout << "tree(pre order): [ ";
-    auto lambda = [](const value_type &value) {
-      std::cout << value << " ";
-    };
-    pre_order(this, lambda);
-    std::cout << "]\n";
-  }
-
   template<class Lambda>
   void in_order(tree_node<T> *p, Lambda &&lambda) {
     if (!p) {
@@ -142,15 +132,6 @@ struct tree_node {
     in_order(this, lambda);
   }
 
-  void in_order() {
-    std::cout << "tree(in order): [ ";
-    auto lambda = [](const value_type &value) {
-      std::cout << value << " ";
-    };
-    in_order(this, lambda);
-    std::cout << "]\n";
-  }
-
   template<class Lambda>
   void post_order(tree_node<T> *p, Lambda &&lambda) {
     if (!p) {
@@ -171,15 +152,6 @@ struct tree_node {
   template<class Lambda>
   void post_order(Lambda &&lambda) {
     post_order(this, lambda);
-  }
-
-  void post_order() {
-    std::cout << "tree(post order): [ ";
-    auto lambda = [](const value_type &value) {
-      std::cout << value << " ";
-    };
-    post_order(this, lambda);
-    std::cout << "]\n";
   }
 
   template<class Lambda>
@@ -292,26 +264,14 @@ public:
     _root->pre_order(lambda);
   }
 
-  void pre_order() {
-    _root->pre_order();
-  }
-
   template<class Lambda>
   void in_order(Lambda &&lambda) {
     _root->in_order(lambda);
   }
 
-  void in_order() {
-    _root->in_order();
-  }
-
   template<class Lambda>
   void post_order(Lambda &&lambda) {
     _root->post_order(lambda);
-  }
-
-  void post_order() {
-    _root->post_order();
   }
 
   template<class Lambda>

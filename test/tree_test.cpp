@@ -22,7 +22,6 @@ TEST(tree_test, test_tree_pre_order) {
   stl::list<char> l1{'A', 'B', 'E', 'C', 'F'};
   EXPECT_EQ(l1, l);
 
-  t.pre_order();
   Log("==> pass!");
 }
 
@@ -43,7 +42,6 @@ TEST(tree_test, test_tree_in_order) {
   stl::list<char> l1{'B', 'E', 'A', 'F', 'C'};
   EXPECT_EQ(l1, l);
 
-  t.in_order();
   Log("==> pass!");
 }
 
@@ -64,7 +62,6 @@ TEST(tree_test, test_tree_post_order) {
   stl::list<char> l1{'E', 'B', 'F', 'C', 'A'};
   EXPECT_EQ(l1, l);
 
-  t.post_order();
   Log("==> pass!");
 }
 

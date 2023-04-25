@@ -8,6 +8,8 @@
 #pragma once
 
 #include "util.h"
+#include "stack.h"
+#include "queue.h"
 
 #include <iostream>
 
@@ -50,9 +52,36 @@ struct tree_node {
     if (!p) {
       return;
     }
-    std::cout << p->data << " ";
-    preorder(p->left);
-    preorder(p->right);
+
+//    std::cout << p->data << " ";
+//    preorder(p->left);
+//    preorder(p->right);
+
+    /**
+     * pre-order: data -> left -> right
+     *
+     *         A
+     *       /  \
+     *     B     C
+     *    / \   / \
+     *   D  E  F  G
+     *
+     * A -> B -> D -> E -> C -> F -> G
+     */
+
+    stack<tree_node<T>*> s;
+    s.push(p);
+    while (!s.empty()) {
+      auto pp = s.top();
+      std::cout << pp->data << " ";
+      s.pop();
+      if (pp->right) {
+        s.push(pp->right);
+      }
+      if (pp->left) {
+        s.push(pp->left);
+      }
+    }
   }
 
   void preorder() {
@@ -65,9 +94,25 @@ struct tree_node {
     if (!p) {
       return;
     }
-    inorder(p->left);
-    std::cout << p->data << " ";
-    inorder(p->right);
+//    inorder(p->left);
+//    std::cout << p->data << " ";
+//    inorder(p->right);
+
+    /**
+     * in-order: left -> data -> right
+     *
+     *         A
+     *       /  \
+     *      B    C
+     *    / \   / \
+     *   D  E  F  G
+     *
+     * D -> B -> E -> A -> F -> C -> G
+     *
+     */
+
+
+
   }
 
   void inorder() {
@@ -180,7 +225,6 @@ public:
     }
   }
 };
-
 
 }// namespace stl
 

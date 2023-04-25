@@ -7,13 +7,42 @@
 
 #pragma once
 
-#include "util.h"
-#include "stack.h"
 #include "queue.h"
+#include "stack.h"
+#include "util.h"
 
 #include <iostream>
 
 namespace stl {
+
+template<class T>
+struct tree_node;
+
+template<class T>
+class tree;
+
+template<class T>
+static void left_most(tree_node<T> *p, stack<tree_node<T> *> &s) {
+  while (p) {
+    s.push(p);
+    p = p->left;
+  }
+}
+
+template<class T>
+static void highest_leaf(stack<tree_node<T> *> &s) {
+  while (auto p = s.top()) {
+    if (p->has_left()) {
+      if (p->has_right()) {
+        s.push(p->right);
+      }
+      s.push(p->left);
+    } else {
+      s.push(p->right);
+    }
+  }
+  s.pop();
+}
 
 template<class T>
 struct tree_node {
@@ -36,6 +65,14 @@ struct tree_node {
             tree_node<T> *l = nullptr, tree_node<T> *r = nullptr, size_type h = 0)
       : data(value), parent(p), left(l), right(r), height(h) {}
 
+  bool has_left() {
+    return this->left != nullptr;
+  }
+
+  bool has_right() {
+    return this->right != nullptr;
+  }
+
   tree_node<T> *insert_left(const T &value) {
     tree_node<T> *newp = new tree_node(value, this);
     this->left = newp;
@@ -48,92 +85,144 @@ struct tree_node {
     return newp;
   }
 
-  void preorder(tree_node<T> *p) {
+  void pre_order(tree_node<T> *p) {
     if (!p) {
       return;
     }
-
-//    std::cout << p->data << " ";
-//    preorder(p->left);
-//    preorder(p->right);
-
-    /**
-     * pre-order: data -> left -> right
-     *
-     *         A
-     *       /  \
-     *     B     C
-     *    / \   / \
-     *   D  E  F  G
-     *
-     * A -> B -> D -> E -> C -> F -> G
-     */
-
-    stack<tree_node<T>*> s;
+    stack<tree_node<T> *> s;
     s.push(p);
     while (!s.empty()) {
-      auto pp = s.top();
+      tree_node<T> *pp = s.top();
       std::cout << pp->data << " ";
       s.pop();
-      if (pp->right) {
+      if (pp->has_right()) {
         s.push(pp->right);
       }
-      if (pp->left) {
+      if (pp->has_left()) {
         s.push(pp->left);
       }
     }
   }
 
-  void preorder() {
+  template<class Lambda>
+  void pre_order(tree_node<T> *p, Lambda &&lambda) {
+    if (!p) {
+      return;
+    }
+    stack<tree_node<T> *> s;
+    s.push(p);
+    while (!s.empty()) {
+      tree_node<T> *pp = s.top();
+      lambda(pp->data);
+      s.pop();
+      if (pp->has_right()) {
+        s.push(pp->right);
+      }
+      if (pp->has_left()) {
+        s.push(pp->left);
+      }
+    }
+  }
+
+  void pre_order() {
     std::cout << "tree(pre order): [ ";
-    preorder(this);
+    pre_order(this);
     std::cout << "]\n";
   }
 
-  void inorder(tree_node<T> *p) {
+  template<class Lambda>
+  void pre_order(Lambda &&lambda) {
+    pre_order(this, lambda);
+  }
+
+  void in_order(tree_node<T> *p) {
     if (!p) {
       return;
     }
-//    inorder(p->left);
-//    std::cout << p->data << " ";
-//    inorder(p->right);
-
-    /**
-     * in-order: left -> data -> right
-     *
-     *         A
-     *       /  \
-     *      B    C
-     *    / \   / \
-     *   D  E  F  G
-     *
-     * D -> B -> E -> A -> F -> C -> G
-     *
-     */
-
-
-
+    stack<tree_node<T> *> s;
+    left_most(p, s);
+    while (!s.empty()) {
+      tree_node<T> *pp = s.top();
+      std::cout << pp->data << " ";
+      s.pop();
+      if (pp->has_right()) {
+        // pp only has right child
+        left_most(pp->right, s);
+      }
+    }
   }
 
-  void inorder() {
+  template<class Lambda>
+  void in_order(tree_node<T> *p, Lambda &&lambda) {
+    if (!p) {
+      return;
+    }
+    stack<tree_node<T> *> s;
+    left_most(p, s);
+    while (!s.empty()) {
+      tree_node<T> *pp = s.top();
+      lambda(pp->data);
+      s.pop();
+      if (pp->has_right()) {
+        // pp only has right child
+        left_most(pp->right, s);
+      }
+    }
+  }
+
+  void in_order() {
     std::cout << "tree(in order): [ ";
-    inorder(this);
+    in_order(this);
     std::cout << "]\n";
   }
 
-  void postorder(tree_node<T> *p) {
+  template<class Lambda>
+  void in_order(Lambda &&lambda) {
+    in_order(this, lambda);
+  }
+
+  void post_order(tree_node<T> *p) {
     if (!p) {
       return;
     }
-    postorder(p->left);
-    postorder(p->right);
-    std::cout << p->data << " ";
+    stack<tree_node<T> *> s;
+    s.push(p);
+    while (!s.empty()) {
+      if (s.top() != p->parent) {
+        highest_leaf(s);
+      }
+      p = s.top();
+      s.pop();
+      std::cout << p->data << " ";
+    }
   }
 
-  void postorder() {
+  template<class Lambda>
+  void post_order(tree_node<T> *p, Lambda &&lambda) {
+    if (!p) {
+      return;
+    }
+    stack<tree_node<T> *> s;
+    s.push(p);
+    while (!s.empty()) {
+      if (s.top() != p->parent) {
+        highest_leaf(s);
+      }
+      p = s.top();
+      s.pop();
+      lambda(p->data);
+    }
+  }
+
+  void post_order() {
     std::cout << "tree(post order): [ ";
-    postorder(this);
+    post_order(this);
     std::cout << "]\n";
+  }
+
+  template<class Lambda>
+  void post_order(Lambda &&lambda) {
+    post_order(this, lambda);
   }
 };
 
@@ -207,22 +296,31 @@ public:
     return p->left;
   }
 
-  void preorder() {
-    if (_root) {
-      _root->preorder();
-    }
+  void pre_order() {
+    _root->pre_order();
   }
 
-  void inorder() {
-    if (_root) {
-      _root->inorder();
-    }
+  template<class Lambda>
+  void pre_order(Lambda &&lambda) {
+    _root->pre_order(lambda);
   }
 
-  void postorder() {
-    if (_root) {
-      _root->postorder();
-    }
+  void in_order() {
+    _root->in_order();
+  }
+
+  template<class Lambda>
+  void in_order(Lambda &&lambda) {
+    _root->in_order(lambda);
+  }
+
+  void post_order() {
+    _root->post_order();
+  }
+
+  template<class Lambda>
+  void post_order(Lambda &&lambda) {
+    _root->post_order(lambda);
   }
 };
 

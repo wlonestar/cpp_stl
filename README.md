@@ -1,13 +1,14 @@
 # cpp stl
 
-[x] vector
+- [x] vector
 
-[x] list
+- [x] list
 
-[ ] deque
+- [ ] deque
 
-[x] stack
+- [x] stack
 
-[x] queue
+- [x] queue
 
-[ ] tree
+- [ ] tree
+

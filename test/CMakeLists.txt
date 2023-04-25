@@ -18,5 +18,8 @@ add_executable(deque_test deque_test.cpp)
 add_executable(stack_test stack_test.cpp)
 target_link_libraries(stack_test gtest gtest_main pthread)
 
+add_executable(queue_test queue_test.cpp)
+target_link_libraries(queue_test gtest gtest_main pthread)
+
 add_executable(tree_test tree_test.cpp)
 target_link_libraries(tree_test gtest gtest_main pthread)

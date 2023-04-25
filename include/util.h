@@ -9,7 +9,7 @@
 
 namespace stl {
 
-#define TODO() \
+#define TODO()                \
   printf("Not implemented!"); \
   exit(-1)
 
@@ -18,6 +18,6 @@ namespace stl {
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-}
+}// namespace stl
 
 #endif//CPP_STL_UTIL_H

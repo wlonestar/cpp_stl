@@ -48,7 +48,7 @@ struct tree_node {
 
   void preorder(tree_node<T> *p) {
     if (!p) {
-      return ;
+      return;
     }
     std::cout << p->data << " ";
     preorder(p->left);
@@ -63,7 +63,7 @@ struct tree_node {
 
   void inorder(tree_node<T> *p) {
     if (!p) {
-      return ;
+      return;
     }
     inorder(p->left);
     std::cout << p->data << " ";
@@ -78,7 +78,7 @@ struct tree_node {
 
   void postorder(tree_node<T> *p) {
     if (!p) {
-      return ;
+      return;
     }
     postorder(p->left);
     postorder(p->right);
@@ -90,7 +90,6 @@ struct tree_node {
     postorder(this);
     std::cout << "]\n";
   }
-
 };
 
 template<class T>
@@ -111,7 +110,7 @@ private:
   node *_root;
 
   void update_height(tree_node<T> *p) {
-    p->height= 1 + MAX(p->left->height, p->right->height);
+    p->height = 1 + MAX(p->left->height, p->right->height);
   }
 
   void update_height_above(tree_node<T> *p) {
@@ -180,7 +179,6 @@ public:
       _root->postorder();
     }
   }
-
 };
 
 

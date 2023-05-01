@@ -85,3 +85,18 @@ TEST(tree_test, test_tree_level_order) {
   t.level_order();
   Log("==> pass!");
 }
+
+TEST(bool_test, bool_test_struct) {
+  struct node {
+    int data;
+    node *left;
+    node *right;
+    node *parent;
+  };
+
+  node *p1 = new node{1, nullptr, nullptr, nullptr};
+  node *p2 = new node{1, nullptr, nullptr, nullptr};
+  node *p3 = new node{1, p1, p2, nullptr};
+  std::cout << (!!(p3->left)) << "\n";
+  std::cout << (p3->left != nullptr) << "\n";
+}

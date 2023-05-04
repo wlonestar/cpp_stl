@@ -23,3 +23,6 @@ target_link_libraries(queue_test gtest gtest_main pthread)
 
 add_executable(tree_test tree_test.cpp)
 target_link_libraries(tree_test gtest gtest_main pthread)
+
+add_executable(graph_test graph_test.cpp)
+target_link_libraries(graph_test gtest gtest_main pthread)

@@ -109,6 +109,11 @@ public:
   tree_node<T> *insert_root(const T &value);
   tree_node<T> *insert_left(tree_node<T> *p, const T &value);
   tree_node<T> *insert_right(tree_node<T> *p, const T &value);
+  tree_node<T> *attach_left(tree_node<T> *p, tree<T> *&t);
+  tree_node<T> *attach_right(tree_node<T> *p, tree<T> *&t);
+
+  int remove(tree_node<T> *p);
+  tree<T> *secede(tree_node<T> *p);
 
   /**
    * Traverse
@@ -412,7 +417,65 @@ tree_node<T> *tree<T>::insert_right(tree_node<T> *p, const T &value) {
   p->insert_right(value);
   this->_size++;
   update_height_above(p);
-  return p->left;
+  return p->right;
+}
+
+template<class T>
+tree_node<T> *tree<T>::attach_left(tree_node<T> *p, tree<T> *&t) {
+  p->left = t->_root;
+  if (p->left) {
+    p->left->parent = p;
+  }
+  _size += t->_size;
+  update_height_above(p);
+  t->_root = nullptr;
+  t->_size = 0;
+  t = nullptr;
+  return p;
+}
+
+template<class T>
+tree_node<T> *tree<T>::attach_right(tree_node<T> *p, tree<T> *&t) {
+  p->right = t->_root;
+  if (p->right) {
+    p->right->parent = p;
+  }
+  _size += t->_size;
+  update_height_above(p);
+  t->_root = nullptr;
+  t->_size = 0;
+  t = nullptr;
+  return p;
+}
+
+template<class T>
+static int remove_at(tree_node<T> *p) {
+  if (p == nullptr) {
+    return 0;
+  }
+  int n = 1 + remove_at(p->left) + remove_at(p->right);
+  return n;
+}
+
+template<class T>
+int tree<T>::remove(tree_node<T> *p) {
+  is_root(p) ? _root : (is_left(p) ? p->parent->left : p->parent->right) = nullptr;
+  update_height_above(p->parent);
+  int n = remove_at(p);
+  _size -= n;
+  return n;
+}
+
+template<class T>
+tree<T> *tree<T>::secede(tree_node<T> *p) {
+  is_root(p) ? _root : (is_left(p) ? p->parent->left : p->parent->right) = nullptr;
+  update_height_above(p->parent);
+  tree<T> *t = new tree<T>;
+  t->_root = p;
+  p->parent = nullptr;
+  t->_size = p->size();
+  _size -= t->_size;
+  return t;
 }
 
 template<class T>

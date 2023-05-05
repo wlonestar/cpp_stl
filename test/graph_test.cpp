@@ -7,25 +7,31 @@
 #include <gtest/gtest.h>
 
 void init_graph(stl::graph<char, int> &graph) {
-  int n = 5;
-  int e = 10;
-  for (int i = 0; i < n; i++) {
-    graph.insert('a' + i);
-  }
-  int k = 0;
-  while (graph.e_num < e) {
-    int i = rand() % n;
-    int j = rand() % n;
-    if (i != j) {
-      int weight = rand() % 100;
-      graph.insert(k++, weight, i, j);
-    }
-  }
+
 }
 
 TEST(graph_test, graph_test_init) {
-  stl::graph<char, int> g;
-  init_graph(g);
-  std::cout << g;
-//  g.bfs(0);
+  stl::graph<char, char> g;
+  int n = 4;
+  int e = 8;
+  for (int i = 0; i < n; i++) {
+    g.insert('a' + i);
+  }
+  EXPECT_EQ(g.n_num, n);
+  int k = 0;
+  while (g.e_num < e) {
+    int i = rand() % n;
+    int j = rand() % n;
+    if (!g.exist(i, j)) {
+      int weight = rand() % e;
+      g.insert('a' + k, weight, i, j);
+      k++;
+    }
+  }
+  EXPECT_EQ(g.e_num, e);
+  EXPECT_EQ(g.e.size(), n);
+  for (int i = 0; i < g.e.size(); i++) {
+    EXPECT_EQ(g.e[i].size(), n);
+  }
+  g.print();
 }

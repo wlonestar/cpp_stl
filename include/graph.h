@@ -43,14 +43,29 @@ struct _vertex {
         d_time(-1), f_time(-1), parent(-1), priority(INT_MAX) {}
 };
 
+template<class V>
+std::ostream &operator<<(std::ostream &out, const _vertex<V> &vertex) {
+  out << "vertex(data=" << vertex.data << ",in=" << vertex.in_degree << ",out="
+      << vertex.out_degree << ",status=" << vertex.status << ",d=" << vertex.d_time << ",f="
+      << vertex.f_time << ",parent=" << vertex.parent << ",prior=" << vertex.priority << ")\n";
+  return out;
+}
+
 template<class E>
 struct _edge {
   E data;
   int weight;
   e_type type;
 
+  _edge() = default;
   _edge(E const &d, int w) : data(d), weight(w), type(UNDETERMINED) {}
 };
+
+template<class E>
+std::ostream &operator<<(std::ostream &out, const _edge<E> &edge) {
+  out << "edge(data=" << edge.data << ",weight=" << edge.weight << ",type=" << edge.type << ")\n";
+  return out;
+}
 
 template<class V, class E>
 class graph {
@@ -66,15 +81,13 @@ public:
 private:
   void reset() {
     for (int i = 0; i < n_num; i++) {
-      v[i].status = UNDISCOVERED;
-//      status(i) = UNDISCOVERED;
+      status(i) = UNDISCOVERED;
       d_time(i) = f_time(i) = -1;
       parent(i) = -1;
       priority(i) = INT_MAX;
       for (int j = 0; j < n_num; j++) {
         if (exist(i, j)) {
-          e[i][j]->type = UNDETERMINED;
-//          type(i, j) = UNDETERMINED;
+          type(i, j) = UNDETERMINED;
         }
       }
     }
@@ -133,18 +146,24 @@ public:
     }
   }
 
-  V &vertex(int i) {
+  constexpr V &vertex(int i) {
     return v[i].data;
   }
-  const V &vertex(int i) const {
+  constexpr const V &vertex(int i) const {
     return v[i].data;
   }
 
-  size_type in_degree(int i) {
+  constexpr size_type in_degree(int i) {
+    return v[i].in_degree;
+  }
+  constexpr const size_type in_degree(int i) const {
     return v[i].in_degree;
   }
 
-  size_type out_degree(int i) {
+  constexpr size_type out_degree(int i) {
+    return v[i].out_degree;
+  }
+  constexpr const size_type out_degree(int i) const {
     return v[i].out_degree;
   }
 
@@ -158,47 +177,61 @@ public:
     return j;
   }
 
-  v_status &status(int i) {
+  constexpr v_status &status(int i) {
+    return v[i].status;
+  }
+  constexpr const v_status &status(int i) const {
     return v[i].status;
   }
 
-  int &d_time(int i) {
+  constexpr int &d_time(int i) {
+    return v[i].d_time;
+  }
+  constexpr const int &d_time(int i) const {
     return v[i].d_time;
   }
 
-  int &f_time(int i) {
+  constexpr int &f_time(int i) {
+    return v[i].f_time;
+  }
+  constexpr const int &f_time(int i) const {
     return v[i].f_time;
   }
 
-  int &parent(int i) {
+  constexpr int &parent(int i) {
     return v[i].parent;
   }
-  const int &parent(int i) const {
+  constexpr const int &parent(int i) const {
     return v[i].parent;
   }
 
-  int &priority(int i) {
+  constexpr int &priority(int i) {
     return v[i].priority;
   }
-  const int &priority(int i) const {
+  constexpr const int &priority(int i) const {
     return v[i].priority;
   }
 
-  E &edge(int i, int j) {
+  constexpr E &edge(int i, int j) {
+    return e[i][j]->data;
+  }
+  constexpr const E &edge(int i, int j) const {
     return e[i][j]->data;
   }
 
-  e_type &type(int i, int j) {
+  constexpr e_type &type(int i, int j) {
+    assert(e.size() >= i + 1 && e.size() <= i + 1 && e[i].size() >= j + 1 && e[i].size() <= j + 1);
     return e[i][j]->type;
   }
-  const e_type &type(int i, int j) const {
+  constexpr const e_type &type(int i, int j) const {
+    assert(e.size() >= i + 1 && e.size() <= i + 1 && e[i].size() >= j + 1 && e[i].size() <= j + 1);
     return e[i][j]->type;
   }
 
-  int &weight(int i, int j) {
+  constexpr int &weight(int i, int j) {
     return e[i][j]->weight;
   }
-  const int &weight(int i, int j) const {
+  constexpr const int &weight(int i, int j) const {
     return e[i][j]->weight;
   }
 
@@ -233,7 +266,7 @@ public:
   }
 
   bool exist(int i, int j) const {
-    return (i >= 0) && (i < n_num) && (j >= 0) && (j < n_num) && e[i][j] != NULL;
+    return (i >= 0) && (i < n_num) && (j >= 0) && (j < n_num) && e[i][j]->data != NULL;
   }
 
   void insert(E const &edge, int w, int i, int j) {
@@ -291,11 +324,35 @@ public:
   void pfs(int, PU) {
     TODO();
   }
+
+  void print() {
+    std::cout << "graph(n=" << n_num << ", e=" << e_num << "): \n";
+    v.for_each(v.begin(), v.end(), [](const _vertex<V> &vertex) {
+      std::cout << vertex;
+    });
+    for (int i = 0; i < e.size(); i++) {
+      for (int j = 0; j < e[i].size(); j++) {
+        _edge<E> *edge = e[i][j];
+        if (edge->data != NULL) {
+          std::cout << "edge(data=" << edge->data << ",weight="
+                    << edge->weight << ",type=" << edge->type << ")\n";
+        }
+      }
+    }
+    //    e.for_each(e.begin(), e.end(), [this](const vector<_edge<E>*> &sub) {
+    //      assert(sub.size() == this->n_num);
+    //      sub.for_each(sub.begin(), sub.end(), [](_edge<E> *edge) {
+    //        std::cout << "edge(data=" << edge->data << ",weight="
+    //                  << edge->weight << ",type=" << edge->type << ")\n";
+    //      });
+    //    });
+  }
 };
 
 template<typename Tv, typename Te>
 std::ostream &operator<<(std::ostream &out, const graph<Tv, Te> &g) {
-  out << "graph" << " (" << g.n_num << ", " << g.e_num << "):\n";
+  out << "graph"
+      << " (" << g.n_num << ", " << g.e_num << "):\n";
   out << "vertex | ";
   for (int i = 0; i < g.n_num; i++) {
     out << g.vertex(i) << " ";

@@ -850,7 +850,7 @@ constexpr void vector<T>::reserve(vector::size_type new_cap) {
     for (size_type i = 0; i < _size; i++) {
       _elem[i] = old[i];
     }
-    delete[] old;
+//    delete[] old;
   }
 }
 

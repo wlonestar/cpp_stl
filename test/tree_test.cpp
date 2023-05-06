@@ -7,6 +7,5 @@
 
 TEST(tree_test, test_tree_init) {
   Log("==> test tree");
-
   Log("==> pass!");
 }

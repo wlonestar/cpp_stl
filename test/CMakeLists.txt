@@ -8,21 +8,10 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# Now simply link against gtest or gtest_main as needed. Eg
-add_executable(vector_test vector_test.cpp)
-target_link_libraries(vector_test gtest gtest_main pthread)
+file(GLOB SRC_FILES "*.cpp")
 
-add_executable(list_test list_test.cpp)
-add_executable(deque_test deque_test.cpp)
-
-add_executable(stack_test stack_test.cpp)
-target_link_libraries(stack_test gtest gtest_main pthread)
-
-add_executable(queue_test queue_test.cpp)
-target_link_libraries(queue_test gtest gtest_main pthread)
-
-add_executable(tree_test tree_test.cpp)
-target_link_libraries(tree_test gtest gtest_main pthread)
-
-add_executable(graph_test graph_test.cpp)
-target_link_libraries(graph_test gtest gtest_main pthread)
+foreach (SRC ${SRC_FILES})
+  GET_FILENAME_COMPONENT(EXEC_NAME ${SRC} NAME_WE)
+  add_executable(${EXEC_NAME} ${SRC})
+  target_link_libraries(${EXEC_NAME} gtest gtest_main pthread)
+endforeach ()

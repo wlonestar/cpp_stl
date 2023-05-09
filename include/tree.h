@@ -7,11 +7,14 @@
 
 #pragma once
 
-#include "util.h"
-
 #include <initializer_list>
 #include <iostream>
 #include <tuple>
+
+#include "queue.h"
+#include "stack.h"
+#include "util.h"
+#include "vector.h"
 
 namespace stl {
 
@@ -47,6 +50,10 @@ public:
   char color;
 };
 
+/**
+ * rbtree node base functions
+ */
+
 rb_node_base *rb_increment(const rb_node_base *p);
 rb_node_base *rb_decrement(const rb_node_base *p);
 rb_node_base *rb_min_child(const rb_node_base *p);
@@ -56,6 +63,19 @@ rb_node_base *rb_rotate_left(rb_node_base *p, rb_node_base *root);
 rb_node_base *rb_rotate_right(rb_node_base *p, rb_node_base *root);
 void rb_insert(rb_node_base *p, rb_node_base *parent, rb_side side);
 void rb_erase(rb_node_base *p, rb_node_base *parent);
+
+/**
+ * rbtree node base traverse
+ */
+
+template<class T>
+void rb_pre_order(rb_node_base *p, stl::vector<T> &v);
+template<class T>
+void rb_in_order(rb_node_base *p, stl::vector<T> &v);
+template<class T>
+void rb_post_order(rb_node_base *p, stl::vector<T> &v);
+template<class T>
+void rb_level_order(rb_node_base *p, stl::vector<T> &v);
 
 /**
  * rbtree node type
@@ -71,7 +91,7 @@ public:
               rbtree_node<T> *left = nullptr, rbtree_node<T> *right = nullptr);
 
   rbtree_node<T> *insert(const T &val, rb_side side);
-  rbtree_node<T> *succ();
+  rbtree_node<T> *attach(rbtree_node<T> *p, rb_side side);
 
   /**
    * Debug
@@ -89,7 +109,7 @@ struct rbtree_iterator {
   typedef rbtree_iterator<T, T *, T &> iterator;
   typedef rbtree_iterator<T, const T *, const T &> const_iterator;
   typedef std::size_t size_type;
-  typedef std::ptrdiff_t dirrerence_type;
+  typedef std::ptrdiff_t difference_type;
   typedef T value_type;
   typedef rb_node_base base_node_type;
   typedef rbtree_node<T> node_type;
@@ -101,20 +121,47 @@ public:
   node_type *node;
 
 public:
-  rbtree_iterator();
-  explicit rbtree_iterator(const node_type *node);
-  rbtree_iterator(const iterator &x);
+  rbtree_iterator() : node(NULL) {}
 
-  rbtree_iterator &operator=(const iterator &x);
+  explicit rbtree_iterator(const node_type *node)
+      : node(static_cast<node_type*>(const_cast<node_type*>(node))) {}
 
-  reference operator*() const;
-  pointer operator->() const;
+  rbtree_iterator(const iterator &x) : node(x.node) {}
 
-  rbtree_iterator &operator++();
-  rbtree_iterator operator++(int);
+  rbtree_iterator &operator=(const iterator &x) {
+    node = x.node;
+    return *this;
+  }
 
-  rbtree_iterator &operator--();
-  rbtree_iterator operator--(int);
+  reference operator*() const {
+    return node->value;
+  }
+
+  pointer operator->() const {
+    return &node->value;
+  }
+
+  rbtree_iterator &operator++() {
+    node = static_cast<node_type*>(rb_increment(node));
+    return *this;
+  }
+
+  rbtree_iterator operator++(int) {
+    this_type tmp(*this);
+    node = static_cast<node_type*>(rb_increment(node));
+    return tmp;
+  }
+
+  rbtree_iterator &operator--() {
+    node = static_cast<node_type*>(rb_decrement(node));
+    return *this;
+  }
+
+  rbtree_iterator operator--(int) {
+    this_type tmp(*this);
+    node = static_cast<node_type*>(rb_decrement(node));
+    return tmp;
+  }
 };
 
 /**
@@ -209,14 +256,42 @@ public:
  * rbtree node base functions
  */
 
-// TODO
 rb_node_base *rb_increment(const rb_node_base *p) {
-  TODO();
+  if (p->right != nullptr) {
+    p = p->right;
+    while (p->left != nullptr) {
+      p = p->left;
+    }
+  } else {
+    rb_node_base *tmp = p->parent;
+    while (p == tmp->right) {
+      p = tmp;
+      tmp = tmp->parent;
+    }
+    if (p->right != tmp) {
+      p = tmp;
+    }
+  }
+  return const_cast<rb_node_base *>(p);
 }
 
-// TODO
 rb_node_base *rb_decrement(const rb_node_base *p) {
-  TODO();
+  if (p->left != nullptr) {
+    p = p->left;
+    while (p->right != nullptr) {
+      p = p->right;
+    }
+  } else {
+    rb_node_base *tmp = p->parent;
+    while (p == tmp->left) {
+      p = tmp;
+      tmp = tmp->parent;
+    }
+    if (p->left != tmp) {
+      p = tmp;
+    }
+  }
+  return const_cast<rb_node_base *>(p);
 }
 
 // TODO
@@ -255,6 +330,100 @@ void rb_erase(rb_node_base *p, rb_node_base *parent) {
 }
 
 /**
+ * rbtree node base traverse
+ */
+
+template<class T>
+void rb_pre_order(rb_node_base *p, stl::vector<T> &v) {
+  stack<rb_node_base *> s;
+  while (true) {
+    while (p != nullptr) {
+      T val = static_cast<rbtree_node<T> *>(p)->value;
+      v.push_back(val);
+      s.push(p->right);
+      p = p->left;
+    }
+    if (s.empty()) {
+      break;
+    }
+    p = s.top();
+    s.pop();
+  }
+}
+
+template<class T>
+void rb_in_order(rb_node_base *p, stl::vector<T> &v) {
+  stack<rb_node_base *> s;
+  while (true) {
+    while (p != nullptr) {
+      s.push(p);
+      p = p->left;
+    }
+    if (s.empty()) {
+      break;
+    }
+    p = s.top();
+    s.pop();
+    T val = static_cast<rbtree_node<T> *>(p)->value;
+    v.push_back(val);
+    p = p->right;
+  }
+}
+
+static void goto_left(stack<rb_node_base *> &s) {
+  while (auto p = s.top()) {
+    if (p->left != nullptr) {
+      if (p->right != nullptr) {
+        s.push(p->right);
+      }
+      s.push(p->left);
+    } else {
+      s.push(p->right);
+    }
+  }
+  s.pop();
+}
+
+template<class T>
+void rb_post_order(rb_node_base *p, stl::vector<T> &v) {
+  if (p == nullptr) {
+    return;
+  }
+  stack<rb_node_base *> s;
+  s.push(p);
+  while (!s.empty()) {
+    if (s.top() != p->parent) {
+      goto_left(s);
+    }
+    p = s.top();
+    s.pop();
+    T val = static_cast<rbtree_node<T> *>(p)->value;
+    v.push_back(val);
+  }
+}
+
+template<class T>
+void rb_level_order(rb_node_base *p, stl::vector<T> &v) {
+  if (p == nullptr) {
+    return;
+  }
+  stl::queue<rb_node_base *> q;
+  q.push(p);
+  while (!q.empty()) {
+    p = q.front();
+    q.pop();
+    T val = static_cast<rbtree_node<T> *>(p)->value;
+    v.push_back(val);
+    if (p->left != nullptr) {
+      q.push(p->left);
+    }
+    if (p->right != nullptr) {
+      q.push(p->right);
+    }
+  }
+}
+
+/**
  * rbtree node implementation
  */
 
@@ -278,18 +447,21 @@ rbtree_node<T> *rbtree_node<T>::insert(const T &val, rb_side side) {
 }
 
 template<class T>
-rbtree_node<T> *rbtree_node<T>::succ() {
-  return nullptr;
+rbtree_node<T> *rbtree_node<T>::attach(rbtree_node<T> *p, rb_side side) {
+  p->parent = this;
+  if (side == RB_LEFT) {
+    left = p;
+  } else if (side == RB_RIGHT) {
+    right = p;
+  }
+  return this;
 }
 
 template<class T>
 void rbtree_node<T>::print() {
-  std::cout << "node(" << value << ", " << this << "): parent: " << parent << ", left: " << left << ", right: " << right << "\n";
+  std::cout << "node(" << value << ", " << this << "): parent: "
+            << parent << ", left: " << left << ", right: " << right << "\n";
 }
-
-/**
- * rbtree iterator implementation
- */
 
 /**
  * rbtree implementation

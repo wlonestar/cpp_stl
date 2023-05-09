@@ -2,8 +2,8 @@
 // Created by wjl on 2023/4/25.
 //
 
-#include "queue.h"
 #include <gtest/gtest.h>
+#include "queue.h"
 
 TEST(test_queue, test_queue_init) {
   Log("==> test queue constructor");

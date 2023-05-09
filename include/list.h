@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include "util.h"
-
 #include <cassert>
 #include <cstddef>
 #include <iostream>
 #include <iterator>
+
+#include "util.h"
 
 namespace stl {
 

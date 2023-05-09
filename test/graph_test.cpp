@@ -2,9 +2,9 @@
 // Created by wjl on 2023/5/4.
 //
 
-#include "graph.h"
 #include <fstream>
 #include <gtest/gtest.h>
+#include "graph.h"
 
 void init_graph(stl::graph<char, int> &graph) {
 

@@ -2,8 +2,8 @@
 // Created by wjl on 2023/4/13.
 //
 
-#include "vector.h"
 #include <gtest/gtest.h>
+#include "vector.h"
 
 TEST(test_vector, test_vector_init) {
   using T = int;

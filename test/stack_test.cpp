@@ -2,8 +2,8 @@
 // Created by wjl on 2023/4/25.
 //
 
-#include "stack.h"
 #include <gtest/gtest.h>
+#include "stack.h"
 
 TEST(test_stack, test_stack_init) {
   Log("==> test stack constructor");

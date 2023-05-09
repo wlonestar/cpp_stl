@@ -7,15 +7,15 @@
 
 #pragma once
 
-#include "iterator.h"
-#include "util.h"
-
 #include <cassert>
 #include <cstddef>
 #include <initializer_list>
 #include <iostream>
 #include <memory>
 #include <utility>
+
+#include "iterator.h"
+#include "util.h"
 
 namespace stl {
 

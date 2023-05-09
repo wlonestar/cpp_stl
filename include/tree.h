@@ -124,7 +124,7 @@ public:
   rbtree_iterator() : node(NULL) {}
 
   explicit rbtree_iterator(const node_type *node)
-      : node(static_cast<node_type*>(const_cast<node_type*>(node))) {}
+      : node(static_cast<node_type *>(const_cast<node_type *>(node))) {}
 
   rbtree_iterator(const iterator &x) : node(x.node) {}
 
@@ -142,24 +142,24 @@ public:
   }
 
   rbtree_iterator &operator++() {
-    node = static_cast<node_type*>(rb_increment(node));
+    node = static_cast<node_type *>(rb_increment(node));
     return *this;
   }
 
   rbtree_iterator operator++(int) {
     this_type tmp(*this);
-    node = static_cast<node_type*>(rb_increment(node));
+    node = static_cast<node_type *>(rb_increment(node));
     return tmp;
   }
 
   rbtree_iterator &operator--() {
-    node = static_cast<node_type*>(rb_decrement(node));
+    node = static_cast<node_type *>(rb_decrement(node));
     return *this;
   }
 
   rbtree_iterator operator--(int) {
     this_type tmp(*this);
-    node = static_cast<node_type*>(rb_decrement(node));
+    node = static_cast<node_type *>(rb_decrement(node));
     return tmp;
   }
 };

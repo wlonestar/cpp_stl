@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include "tree.h"
 
-TEST(rb_node_test, rb_node_init) {
+TEST(tree_test, rb_node_init) {
   stl::rbtree_node<int> t1(1);
   stl::rbtree_node<int> t2(2);
   stl::rbtree_node<int> t3(3);
@@ -17,14 +17,14 @@ TEST(rb_node_test, rb_node_init) {
   t4.print();
 }
 
-TEST(rb_node_test, rb_node_insert) {
+TEST(tree_test, rb_node_insert) {
   stl::rbtree_node<int> *n1 = new stl::rbtree_node(1);
   n1->insert(2, stl::RB_LEFT);
   n1->insert(3, stl::RB_RIGHT);
   n1->print();
 }
 
-TEST(rb_node_test, rb_node_incredecre) {
+TEST(tree_test, rb_node_incredecre) {
   stl::rbtree_node<char> *n1 = new stl::rbtree_node('b');
   n1->insert('a', stl::RB_LEFT);
   n1->insert('c', stl::RB_RIGHT);
@@ -43,7 +43,7 @@ TEST(rb_node_test, rb_node_incredecre) {
   EXPECT_EQ(val, 'b');
 }
 
-TEST(rb_node_test, rb_node_rotate_left) {
+TEST(tree_test, rb_node_rotate_left) {
   stl::rbtree_node<int> *n1 = new stl::rbtree_node(2);
   stl::rbtree_node<int> *n2 = new stl::rbtree_node(5);
   stl::rbtree_node<int> *n3 = new stl::rbtree_node(6);
@@ -65,7 +65,7 @@ TEST(rb_node_test, rb_node_rotate_left) {
   stl::rb_print<int>(root);
 }
 
-TEST(rb_node_test, rb_node_rotate_right) {
+TEST(tree_test, rb_node_rotate_right) {
   stl::rbtree_node<int> *n1 = new stl::rbtree_node(2);
   stl::rbtree_node<int> *n2 = new stl::rbtree_node(5);
   stl::rbtree_node<int> *n3 = new stl::rbtree_node(6);
@@ -87,7 +87,7 @@ TEST(rb_node_test, rb_node_rotate_right) {
   stl::rb_print<int>(root);
 }
 
-TEST(rb_node_test, rb_node_traverse) {
+TEST(tree_test, rb_node_traverse) {
   stl::rbtree_node<int> *n1 = new stl::rbtree_node(1);
   n1->insert(2, stl::RB_LEFT);
   n1->insert(3, stl::RB_RIGHT);
@@ -124,6 +124,37 @@ TEST(rb_node_test, rb_node_traverse) {
   });
 }
 
-TEST(tree_test, tree_test_init) {
+TEST(tree_test, tree_test_insert) {
+  stl::rbtree<int> t;
+  for (int i = 5; i >= 1; i--) {
+    t.insert(i);
+  }
+  t.pre_order();
+  t.in_order();
+  t.post_order();
+  t.level_order();
+  t.print();
+}
 
+TEST(tree_test, tree_test_find) {
+  stl::rbtree<int> t;
+  t.insert(4);
+  t.insert(2);
+  t.insert(6);
+  t.insert(1);
+  t.insert(3);
+  t.insert(5);
+  t.insert(7);
+  t.print();
+  t.in_order();
+//  for (int i = 0; i <= 7; i++) {
+//    auto p = t.find(i);
+//    if (p != nullptr) {
+//      std::cout << p->value << "\n";
+//    } else {
+//      std::cout << "not exists\n";
+//    }
+//  }
+  t.erase(t.root());
+  t.print();
 }

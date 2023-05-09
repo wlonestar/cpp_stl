@@ -166,7 +166,7 @@ public:
 /**
  * rbtree
  */
-template<class Key, class T, class Compare>
+template<class T, class Compare = std::less<T>>
 class rbtree {
 public:
   /**
@@ -175,20 +175,33 @@ public:
 
   typedef std::size_t size_type;
   typedef std::ptrdiff_t difference_type;
-  typedef Key key_type;
   typedef T value_type;
-  typedef rbtree_node<value_type> node_type;
   typedef value_type &reference;
   typedef const value_type &const_reference;
   typedef value_type *pointer;
   typedef const value_type *const_pointer;
 
-  typedef Compare key_compare;
-  typedef rbtree<Key, T, Compare> this_type;
+  typedef rbtree_iterator<value_type, value_type *, value_type &> iterator;
+  typedef rbtree_iterator<value_type, const value_type *, const value_type &> const_iterator;
+  typedef std::reverse_iterator<iterator> reverse_iterator;
+  typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-protected:
+  typedef rbtree_node<value_type> node_type;
+
+  template<class Iter, class NodeType>
+  struct _insert_return_type {
+    Iter position;
+    bool inserted;
+    NodeType node;
+  };
+  typedef _insert_return_type<iterator, node_type> insert_return_type;
+
+  typedef rbtree<T, Compare> this_type;
+
+public:
   node_type *_root;
   size_type _size;
+  Compare comp;
 
 public:
   /**
@@ -201,54 +214,66 @@ public:
   rbtree(this_type &&x);
   ~rbtree();
 
-  this_type &operator=(const this_type &x);
-  this_type &operator=(std::initializer_list<value_type> ilist);
-  this_type &operator=(this_type &&x);
-
   /**
    * Element access
    */
 
-  T &operator[](const key_type &key);
-  T &operator[](key_type &&key);
+  node_type *root() { return _root; }
+  const node_type *root() const { return _root; }
+
+  // TODO
 
   /**
    * Iterators
    */
 
-  // TODO
+  iterator begin() noexcept;
+  const_iterator begin() const noexcept;
+  const_iterator cbegin() const noexcept;
+
+  iterator end() noexcept;
+  const_iterator end() const noexcept;
+  const_iterator cend() const noexcept;
+
+  reverse_iterator rbegin() noexcept;
+  const_reverse_iterator rbegin() const noexcept;
+  const_reverse_iterator crbegin() const noexcept;
+
+  reverse_iterator rend() noexcept;
+  const_reverse_iterator rend() const noexcept;
+  const_reverse_iterator crend() const noexcept;
 
   /**
    * Capacity
    */
 
-  bool empty() const;
-  size_type size() const;
+  bool empty() const { return _size == 0; }
+  size_type size() const { return _size; }
 
   /**
    * Modifiers
    */
 
   void clear() noexcept;
-  // TODO: insert
+  node_type *insert(const value_type &value);
+  void erase(node_type *p);
 
   /**
    * Lookup
    */
 
-  size_type count(const Key &key) const;
-  template<class K>
-  size_type count(const K &x) const;
-  // TODO: find
-  bool contains(const Key &key) const;
-  template<class K>
-  bool contains(const K &x) const;
+  node_type *find(node_type *p, const value_type &value);
+  node_type *find(const value_type &value);
 
   /**
    * Traverse
    */
 
-  // TODO
+  void pre_order();
+  void in_order();
+  void post_order();
+  void level_order();
+  void print();
 };
 
 /**
@@ -257,40 +282,26 @@ public:
 
 rb_node_base *rb_increment(const rb_node_base *p) {
   if (p->right != nullptr) {
-    p = p->right;
-    while (p->left != nullptr) {
-      p = p->left;
-    }
-  } else {
-    rb_node_base *tmp = p->parent;
-    while (p == tmp->right) {
-      p = tmp;
-      tmp = tmp->parent;
-    }
-    if (p->right != tmp) {
-      p = tmp;
-    }
+    return rb_min_child(p->right);
   }
-  return const_cast<rb_node_base *>(p);
+  rb_node_base *tmp = p->parent;
+  while (tmp != nullptr && p == tmp->right) {
+    p = tmp;
+    tmp = tmp->parent;
+  }
+  return tmp;
 }
 
 rb_node_base *rb_decrement(const rb_node_base *p) {
   if (p->left != nullptr) {
-    p = p->left;
-    while (p->right != nullptr) {
-      p = p->right;
-    }
-  } else {
-    rb_node_base *tmp = p->parent;
-    while (p == tmp->left) {
-      p = tmp;
-      tmp = tmp->parent;
-    }
-    if (p->left != tmp) {
-      p = tmp;
-    }
+    return rb_max_child(p->left);
   }
-  return const_cast<rb_node_base *>(p);
+  rb_node_base *tmp = p->parent;
+  while (tmp != nullptr && p == tmp->left) {
+    p = tmp;
+    tmp = tmp->parent;
+  }
+  return tmp;
 }
 
 rb_node_base *rb_min_child(const rb_node_base *p) {
@@ -314,7 +325,7 @@ std::size_t rb_black_count(const rb_node_base *top, const rb_node_base *bottom) 
       ++count;
     }
     if (bottom == top) {
-      break ;
+      break;
     }
   }
   return count;
@@ -527,6 +538,171 @@ void rbtree_node<T>::print() {
  * rbtree implementation
  */
 
+/**
+ * Member functions
+ */
+
+template<class T, class Compare>
+rbtree<T, Compare>::rbtree() : _root(), _size(0), comp(Compare()) {}
+
+template<class T, class Compare>
+rbtree<T, Compare>::rbtree(const Compare &compare)
+    : _root(), _size(0), comp(compare) {}
+
+template<class T, class Compare>
+rbtree<T, Compare>::rbtree(const rbtree::this_type &x)
+    : _root(x._root), _size(0), comp(x.comp) {}
+
+template<class T, class Compare>
+rbtree<T, Compare>::rbtree(rbtree::this_type &&x)
+    : _root(), _size(0), comp() {
+  swap(x);
+}
+
+template<class T, class Compare>
+rbtree<T, Compare>::~rbtree() {
+  if (_size > 0) {
+    erase(_root);
+  }
+}
+
+/**
+ * Modifiers
+ */
+
+template<class T, class Compare>
+void rbtree<T, Compare>::clear() noexcept {
+}
+
+template<class T, class Compare>
+rbtree<T, Compare>::node_type *rbtree<T, Compare>::insert(const value_type &value) {
+  node_type *p = new rbtree_node<T>(value);
+  node_type *y = nullptr;
+  node_type *x = _root;
+  while (x != nullptr) {
+    y = x;
+    if (comp(value, x->value)) {
+      x = static_cast<rbtree_node<T> *>(x->left);
+    } else {
+      x = static_cast<rbtree_node<T> *>(x->right);
+    }
+  }
+  p->parent = static_cast<rbtree_node<T> *>(y);
+  if (y == nullptr) {
+    _root = p;
+  } else if (comp(value, y->value)) {
+    y->left = p;
+  } else {
+    y->right = p;
+  }
+  _size++;
+  return p;
+}
+
+template<class T>
+static void transplant(rbtree<T> *t, rb_node_base *u, rb_node_base *v) {
+  if (u->parent == nullptr) {
+    t->_root = static_cast<rbtree_node<T> *>(v);
+  } else if (u == u->parent->left) {
+    u->parent->left = v;
+  } else {
+    u->parent->right = v;
+  }
+  if (v != nullptr) {
+    v->parent = u->parent;
+  }
+}
+
+template<class T, class Compare>
+void rbtree<T, Compare>::erase(rbtree::node_type *p) {
+  if (p->left == nullptr) {
+    transplant(this, p, p->right);
+  } else if (p->right == nullptr) {
+    transplant(this, p, p->left);
+  } else {
+    rbtree_node<T> *tmp = static_cast<rbtree_node<T> *>(rb_min_child(p->right));
+    if (tmp->parent != p) {
+      transplant(this, tmp, tmp->right);
+      tmp->right = p->right;
+      tmp->right->parent = tmp;
+    }
+    transplant(this, p, tmp);
+    tmp->left = p->left;
+    tmp->left->parent = tmp;
+  }
+  _size--;
+}
+
+/**
+ * Lookup
+ */
+
+template<class T, class Compare>
+rbtree<T, Compare>::node_type *rbtree<T, Compare>::find(rbtree::node_type *p,
+                                                        const value_type &value) {
+  while (p != nullptr && value != p->value) {
+    if (comp(value, p->value)) {
+      p = static_cast<rbtree_node<T> *>(p->left);
+    } else {
+      p = static_cast<rbtree_node<T> *>(p->right);
+    }
+  }
+  return p;
+}
+
+template<class T, class Compare>
+rbtree<T, Compare>::node_type *rbtree<T, Compare>::find(const value_type &value) {
+  return find(_root, value);
+}
+
+/**
+ * Traverse
+ */
+
+template<class T, class Compare>
+void rbtree<T, Compare>::pre_order() {
+  stl::vector<T> v;
+  rb_pre_order(_root, v);
+  v.for_each(v.begin(), v.end(), [](const T &value) {
+    std::cout << value << " ";
+  });
+  std::cout << "\n";
+}
+
+template<class T, class Compare>
+void rbtree<T, Compare>::in_order() {
+  stl::vector<T> v;
+  rb_in_order(_root, v);
+  v.for_each(v.begin(), v.end(), [](const T &value) {
+    std::cout << value << " ";
+  });
+  std::cout << "\n";
+}
+
+template<class T, class Compare>
+void rbtree<T, Compare>::post_order() {
+  stl::vector<T> v;
+  rb_post_order(_root, v);
+  v.for_each(v.begin(), v.end(), [](const T &value) {
+    std::cout << value << " ";
+  });
+  std::cout << "\n";
+}
+
+template<class T, class Compare>
+void rbtree<T, Compare>::level_order() {
+  stl::vector<T> v;
+  rb_level_order(_root, v);
+  v.for_each(v.begin(), v.end(), [](const T &value) {
+    std::cout << value << " ";
+  });
+  std::cout << "\n";
+}
+
+template<class T, class Compare>
+void rbtree<T, Compare>::print() {
+  rb_print<T>(_root);
+}
 
 }// namespace stl
 

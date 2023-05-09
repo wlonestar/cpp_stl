@@ -76,6 +76,10 @@ template<class T>
 void rb_post_order(rb_node_base *p, stl::vector<T> &v);
 template<class T>
 void rb_level_order(rb_node_base *p, stl::vector<T> &v);
+template<class T>
+void __rb_print(rb_node_base *p, int prefix);
+template<class T>
+void rb_print(rb_node_base *p);
 
 /**
  * rbtree node type
@@ -133,13 +137,8 @@ public:
     return *this;
   }
 
-  reference operator*() const {
-    return node->value;
-  }
-
-  pointer operator->() const {
-    return &node->value;
-  }
+  reference operator*() const { return node->value; }
+  pointer operator->() const { return &node->value; }
 
   rbtree_iterator &operator++() {
     node = static_cast<node_type *>(rb_increment(node));
@@ -294,29 +293,69 @@ rb_node_base *rb_decrement(const rb_node_base *p) {
   return const_cast<rb_node_base *>(p);
 }
 
-// TODO
 rb_node_base *rb_min_child(const rb_node_base *p) {
-  TODO();
+  while (p->left != nullptr) {
+    p = p->left;
+  }
+  return const_cast<rb_node_base *>(p);
 }
 
-// TODO
 rb_node_base *rb_max_child(const rb_node_base *p) {
-  TODO();
+  while (p->right != nullptr) {
+    p = p->right;
+  }
+  return const_cast<rb_node_base *>(p);
 }
 
-// TODO
 std::size_t rb_black_count(const rb_node_base *top, const rb_node_base *bottom) {
-  TODO();
+  size_t count = 0;
+  for (; bottom; bottom = bottom->parent) {
+    if (bottom->color == RB_BLACK) {
+      ++count;
+    }
+    if (bottom == top) {
+      break ;
+    }
+  }
+  return count;
 }
 
-// TODO
 rb_node_base *rb_rotate_left(rb_node_base *p, rb_node_base *root) {
-  TODO();
+  rb_node_base *y = p->right;
+  p->right = y->left;
+  if (y->left != nullptr) {
+    y->left->parent = p;
+  }
+  y->parent = p->parent;
+  if (p == root) {
+    root = y;
+  } else if (p == p->parent->left) {
+    p->parent->left = y;
+  } else {
+    p->parent->right = y;
+  }
+  y->left = p;
+  p->parent = y;
+  return root;
 }
 
-// TODO
 rb_node_base *rb_rotate_right(rb_node_base *p, rb_node_base *root) {
-  TODO();
+  rb_node_base *y = p->left;
+  p->left = y->right;
+  if (y->right != nullptr) {
+    y->right->parent = p;
+  }
+  y->parent = p->parent;
+  if (p == root) {
+    root = y;
+  } else if (p == p->parent->right) {
+    p->parent->right = y;
+  } else {
+    p->parent->left = y;
+  }
+  y->right = p;
+  p->parent = y;
+  return root;
 }
 
 // TODO
@@ -421,6 +460,27 @@ void rb_level_order(rb_node_base *p, stl::vector<T> &v) {
       q.push(p->right);
     }
   }
+}
+
+template<class T>
+void __rb_print(rb_node_base *p, int prefix) {
+  char prefix_str[prefix];
+  for (int i = 0; i < prefix; i++) {
+    prefix_str[i] = ' ';
+  }
+  prefix_str[prefix] = '\0';
+  if (p == nullptr) {
+    return;
+  }
+  T value = static_cast<rbtree_node<T> *>(p)->value;
+  std::cout << prefix_str << value << "\n";
+  __rb_print<T>(p->left, prefix + 2);
+  __rb_print<T>(p->right, prefix + 2);
+}
+
+template<class T>
+void rb_print(rb_node_base *p) {
+  __rb_print<T>(p, 0);
 }
 
 /**

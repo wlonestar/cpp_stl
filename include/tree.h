@@ -35,75 +35,88 @@ enum rb_side {
 };
 
 /**
- * rbtree node base type
- *
- * separate data fom node
+ * rbtree node type
  */
-struct rb_node_base {
+template<class T>
+struct rbtree_node {
 private:
-  typedef rb_node_base this_type;
+  typedef rbtree_node<T> this_type;
 
 public:
   this_type *parent;
   this_type *left;
   this_type *right;
   char color;
-};
-
-/**
- * rbtree node base functions
- */
-
-rb_node_base *rb_min_child(const rb_node_base *p);
-rb_node_base *rb_max_child(const rb_node_base *p);
-rb_node_base *rb_increment(const rb_node_base *p);
-rb_node_base *rb_decrement(const rb_node_base *p);
-std::size_t rb_black_count(const rb_node_base *top, const rb_node_base *bottom);
-rb_node_base *rb_rotate_left(rb_node_base *p, rb_node_base *root);
-rb_node_base *rb_rotate_right(rb_node_base *p, rb_node_base *root);
-void rb_insert(rb_node_base *p, rb_node_base *parent, rb_side side);
-void rb_erase(rb_node_base *p, rb_node_base *parent);
-
-/**
- * rbtree node base traverse
- */
-
-template<class T>
-void rb_pre_order(rb_node_base *p, stl::vector<T> &v);
-template<class T>
-void rb_in_order(rb_node_base *p, stl::vector<T> &v);
-template<class T>
-void rb_post_order(rb_node_base *p, stl::vector<T> &v);
-template<class T>
-void rb_level_order(rb_node_base *p, stl::vector<T> &v);
-template<class T>
-void __rb_print(rb_node_base *p, int prefix);
-template<class T>
-void rb_print(rb_node_base *p);
-
-/**
- * rbtree node type
- */
-template<class T>
-struct rbtree_node : rb_node_base {
-public:
   T value;
 
 public:
-  rbtree_node();
+  rbtree_node()
+      : parent(nullptr), left(nullptr), right(nullptr), color(RB_RED) {}
+
   rbtree_node(const T &val, rbtree_node<T> *parent = nullptr,
               rbtree_node<T> *left = nullptr, rbtree_node<T> *right = nullptr,
-              rb_color color = RB_RED);
+              rb_color color = RB_RED)
+      : value(val), parent(parent), left(left), right(right), color(color) {}
 
-  rbtree_node<T> *insert(const T &val, rb_side side);
-  rbtree_node<T> *attach(rbtree_node<T> *p, rb_side side);
+  rbtree_node<T> *insert(const T &val, rb_side side) {
+    rbtree_node<T> *new_node = new rbtree_node(val, this);
+    if (side == RB_LEFT) {
+      left = new_node;
+    } else if (side == RB_RIGHT) {
+      right = new_node;
+    }
+    return this;
+  }
+
+  rbtree_node<T> *attach(rbtree_node<T> *p, rb_side side) {
+    p->parent = this;
+    if (side == RB_LEFT) {
+      left = p;
+    } else if (side == RB_RIGHT) {
+      right = p;
+    }
+    return this;
+  }
 
   /**
    * Debug
    */
 
-  void print();
+  void print() {
+    std::cout << "node(" << value << ", " << this << "): parent: "
+              << parent << ", left: " << left << ", right: " << right << "\n";
+  }
 };
+
+/**
+ * rbtree node functions
+ */
+
+template<class T>
+rbtree_node<T> *rb_min_child(rbtree_node<T> *p);
+template<class T>
+rbtree_node<T> *rb_max_child(rbtree_node<T> *p);
+template<class T>
+rbtree_node<T> *rb_increment(rbtree_node<T> *p);
+template<class T>
+rbtree_node<T> *rb_decrement(rbtree_node<T> *p);
+
+/**
+ * rbtree node traverses
+ */
+
+template<class T>
+void rb_pre_order(rbtree_node<T> *p, stl::vector<T> &v);
+template<class T>
+void rb_in_order(rbtree_node<T> *p, stl::vector<T> &v);
+template<class T>
+void rb_post_order(rbtree_node<T> *p, stl::vector<T> &v);
+template<class T>
+void rb_level_order(rbtree_node<T> *p, stl::vector<T> &v);
+template<class T>
+void __rb_print(rbtree_node<T> *p, int prefix);
+template<class T>
+void rb_print(rbtree_node<T> *p);
 
 /**
  * rbtree iterator
@@ -116,7 +129,6 @@ struct rbtree_iterator {
   typedef std::size_t size_type;
   typedef std::ptrdiff_t difference_type;
   typedef T value_type;
-  typedef rb_node_base base_node_type;
   typedef rbtree_node<T> node_type;
   typedef Pointer pointer;
   typedef Reference reference;
@@ -231,8 +243,6 @@ public:
   node_type *root() { return _root; }
   const node_type *root() const { return _root; }
 
-  // TODO
-
   /**
    * Iterators
    */
@@ -291,28 +301,40 @@ public:
 };
 
 /**
- * rbtree node base functions
+ * Node operation
  */
 
-rb_node_base *rb_min_child(const rb_node_base *p) {
+template<class T>
+void rb_rotate_left(rbtree_node<T> *p, rbtree<T> *t);
+template<class T>
+void rb_rotate_right(rbtree_node<T> *p, rbtree<T> *t);
+
+/**
+ * rbtree node functions
+ */
+
+template<class T>
+rbtree_node<T> *rb_min_child(rbtree_node<T> *p) {
   while (p->left != nullptr) {
     p = p->left;
   }
-  return const_cast<rb_node_base *>(p);
+  return p;
 }
 
-rb_node_base *rb_max_child(const rb_node_base *p) {
+template<class T>
+rbtree_node<T> *rb_max_child(rbtree_node<T> *p) {
   while (p->right != nullptr) {
     p = p->right;
   }
-  return const_cast<rb_node_base *>(p);
+  return p;
 }
 
-rb_node_base *rb_increment(const rb_node_base *p) {
+template<class T>
+rbtree_node<T> *rb_increment(rbtree_node<T> *p) {
   if (p->right != nullptr) {
-    return rb_min_child(p->right);
+    return rb_min_child<T>(p->right);
   }
-  rb_node_base *tmp = p->parent;
+  rbtree_node<T> *tmp = p->parent;
   while (tmp != nullptr && p == tmp->right) {
     p = tmp;
     tmp = tmp->parent;
@@ -320,11 +342,12 @@ rb_node_base *rb_increment(const rb_node_base *p) {
   return tmp;
 }
 
-rb_node_base *rb_decrement(const rb_node_base *p) {
+template<class T>
+rbtree_node<T> *rb_decrement(rbtree_node<T> *p) {
   if (p->left != nullptr) {
-    return rb_max_child(p->left);
+    return rb_max_child<T>(p->left);
   }
-  rb_node_base *tmp = p->parent;
+  rbtree_node<T> *tmp = p->parent;
   while (tmp != nullptr && p == tmp->left) {
     p = tmp;
     tmp = tmp->parent;
@@ -332,77 +355,16 @@ rb_node_base *rb_decrement(const rb_node_base *p) {
   return tmp;
 }
 
-std::size_t rb_black_count(const rb_node_base *top, const rb_node_base *bottom) {
-  size_t count = 0;
-  for (; bottom; bottom = bottom->parent) {
-    if (bottom->color == RB_BLACK) {
-      ++count;
-    }
-    if (bottom == top) {
-      break;
-    }
-  }
-  return count;
-}
-
-rb_node_base *rb_rotate_left(rb_node_base *p, rb_node_base *root) {
-  rb_node_base *const y = p->right;
-  p->right = y->left;
-  if (y->left != nullptr) {
-    y->left->parent = p;
-  }
-  y->parent = p->parent;
-  if (p == root) {
-    root = y;
-  } else if (p == p->parent->left) {
-    p->parent->left = y;
-  } else {
-    p->parent->right = y;
-  }
-  y->left = p;
-  p->parent = y;
-  return root;
-}
-
-rb_node_base *rb_rotate_right(rb_node_base *p, rb_node_base *root) {
-  rb_node_base *const y = p->left;
-  p->left = y->right;
-  if (y->right != nullptr) {
-    y->right->parent = p;
-  }
-  y->parent = p->parent;
-  if (p == root) {
-    root = y;
-  } else if (p == p->parent->right) {
-    p->parent->right = y;
-  } else {
-    p->parent->left = y;
-  }
-  y->right = p;
-  p->parent = y;
-  return root;
-}
-
-// TODO
-void rb_insert(rb_node_base *p, rb_node_base *parent, rb_side side) {
-  TODO();
-}
-
-// TODO
-void rb_erase(rb_node_base *p, rb_node_base *parent) {
-  TODO();
-}
-
 /**
- * rbtree node base traverse
+ * rbtree node traverses
  */
 
 template<class T>
-void rb_pre_order(rb_node_base *p, stl::vector<T> &v) {
-  stack<rb_node_base *> s;
+void rb_pre_order(rbtree_node<T> *p, stl::vector<T> &v) {
+  stack<rbtree_node<T> *> s;
   while (true) {
     while (p != nullptr) {
-      T val = static_cast<rbtree_node<T> *>(p)->value;
+      T val = p->value;
       v.push_back(val);
       s.push(p->right);
       p = p->left;
@@ -416,8 +378,8 @@ void rb_pre_order(rb_node_base *p, stl::vector<T> &v) {
 }
 
 template<class T>
-void rb_in_order(rb_node_base *p, stl::vector<T> &v) {
-  stack<rb_node_base *> s;
+void rb_in_order(rbtree_node<T> *p, stl::vector<T> &v) {
+  stack<rbtree_node<T> *> s;
   while (true) {
     while (p != nullptr) {
       s.push(p);
@@ -428,13 +390,14 @@ void rb_in_order(rb_node_base *p, stl::vector<T> &v) {
     }
     p = s.top();
     s.pop();
-    T val = static_cast<rbtree_node<T> *>(p)->value;
+    T val = p->value;
     v.push_back(val);
     p = p->right;
   }
 }
 
-static void goto_left(stack<rb_node_base *> &s) {
+template<class T>
+static void goto_left(stack<rbtree_node<T> *> &s) {
   while (auto p = s.top()) {
     if (p->left != nullptr) {
       if (p->right != nullptr) {
@@ -449,11 +412,11 @@ static void goto_left(stack<rb_node_base *> &s) {
 }
 
 template<class T>
-void rb_post_order(rb_node_base *p, stl::vector<T> &v) {
+void rb_post_order(rbtree_node<T> *p, stl::vector<T> &v) {
   if (p == nullptr) {
     return;
   }
-  stack<rb_node_base *> s;
+  stack<rbtree_node<T> *> s;
   s.push(p);
   while (!s.empty()) {
     if (s.top() != p->parent) {
@@ -461,22 +424,22 @@ void rb_post_order(rb_node_base *p, stl::vector<T> &v) {
     }
     p = s.top();
     s.pop();
-    T val = static_cast<rbtree_node<T> *>(p)->value;
+    T val = p->value;
     v.push_back(val);
   }
 }
 
 template<class T>
-void rb_level_order(rb_node_base *p, stl::vector<T> &v) {
+void rb_level_order(rbtree_node<T> *p, stl::vector<T> &v) {
   if (p == nullptr) {
     return;
   }
-  stl::queue<rb_node_base *> q;
+  stl::queue<rbtree_node<T> *> q;
   q.push(p);
   while (!q.empty()) {
     p = q.front();
     q.pop();
-    T val = static_cast<rbtree_node<T> *>(p)->value;
+    T val = p->value;
     v.push_back(val);
     if (p->left != nullptr) {
       q.push(p->left);
@@ -488,7 +451,7 @@ void rb_level_order(rb_node_base *p, stl::vector<T> &v) {
 }
 
 template<class T>
-void __rb_print(rb_node_base *p, int prefix) {
+void __rb_print(rbtree_node<T> *p, int prefix) {
   char prefix_str[prefix];
   for (int i = 0; i < prefix; i++) {
     prefix_str[i] = ' ';
@@ -497,56 +460,15 @@ void __rb_print(rb_node_base *p, int prefix) {
   if (p == nullptr) {
     return;
   }
-  T value = static_cast<rbtree_node<T> *>(p)->value;
+  T value = p->value;
   std::cout << prefix_str << value << "\n";
   __rb_print<T>(p->left, prefix + 2);
   __rb_print<T>(p->right, prefix + 2);
 }
 
 template<class T>
-void rb_print(rb_node_base *p) {
+void rb_print(rbtree_node<T> *p) {
   __rb_print<T>(p, 0);
-}
-
-/**
- * rbtree node implementation
- */
-
-template<class T>
-rbtree_node<T>::rbtree_node()
-    : rb_node_base(nullptr, nullptr, nullptr, RB_RED) {}
-
-template<class T>
-rbtree_node<T>::rbtree_node(const T &val, rbtree_node<T> *parent,
-                            rbtree_node<T> *left, rbtree_node<T> *right, rb_color color)
-    : value(val), rb_node_base(parent, left, right, color) {}
-
-template<class T>
-rbtree_node<T> *rbtree_node<T>::insert(const T &val, rb_side side) {
-  rbtree_node<T> *new_node = new rbtree_node(val, this);
-  if (side == RB_LEFT) {
-    left = new_node;
-  } else if (side == RB_RIGHT) {
-    right = new_node;
-  }
-  return this;
-}
-
-template<class T>
-rbtree_node<T> *rbtree_node<T>::attach(rbtree_node<T> *p, rb_side side) {
-  p->parent = this;
-  if (side == RB_LEFT) {
-    left = p;
-  } else if (side == RB_RIGHT) {
-    right = p;
-  }
-  return this;
-}
-
-template<class T>
-void rbtree_node<T>::print() {
-  std::cout << "node(" << value << ", " << this << "): parent: "
-            << parent << ", left: " << left << ", right: " << right << "\n";
 }
 
 /**
@@ -575,16 +497,12 @@ rbtree<T, Compare>::rbtree(const rbtree::this_type &x)
     : _root(x._root), _size(0), comp(x.comp) {}
 
 template<class T, class Compare>
-rbtree<T, Compare>::rbtree(rbtree::this_type &&x)
-    : _root(), _size(0), comp() {
+rbtree<T, Compare>::rbtree(rbtree::this_type &&x) : _root(), _size(0), comp() {
   swap(x);
 }
 
 template<class T, class Compare>
 rbtree<T, Compare>::~rbtree() {
-//  if (_size > 0) {
-//    erase(_root);
-//  }
 }
 
 /**
@@ -596,14 +514,14 @@ void rbtree<T, Compare>::clear() noexcept {
 }
 
 // TODO
-static void insert_fixup(rb_node_base *p, rb_node_base *root) {
-  // case 0: root is null
-  if (p == root) {
+template<class T>
+static void insert_fixup(rbtree_node<T> *p, rbtree<T> *t) {
+  if (p == t->_root) {
     p->color = RB_BLACK;
     return;
   }
   while (p->parent->color == RB_RED) {
-    rb_node_base *y;
+    rbtree_node<T> *y;
     if (p->parent == p->parent->parent->left) {
       y = p->parent->parent->right;
       if (y->color == RB_RED) {
@@ -613,11 +531,11 @@ static void insert_fixup(rb_node_base *p, rb_node_base *root) {
         p = p->parent->parent;
       } else if (p == p->parent->right) {
         p = p->parent;
-        rb_rotate_left(p, root);
+        rb_rotate_left(p, t);
       }
       p->parent->color = RB_BLACK;
       p->parent->parent->color = RB_RED;
-      rb_rotate_right(p->parent->parent, root);
+      rb_rotate_right(p->parent->parent, t);
     } else {
       y = p->parent->parent->left;
       if (y->color == RB_RED) {
@@ -627,14 +545,14 @@ static void insert_fixup(rb_node_base *p, rb_node_base *root) {
         p = p->parent->parent;
       } else if (p == p->parent->left) {
         p = p->parent;
-        rb_rotate_right(p, root);
+        rb_rotate_right(p, t);
       }
       p->parent->color = RB_BLACK;
       p->parent->parent->color = RB_RED;
-      rb_rotate_left(p->parent->parent, root);
+      rb_rotate_left(p->parent->parent, t);
     }
   }
-  root->color = RB_BLACK;
+  t->_root->color = RB_BLACK;
 }
 
 template<class T, class Compare>
@@ -645,12 +563,12 @@ rbtree<T, Compare>::node_type *rbtree<T, Compare>::insert(const value_type &valu
   while (x != nil) {
     y = x;
     if (comp(value, x->value)) {
-      x = static_cast<rbtree_node<T> *>(x->left);
+      x = x->left;
     } else {
-      x = static_cast<rbtree_node<T> *>(x->right);
+      x = x->right;
     }
   }
-  p->parent = static_cast<rbtree_node<T> *>(y);
+  p->parent = y;
   if (y == nil) {
     _root = p;
   } else if (comp(value, y->value)) {
@@ -662,7 +580,7 @@ rbtree<T, Compare>::node_type *rbtree<T, Compare>::insert(const value_type &valu
   p->left = nil;
   p->right = nil;
   p->color = RB_RED;
-  insert_fixup(p, _root);
+  insert_fixup(p, this);
   return p;
 }
 
@@ -670,9 +588,9 @@ rbtree<T, Compare>::node_type *rbtree<T, Compare>::insert(const value_type &valu
  * in rbtree @t, using subtree @v to replace subtree @u
  */
 template<class T>
-static void transplant(rbtree<T> *t, rb_node_base *u, rb_node_base *v) {
+static void transplant(rbtree<T> *t, rbtree_node<T> *u, rbtree_node<T> *v) {
   if (u->parent == nullptr) {
-    t->_root = static_cast<rbtree_node<T> *>(v);
+    t->_root = v;
   } else if (u == u->parent->left) {
     u->parent->left = v;
   } else {
@@ -690,7 +608,7 @@ void rbtree<T, Compare>::erase(rbtree::node_type *p) {
   } else if (p->right == nullptr) {
     transplant(this, p, p->left);
   } else {
-    rbtree_node<T> *tmp = static_cast<rbtree_node<T> *>(rb_min_child(p->right));
+    rbtree_node<T> *tmp = rb_min_child(p->right);
     if (tmp->parent != p) {
       transplant(this, tmp, tmp->right);
       tmp->right = p->right;
@@ -708,13 +626,12 @@ void rbtree<T, Compare>::erase(rbtree::node_type *p) {
  */
 
 template<class T, class Compare>
-rbtree<T, Compare>::node_type *rbtree<T, Compare>::find(rbtree::node_type *p,
-                                                        const value_type &value) {
+rbtree<T, Compare>::node_type *rbtree<T, Compare>::find(rbtree::node_type *p, const value_type &value) {
   while (p != nullptr && value != p->value) {
     if (comp(value, p->value)) {
-      p = static_cast<rbtree_node<T> *>(p->left);
+      p = p->left;
     } else {
-      p = static_cast<rbtree_node<T> *>(p->right);
+      p = p->right;
     }
   }
   return p;
@@ -772,6 +689,74 @@ void rbtree<T, Compare>::level_order() {
 template<class T, class Compare>
 void rbtree<T, Compare>::print() {
   rb_print<T>(_root);
+}
+
+/**
+ * Node operation
+ */
+
+template<class T>
+void rb_rotate_left(rbtree_node<T> *p, rbtree<T> *t) {
+  rbtree_node<T> *const y = p->right;
+  p->right = y->left;
+  if (y->left != nullptr) {
+    y->left->parent = p;
+  }
+  y->parent = p->parent;
+  if (p == t->_root) {
+    t->_root = y;
+  } else if (p == p->parent->left) {
+    p->parent->left = y;
+  } else {
+    p->parent->right = y;
+  }
+  y->left = p;
+  p->parent = y;
+}
+
+template<class T>
+void rb_rotate_right(rbtree_node<T> *p, rbtree<T> *t) {
+  rbtree_node<T> *const y = p->left;
+  p->left = y->right;
+  if (y->right != nullptr) {
+    y->right->parent = p;
+  }
+  y->parent = p->parent;
+  if (p == t->_root) {
+    t->_root = y;
+  } else if (p == p->parent->right) {
+    p->parent->right = y;
+  } else {
+    p->parent->left = y;
+  }
+  y->right = p;
+  p->parent = y;
+}
+
+/**
+ * generate tree
+ */
+
+static stl::rbtree_node<int> *generate_full_tree() {
+  stl::rbtree_node<int> *n = new stl::rbtree_node<int>(4);
+  stl::rbtree_node<int> *n1 = new stl::rbtree_node<int>(2);
+  n1->insert(1, stl::RB_LEFT);
+  n1->insert(3, stl::RB_RIGHT);
+  n->attach(n1, stl::RB_LEFT);
+  stl::rbtree_node<int> *n2 = new stl::rbtree_node<int>(6);
+  n2->insert(5, stl::RB_LEFT);
+  n2->insert(7, stl::RB_RIGHT);
+  n->attach(n2, stl::RB_RIGHT);
+  /**
+   * generated tree:
+   *
+   *       4
+   *      / \
+   *     2   6
+   *   / \  / \
+   *  1  3 5  7
+   */
+  return n;
 }
 
 }// namespace stl

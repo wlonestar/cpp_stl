@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <cstring>
 #include <initializer_list>
 #include <iostream>
 #include <tuple>
@@ -50,33 +51,13 @@ public:
   T value;
 
 public:
-  rbtree_node()
-      : parent(nullptr), left(nullptr), right(nullptr), color(RB_RED) {}
-
+  rbtree_node();
   rbtree_node(const T &val, rbtree_node<T> *parent = nullptr,
               rbtree_node<T> *left = nullptr, rbtree_node<T> *right = nullptr,
-              rb_color color = RB_RED)
-      : value(val), parent(parent), left(left), right(right), color(color) {}
+              rb_color color = RB_RED);
 
-  rbtree_node<T> *insert(const T &val, rb_side side) {
-    rbtree_node<T> *new_node = new rbtree_node(val, this);
-    if (side == RB_LEFT) {
-      left = new_node;
-    } else if (side == RB_RIGHT) {
-      right = new_node;
-    }
-    return this;
-  }
-
-  rbtree_node<T> *attach(rbtree_node<T> *p, rb_side side) {
-    p->parent = this;
-    if (side == RB_LEFT) {
-      left = p;
-    } else if (side == RB_RIGHT) {
-      right = p;
-    }
-    return this;
-  }
+  rbtree_node<T> *insert(const T &val, rb_side side);
+  rbtree_node<T> *attach(rbtree_node<T> *p, rb_side side);
 
   /**
    * Debug
@@ -227,6 +208,14 @@ public:
 
 public:
   /**
+   * Node operation
+   */
+
+  void rotate_left(rbtree_node<T> *p);
+  void rotate_right(rbtree_node<T> *p);
+
+public:
+  /**
    * Member functions
    */
 
@@ -279,6 +268,7 @@ public:
    */
 
   void clear() noexcept;
+  void insert_fixup(rbtree_node<T> *p);
   node_type *insert(const value_type &value);
   void erase(node_type *p);
 
@@ -295,19 +285,54 @@ public:
 
   void pre_order();
   void in_order();
+  void _post_order(rbtree_node<T> *p, stl::vector<T> &v);
   void post_order();
   void level_order();
+  void print(rbtree_node<T> *p, int prefix);
   void print();
 };
 
 /**
- * Node operation
+ * ========================================================
+ * implementations
+ * ========================================================
+ */
+
+/**
+ * rbtree node implementation
  */
 
 template<class T>
-void rb_rotate_left(rbtree_node<T> *p, rbtree<T> *t);
+rbtree_node<T>::rbtree_node()
+    : parent(nullptr), left(nullptr), right(nullptr), color(RB_RED) {}
+
 template<class T>
-void rb_rotate_right(rbtree_node<T> *p, rbtree<T> *t);
+rbtree_node<T>::rbtree_node(const T &val, rbtree_node<T> *parent,
+                            rbtree_node<T> *left, rbtree_node<T> *right,
+                            rb_color color)
+    : value(val), parent(parent), left(left), right(right), color(color) {}
+
+template<class T>
+rbtree_node<T> *rbtree_node<T>::insert(const T &val, rb_side side) {
+  rbtree_node<T> *new_node = new rbtree_node(val, this);
+  if (side == RB_LEFT) {
+    left = new_node;
+  } else if (side == RB_RIGHT) {
+    right = new_node;
+  }
+  return this;
+}
+
+template<class T>
+rbtree_node<T> *rbtree_node<T>::attach(rbtree_node<T> *p, rb_side side) {
+  p->parent = this;
+  if (side == RB_LEFT) {
+    left = p;
+  } else if (side == RB_RIGHT) {
+    right = p;
+  }
+  return this;
+}
 
 /**
  * rbtree node functions
@@ -460,8 +485,15 @@ void __rb_print(rbtree_node<T> *p, int prefix) {
   if (p == nullptr) {
     return;
   }
-  T value = p->value;
-  std::cout << prefix_str << value << "\n";
+  std::cout << prefix_str;
+  if (p->parent == nullptr) {
+    std::cout << "--";
+  } else if (p == p->parent->left) {
+    std::cout << "->";
+  } else if (p == p->parent->right) {
+    std::cout << "=>";
+  }
+  std::cout << p->value << "\n";
   __rb_print<T>(p->left, prefix + 2);
   __rb_print<T>(p->right, prefix + 2);
 }
@@ -474,6 +506,48 @@ void rb_print(rbtree_node<T> *p) {
 /**
  * rbtree implementation
  */
+
+/**
+ * Node operation
+ */
+
+template<class T, class Compare>
+void rbtree<T, Compare>::rotate_left(rbtree_node<T> *p) {
+  rbtree_node<T> *y = p->right;
+  p->right = y->left;
+  if (y->left != nil) {
+    y->left->parent = p;
+  }
+  y->parent = p->parent;
+  if (p->parent == nil) {
+    _root = y;
+  } else if (p == p->parent->left) {
+    p->parent->left = y;
+  } else {
+    p->parent->right = y;
+  }
+  y->left = p;
+  p->parent = y;
+}
+
+template<class T, class Compare>
+void rbtree<T, Compare>::rotate_right(rbtree_node<T> *p) {
+  rbtree_node<T> *y = p->left;
+  p->left = y->right;
+  if (y->right != nil) {
+    y->right->parent = p;
+  }
+  y->parent = p->parent;
+  if (p->parent == nil) {
+    _root = y;
+  } else if (p == p->parent->right) {
+    p->parent->right = y;
+  } else {
+    p->parent->left = y;
+  }
+  y->right = p;
+  p->parent = y;
+}
 
 /**
  * Member functions
@@ -513,13 +587,8 @@ template<class T, class Compare>
 void rbtree<T, Compare>::clear() noexcept {
 }
 
-// TODO
-template<class T>
-static void insert_fixup(rbtree_node<T> *p, rbtree<T> *t) {
-  if (p == t->_root) {
-    p->color = RB_BLACK;
-    return;
-  }
+template<class T, class Compare>
+void rbtree<T, Compare>::insert_fixup(rbtree_node<T> *p) {
   while (p->parent->color == RB_RED) {
     rbtree_node<T> *y;
     if (p->parent == p->parent->parent->left) {
@@ -531,12 +600,13 @@ static void insert_fixup(rbtree_node<T> *p, rbtree<T> *t) {
         p = p->parent->parent;
       } else if (p == p->parent->right) {
         p = p->parent;
-        rb_rotate_left(p, t);
+        rotate_left(p);
+      } else {
+        p->parent->color = RB_BLACK;
+        p->parent->parent->color = RB_RED;
+        rotate_right(p->parent->parent);
       }
-      p->parent->color = RB_BLACK;
-      p->parent->parent->color = RB_RED;
-      rb_rotate_right(p->parent->parent, t);
-    } else {
+    } else if (p->parent == p->parent->parent->right) {
       y = p->parent->parent->left;
       if (y->color == RB_RED) {
         p->parent->color = RB_BLACK;
@@ -545,14 +615,15 @@ static void insert_fixup(rbtree_node<T> *p, rbtree<T> *t) {
         p = p->parent->parent;
       } else if (p == p->parent->left) {
         p = p->parent;
-        rb_rotate_right(p, t);
+        rotate_right(p);
+      } else {
+        p->parent->color = RB_BLACK;
+        p->parent->parent->color = RB_RED;
+        rotate_left(p->parent->parent);
       }
-      p->parent->color = RB_BLACK;
-      p->parent->parent->color = RB_RED;
-      rb_rotate_left(p->parent->parent, t);
     }
   }
-  t->_root->color = RB_BLACK;
+  _root->color = RB_BLACK;
 }
 
 template<class T, class Compare>
@@ -580,7 +651,7 @@ rbtree<T, Compare>::node_type *rbtree<T, Compare>::insert(const value_type &valu
   p->left = nil;
   p->right = nil;
   p->color = RB_RED;
-  insert_fixup(p, this);
+  insert_fixup(p);
   return p;
 }
 
@@ -626,7 +697,8 @@ void rbtree<T, Compare>::erase(rbtree::node_type *p) {
  */
 
 template<class T, class Compare>
-rbtree<T, Compare>::node_type *rbtree<T, Compare>::find(rbtree::node_type *p, const value_type &value) {
+rbtree<T, Compare>::node_type *rbtree<T, Compare>::find(rbtree::node_type *p,
+                                                        const value_type &value) {
   while (p != nullptr && value != p->value) {
     if (comp(value, p->value)) {
       p = p->left;
@@ -648,8 +720,22 @@ rbtree<T, Compare>::node_type *rbtree<T, Compare>::find(const value_type &value)
 
 template<class T, class Compare>
 void rbtree<T, Compare>::pre_order() {
+  rbtree_node<T> *p = _root;
   stl::vector<T> v;
-  rb_pre_order(_root, v);
+  stack<rbtree_node<T> *> s;
+  while (true) {
+    while (p != nil && p != nullptr) {
+      T val = p->value;
+      v.push_back(val);
+      s.push(p->right);
+      p = p->left;
+    }
+    if (s.empty()) {
+      break;
+    }
+    p = s.top();
+    s.pop();
+  }
   v.for_each(v.begin(), v.end(), [](const T &value) {
     std::cout << value << " ";
   });
@@ -658,8 +744,23 @@ void rbtree<T, Compare>::pre_order() {
 
 template<class T, class Compare>
 void rbtree<T, Compare>::in_order() {
+  rbtree_node<T> *p = _root;
   stl::vector<T> v;
-  rb_in_order(_root, v);
+  stack<rbtree_node<T> *> s;
+  while (true) {
+    while (p != nil && p != nullptr) {
+      s.push(p);
+      p = p->left;
+    }
+    if (s.empty()) {
+      break;
+    }
+    p = s.top();
+    s.pop();
+    T val = p->value;
+    v.push_back(val);
+    p = p->right;
+  }
   v.for_each(v.begin(), v.end(), [](const T &value) {
     std::cout << value << " ";
   });
@@ -667,9 +768,19 @@ void rbtree<T, Compare>::in_order() {
 }
 
 template<class T, class Compare>
+void rbtree<T, Compare>::_post_order(rbtree_node<T> *p, stl::vector<T> &v) {
+  if (p == nil || p == nullptr) {
+    return ;
+  }
+  _post_order(p->left, v);
+  _post_order(p->right, v);
+  v.push_back(p->value);
+}
+
+template<class T, class Compare>
 void rbtree<T, Compare>::post_order() {
   stl::vector<T> v;
-  rb_post_order(_root, v);
+  _post_order(_root, v);
   v.for_each(v.begin(), v.end(), [](const T &value) {
     std::cout << value << " ";
   });
@@ -678,8 +789,25 @@ void rbtree<T, Compare>::post_order() {
 
 template<class T, class Compare>
 void rbtree<T, Compare>::level_order() {
+  rbtree_node<T> *p = _root;
   stl::vector<T> v;
-  rb_level_order(_root, v);
+  if (p == nullptr || p == nil) {
+    return;
+  }
+  stl::queue<rbtree_node<T> *> q;
+  q.push(p);
+  while (!q.empty()) {
+    p = q.front();
+    q.pop();
+    T val = p->value;
+    v.push_back(val);
+    if (p->left != nil) {
+      q.push(p->left);
+    }
+    if (p->right != nil) {
+      q.push(p->right);
+    }
+  }
   v.for_each(v.begin(), v.end(), [](const T &value) {
     std::cout << value << " ";
   });
@@ -687,50 +815,35 @@ void rbtree<T, Compare>::level_order() {
 }
 
 template<class T, class Compare>
-void rbtree<T, Compare>::print() {
-  rb_print<T>(_root);
-}
-
-/**
- * Node operation
- */
-
-template<class T>
-void rb_rotate_left(rbtree_node<T> *p, rbtree<T> *t) {
-  rbtree_node<T> *const y = p->right;
-  p->right = y->left;
-  if (y->left != nullptr) {
-    y->left->parent = p;
+void rbtree<T, Compare>::print(rbtree_node<T> *p, int prefix) {
+  char prefix_str[prefix];
+  for (int i = 0; i < prefix; i++) {
+    prefix_str[i] = ' ';
   }
-  y->parent = p->parent;
-  if (p == t->_root) {
-    t->_root = y;
+  prefix_str[prefix] = '\0';
+  if (p == nil) {
+    return;
+  }
+  std::cout << prefix_str;
+  if (p == _root) {
+    std::cout << "--";
   } else if (p == p->parent->left) {
-    p->parent->left = y;
-  } else {
-    p->parent->right = y;
+    std::cout << "->";
+  } else if (p == p->parent->right) {
+    std::cout << "=>";
   }
-  y->left = p;
-  p->parent = y;
+  if (p->color == RB_RED) {
+    std::cout << "\033[31m" << p->value << "\033[0m\n";
+  } else {
+    std::cout << "\033[0m" << p->value << "\033[0m\n";
+  }
+  print(p->left, prefix + 2);
+  print(p->right, prefix + 2);
 }
 
-template<class T>
-void rb_rotate_right(rbtree_node<T> *p, rbtree<T> *t) {
-  rbtree_node<T> *const y = p->left;
-  p->left = y->right;
-  if (y->right != nullptr) {
-    y->right->parent = p;
-  }
-  y->parent = p->parent;
-  if (p == t->_root) {
-    t->_root = y;
-  } else if (p == p->parent->right) {
-    p->parent->right = y;
-  } else {
-    p->parent->left = y;
-  }
-  y->right = p;
-  p->parent = y;
+template<class T, class Compare>
+void rbtree<T, Compare>::print() {
+  print(_root, 0);
 }
 
 /**

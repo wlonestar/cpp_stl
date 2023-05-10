@@ -44,15 +44,35 @@ TEST(tree_test, node_traverses) {
   ret.assign({4, 2, 6, 1, 3, 5, 7});
   EXPECT_EQ(v, ret);
   v.clear();
+  stl::rb_print(n);
   Log("==> pass!");
 }
 
 TEST(tree_test, tree_insert) {
   Log("==> test tree insert...");
-
   stl::rbtree<int> t;
-  t.insert(1);
+  for (int i = 0; i < 18; i++) {
+    t.insert(i);
+  }
   t.print();
+  Log("==> pass!");
+}
 
+TEST(tree_test, tree_traverse) {
+  Log("==> test tree insert...");
+  stl::rbtree<int> t;
+  t.pre_order();
+  t.in_order();
+  t.post_order();
+  t.level_order();
+  for (int i = 1; i <= 7; i++) {
+    t.insert(i);
+  }
+  t.print();
+  EXPECT_EQ(t.size(), 7);
+  t.pre_order();
+  t.in_order();
+  t.post_order();
+  t.level_order();
   Log("==> pass!");
 }

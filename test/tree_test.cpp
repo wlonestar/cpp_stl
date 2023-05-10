@@ -126,17 +126,18 @@ TEST(tree_test, rb_node_traverse) {
 
 TEST(tree_test, tree_test_insert) {
   stl::rbtree<int> t;
-  for (int i = 5; i >= 1; i--) {
-    t.insert(i);
-  }
-  t.pre_order();
+  t.insert(15);
+  t.insert(5);
+  t.insert(1);
+
+//  t.pre_order();
   t.in_order();
-  t.post_order();
-  t.level_order();
+//  t.post_order();
+//  t.level_order();
   t.print();
 }
 
-TEST(tree_test, tree_test_find) {
+TEST(tree_test, tree_test_iterator) {
   stl::rbtree<int> t;
   t.insert(4);
   t.insert(2);
@@ -145,16 +146,13 @@ TEST(tree_test, tree_test_find) {
   t.insert(3);
   t.insert(5);
   t.insert(7);
-  t.print();
+//  t.print();
   t.in_order();
-//  for (int i = 0; i <= 7; i++) {
-//    auto p = t.find(i);
-//    if (p != nullptr) {
-//      std::cout << p->value << "\n";
-//    } else {
-//      std::cout << "not exists\n";
-//    }
-//  }
+  for (stl::rbtree<int>::iterator it = t.begin(), it_end = t.end(); it != it_end; ++it) {
+    std::cout << *it << " ";
+  }
+  std::cout << "\n";
   t.erase(t.root());
-  t.print();
+  t.in_order();
+//  t.print();
 }

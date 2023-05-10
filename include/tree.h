@@ -54,10 +54,10 @@ public:
  * rbtree node base functions
  */
 
-rb_node_base *rb_increment(const rb_node_base *p);
-rb_node_base *rb_decrement(const rb_node_base *p);
 rb_node_base *rb_min_child(const rb_node_base *p);
 rb_node_base *rb_max_child(const rb_node_base *p);
+rb_node_base *rb_increment(const rb_node_base *p);
+rb_node_base *rb_decrement(const rb_node_base *p);
 std::size_t rb_black_count(const rb_node_base *top, const rb_node_base *bottom);
 rb_node_base *rb_rotate_left(rb_node_base *p, rb_node_base *root);
 rb_node_base *rb_rotate_right(rb_node_base *p, rb_node_base *root);
@@ -92,7 +92,8 @@ public:
 public:
   rbtree_node();
   rbtree_node(const T &val, rbtree_node<T> *parent = nullptr,
-              rbtree_node<T> *left = nullptr, rbtree_node<T> *right = nullptr);
+              rbtree_node<T> *left = nullptr, rbtree_node<T> *right = nullptr,
+              rb_color color = RB_RED);
 
   rbtree_node<T> *insert(const T &val, rb_side side);
   rbtree_node<T> *attach(rbtree_node<T> *p, rb_side side);
@@ -163,6 +164,12 @@ public:
   }
 };
 
+template<class T, class Pointer, class Reference>
+constexpr bool operator==(const rbtree_iterator<T, Pointer, Reference> &lhs,
+                          const rbtree_iterator<T, Pointer, Reference> &rhs) {
+  return lhs.node == rhs.node;
+}
+
 /**
  * rbtree
  */
@@ -198,6 +205,9 @@ public:
 
   typedef rbtree<T, Compare> this_type;
 
+private:
+  node_type *nil;
+
 public:
   node_type *_root;
   size_type _size;
@@ -227,21 +237,25 @@ public:
    * Iterators
    */
 
-  iterator begin() noexcept;
-  const_iterator begin() const noexcept;
-  const_iterator cbegin() const noexcept;
+  iterator begin() noexcept {
+    return iterator(static_cast<node_type *>(rb_min_child(_root)));
+  }
+  const_iterator begin() const noexcept {
+    return const_iterator(static_cast<node_type *>(rb_min_child(_root)));
+  }
+  const_iterator cbegin() const noexcept {
+    return constiterator(static_cast<node_type *>(rb_min_child(_root)));
+  }
 
-  iterator end() noexcept;
-  const_iterator end() const noexcept;
-  const_iterator cend() const noexcept;
-
-  reverse_iterator rbegin() noexcept;
-  const_reverse_iterator rbegin() const noexcept;
-  const_reverse_iterator crbegin() const noexcept;
-
-  reverse_iterator rend() noexcept;
-  const_reverse_iterator rend() const noexcept;
-  const_reverse_iterator crend() const noexcept;
+  iterator end() noexcept {
+    return iterator(static_cast<node_type *>(rb_max_child(_root)->right));
+  }
+  const_iterator end() const noexcept {
+    return const_iterator(static_cast<node_type *>(rb_max_child(_root)->right));
+  }
+  const_iterator cend() const noexcept {
+    return const_iterator(static_cast<node_type *>(rb_max_child(_root)->right));
+  }
 
   /**
    * Capacity
@@ -280,6 +294,20 @@ public:
  * rbtree node base functions
  */
 
+rb_node_base *rb_min_child(const rb_node_base *p) {
+  while (p->left != nullptr) {
+    p = p->left;
+  }
+  return const_cast<rb_node_base *>(p);
+}
+
+rb_node_base *rb_max_child(const rb_node_base *p) {
+  while (p->right != nullptr) {
+    p = p->right;
+  }
+  return const_cast<rb_node_base *>(p);
+}
+
 rb_node_base *rb_increment(const rb_node_base *p) {
   if (p->right != nullptr) {
     return rb_min_child(p->right);
@@ -304,20 +332,6 @@ rb_node_base *rb_decrement(const rb_node_base *p) {
   return tmp;
 }
 
-rb_node_base *rb_min_child(const rb_node_base *p) {
-  while (p->left != nullptr) {
-    p = p->left;
-  }
-  return const_cast<rb_node_base *>(p);
-}
-
-rb_node_base *rb_max_child(const rb_node_base *p) {
-  while (p->right != nullptr) {
-    p = p->right;
-  }
-  return const_cast<rb_node_base *>(p);
-}
-
 std::size_t rb_black_count(const rb_node_base *top, const rb_node_base *bottom) {
   size_t count = 0;
   for (; bottom; bottom = bottom->parent) {
@@ -332,7 +346,7 @@ std::size_t rb_black_count(const rb_node_base *top, const rb_node_base *bottom) 
 }
 
 rb_node_base *rb_rotate_left(rb_node_base *p, rb_node_base *root) {
-  rb_node_base *y = p->right;
+  rb_node_base *const y = p->right;
   p->right = y->left;
   if (y->left != nullptr) {
     y->left->parent = p;
@@ -351,7 +365,7 @@ rb_node_base *rb_rotate_left(rb_node_base *p, rb_node_base *root) {
 }
 
 rb_node_base *rb_rotate_right(rb_node_base *p, rb_node_base *root) {
-  rb_node_base *y = p->left;
+  rb_node_base *const y = p->left;
   p->left = y->right;
   if (y->right != nullptr) {
     y->right->parent = p;
@@ -499,12 +513,13 @@ void rb_print(rb_node_base *p) {
  */
 
 template<class T>
-rbtree_node<T>::rbtree_node() : rb_node_base() {}
+rbtree_node<T>::rbtree_node()
+    : rb_node_base(nullptr, nullptr, nullptr, RB_RED) {}
 
 template<class T>
 rbtree_node<T>::rbtree_node(const T &val, rbtree_node<T> *parent,
-                            rbtree_node<T> *left, rbtree_node<T> *right)
-    : value(val), rb_node_base(parent, left, right) {}
+                            rbtree_node<T> *left, rbtree_node<T> *right, rb_color color)
+    : value(val), rb_node_base(parent, left, right, color) {}
 
 template<class T>
 rbtree_node<T> *rbtree_node<T>::insert(const T &val, rb_side side) {
@@ -543,7 +558,13 @@ void rbtree_node<T>::print() {
  */
 
 template<class T, class Compare>
-rbtree<T, Compare>::rbtree() : _root(), _size(0), comp(Compare()) {}
+rbtree<T, Compare>::rbtree() : _root(), _size(0), comp(Compare()) {
+  nil->parent = nullptr;
+  nil->left = nullptr;
+  nil->right = nullptr;
+  nil->color = RB_BLACK;
+  _root = nil;
+}
 
 template<class T, class Compare>
 rbtree<T, Compare>::rbtree(const Compare &compare)
@@ -561,9 +582,9 @@ rbtree<T, Compare>::rbtree(rbtree::this_type &&x)
 
 template<class T, class Compare>
 rbtree<T, Compare>::~rbtree() {
-  if (_size > 0) {
-    erase(_root);
-  }
+//  if (_size > 0) {
+//    erase(_root);
+//  }
 }
 
 /**
@@ -574,12 +595,54 @@ template<class T, class Compare>
 void rbtree<T, Compare>::clear() noexcept {
 }
 
+// TODO
+static void insert_fixup(rb_node_base *p, rb_node_base *root) {
+  // case 0: root is null
+  if (p == root) {
+    p->color = RB_BLACK;
+    return;
+  }
+  while (p->parent->color == RB_RED) {
+    rb_node_base *y;
+    if (p->parent == p->parent->parent->left) {
+      y = p->parent->parent->right;
+      if (y->color == RB_RED) {
+        p->parent->color = RB_BLACK;
+        y->color = RB_BLACK;
+        p->parent->parent->color = RB_RED;
+        p = p->parent->parent;
+      } else if (p == p->parent->right) {
+        p = p->parent;
+        rb_rotate_left(p, root);
+      }
+      p->parent->color = RB_BLACK;
+      p->parent->parent->color = RB_RED;
+      rb_rotate_right(p->parent->parent, root);
+    } else {
+      y = p->parent->parent->left;
+      if (y->color == RB_RED) {
+        p->parent->color = RB_BLACK;
+        y->color = RB_BLACK;
+        p->parent->parent->color = RB_RED;
+        p = p->parent->parent;
+      } else if (p == p->parent->left) {
+        p = p->parent;
+        rb_rotate_right(p, root);
+      }
+      p->parent->color = RB_BLACK;
+      p->parent->parent->color = RB_RED;
+      rb_rotate_left(p->parent->parent, root);
+    }
+  }
+  root->color = RB_BLACK;
+}
+
 template<class T, class Compare>
 rbtree<T, Compare>::node_type *rbtree<T, Compare>::insert(const value_type &value) {
   node_type *p = new rbtree_node<T>(value);
-  node_type *y = nullptr;
+  node_type *y = nil;
   node_type *x = _root;
-  while (x != nullptr) {
+  while (x != nil) {
     y = x;
     if (comp(value, x->value)) {
       x = static_cast<rbtree_node<T> *>(x->left);
@@ -588,7 +651,7 @@ rbtree<T, Compare>::node_type *rbtree<T, Compare>::insert(const value_type &valu
     }
   }
   p->parent = static_cast<rbtree_node<T> *>(y);
-  if (y == nullptr) {
+  if (y == nil) {
     _root = p;
   } else if (comp(value, y->value)) {
     y->left = p;
@@ -596,9 +659,16 @@ rbtree<T, Compare>::node_type *rbtree<T, Compare>::insert(const value_type &valu
     y->right = p;
   }
   _size++;
+  p->left = nil;
+  p->right = nil;
+  p->color = RB_RED;
+  insert_fixup(p, _root);
   return p;
 }
 
+/**
+ * in rbtree @t, using subtree @v to replace subtree @u
+ */
 template<class T>
 static void transplant(rbtree<T> *t, rb_node_base *u, rb_node_base *v) {
   if (u->parent == nullptr) {

@@ -58,6 +58,20 @@ TEST(tree_test, tree_insert) {
   Log("==> pass!");
 }
 
+TEST(tree_test, tree_erase) {
+  Log("==> test tree erase...");
+  stl::rbtree<int> t;
+  for (int i = 0; i < 12; i++) {
+    t.insert(i);
+  }
+  t.print();
+  t.erase(t._root);
+  t.erase(t._root->left);
+  t.print();
+  t.in_order();
+  Log("==> pass!");
+}
+
 TEST(tree_test, tree_traverse) {
   Log("==> test tree insert...");
   stl::rbtree<int> t;

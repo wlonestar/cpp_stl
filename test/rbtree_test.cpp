@@ -2,7 +2,7 @@
 // Created by wjl on 2023/5/8.
 //
 
-#include "tree.h"
+#include "rbtree.h"
 #include <gtest/gtest.h>
 
 TEST(tree_test, tree_insert) {

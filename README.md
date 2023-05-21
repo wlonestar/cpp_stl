@@ -10,5 +10,6 @@
 
 - [x] queue
 
-- [ ] tree
+- [x] rbtree
 
+- [ ] hashtable

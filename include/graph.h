@@ -72,7 +72,7 @@ public:
   virtual Te remove(int, int) = 0;
 
   void bfs(int);
-  void dfs(int);
+  void dfs();
   void bcc(int);
   stack<Tv> *tsort(int);
   void prim(int);
@@ -101,7 +101,19 @@ void graph<Tv, Te>::_bfs(int, int &) {
 }
 
 template<class Tv, class Te>
-void graph<Tv, Te>::_dfs(int, int &) {
+void graph<Tv, Te>::_dfs(int u, int &time) {
+  time += 1;
+  d_time(u) = time;
+  color(u) = GRAY;
+  for (int v = 0; v < this->n; v++) {
+    if (exists(u, v) && color(v) == WHITE) {
+      parent(v) = u;
+      _dfs(v, time);
+    }
+  }
+  color(u) = BLACK;
+  time += 1;
+  f_time(u) = time;
 }
 
 template<class Tv, class Te>
@@ -141,7 +153,14 @@ void graph<Tv, Te>::bfs(int s) {
 }
 
 template<class Tv, class Te>
-void graph<Tv, Te>::dfs(int) {
+void graph<Tv, Te>::dfs() {
+  reset();
+  int time = 0;
+  for (int u = 0; u < this->n; u++) {
+    if (color(u) == WHITE) {
+      _dfs(u, time);
+    }
+  }
 }
 
 template<class Tv, class Te>
@@ -319,6 +338,17 @@ public:
     return back;
   }
 
+  void print_path(int s, int v) {
+    if (v == s) {
+      std::cout << s << " ";
+    } else if (parent(v) == -1) {
+      std::cout << "no path ";
+    } else {
+      print_path(s, parent(v));
+      std::cout << v << " ";
+    }
+  }
+
   void print() {
     std::cout << "graph(" << this->n << ", " << this->e << "): \n";
     std::cout << "vertex: \n";
@@ -362,20 +392,38 @@ void generate_graph(stl::graph_matrix<Tv, Te> &g, int n, int e) {
   }
 }
 
-void generate_example_graph(stl::graph_matrix<char, char> &g) {
-  for (int i = 0; i < 5; i++) {
+void generate_bfs_graph(stl::graph_matrix<char, int> &g) {
+  g.insert('S');
+  for (int i = 0; i < 7; i++) {
     g.insert('A' + i);
   }
-  g.insert('a', 1, 0, 1);
-  g.insert('b', 2, 0, 2);
-  g.insert('c', 3, 0, 3);
-  g.insert('d', 4, 0, 4);
-  g.insert('e', 3, 1, 3);
-  g.insert('f', 2, 2, 1);
-  g.insert('g', 1, 2, 4);
-  g.insert('h', 2, 3, 2);
-  g.insert('i', 3, 4, 1);
-  g.insert('j', 5, 4, 2);
+  g.insert(1, 1, 0, 1);
+  g.insert(2, 2, 0, 3);
+  g.insert(3, 3, 0, 4);
+  g.insert(4, 4, 1, 3);
+  g.insert(5, 3, 1, 5);
+  g.insert(6, 2, 3, 2);
+  g.insert(7, 1, 4, 2);
+  g.insert(8, 2, 5, 6);
+  g.insert(9, 3, 5, 7);
+  g.insert(10, 5, 7, 2);
+  g.insert(11, 5, 7, 6);
+}
+
+void generate_dfs_graph(stl::graph_matrix<char, int> &g) {
+  for (int i = 0; i < 7; i++) {
+    g.insert('A' + i);
+  }
+  g.insert(1, 1, 0, 1);
+  g.insert(2, 2, 0, 2);
+  g.insert(3, 3, 0, 5);
+  g.insert(4, 4, 1, 2);
+  g.insert(5, 3, 3, 0);
+  g.insert(6, 2, 3, 4);
+  g.insert(7, 1, 4, 5);
+  g.insert(8, 2, 5, 6);
+  g.insert(9, 3, 6, 0);
+  g.insert(10, 5, 6, 2);
 }
 
 #endif//CPP_STL_GRAPH_H

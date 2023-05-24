@@ -15,9 +15,20 @@ TEST(graph_test, graph_init) {
 
 TEST(graph_test, graph_bfs) {
   srand(time(NULL));
-  stl::graph_matrix<char, char> g;
-  generate_example_graph(g);
+  stl::graph_matrix<char, int> g;
+  generate_bfs_graph(g);
   g.print();
-  g.bfs(1);
+  g.bfs(0);
   g.print();
+  g.print_path(0, 7);
+}
+
+TEST(graph_test, graph_dfs) {
+  srand(time(NULL));
+  stl::graph_matrix<char, int> g;
+  generate_dfs_graph(g);
+  g.print();
+  g.dfs();
+  g.print();
+  g.print_path(0, 6);
 }

@@ -8,17 +8,17 @@
 #pragma once
 
 #include "queue.h"
-#include "stack.h"
+#include <stack>
 #include <climits>
 #include <vector>
 
 namespace stl {
 
 typedef enum {
-  WHITE,// white
-  GRAY, // gray
-  BLACK,// black
-} v_color;
+  UNDISCOVERED,// white
+  DISCOVERED,  // gray
+  VISITED,     // black
+} v_status;
 
 typedef enum {
   UNDETERMINED,
@@ -39,15 +39,15 @@ private:
 
   void _bfs(int, int &);
   void _dfs(int, int &);
-  void _bcc(int, int &, stack<int> &);
-  bool _tsort(int, int &, stack<Tv> *);
+  void _bcc(int, int &, std::stack<int> &);
+  bool _tsort(int, int &, std::stack<Tv> *);
   template<class Pu>
   void _pfs(int, Pu);
 
 public:
   int n;
 
-  virtual v_color &color(int) = 0;
+  virtual v_status &status(int) = 0;
   virtual Tv &vertex(int) = 0;
   virtual int in_degree(int) = 0;
   virtual int out_degree(int) = 0;
@@ -72,9 +72,9 @@ public:
   virtual Te remove(int, int) = 0;
 
   void bfs(int);
-  void dfs();
+  void dfs(int);
   void bcc(int);
-  stack<Tv> *tsort(int);
+  std::stack<Tv> *tsort(int);
   void prim(int);
   void dijkstra(int);
   template<class Pu>
@@ -84,7 +84,7 @@ public:
 template<class Tv, class Te>
 void graph<Tv, Te>::reset() {
   for (int i = 0; i < n; i++) {
-    color(i) = WHITE;
+    status(i) = UNDISCOVERED;
     d_time(i) = f_time(i) = -1;
     parent(i) = -1;
     prior(i) = INT_MAX;
@@ -97,32 +97,85 @@ void graph<Tv, Te>::reset() {
 }
 
 template<class Tv, class Te>
-void graph<Tv, Te>::_bfs(int, int &) {
+void graph<Tv, Te>::_bfs(int s, int &clock) {
+  queue<int> q;
+  status(s) = DISCOVERED;
+  q.push(s);
+  while (!q.empty()) {
+    int u = q.front();
+    q.pop();
+    d_time(u) = ++clock;
+    for (int v = 0; v < this->n; v++) {
+      if (exists(u, v)) {
+        if (status(v) == UNDISCOVERED) {
+          status(v) = DISCOVERED;
+          q.push(v);
+          type(u, v) = TREE;
+          parent(v) = u;
+        } else {
+          type(u, v) = CROSS;
+        }
+      }
+    }
+    status(u) = VISITED;
+  }
 }
 
 template<class Tv, class Te>
-void graph<Tv, Te>::_dfs(int u, int &time) {
-  time += 1;
-  d_time(u) = time;
-  color(u) = GRAY;
+void graph<Tv, Te>::_dfs(int u, int &clock) {
+  d_time(u) = ++clock;
+  status(u) = DISCOVERED;
   for (int v = 0; v < this->n; v++) {
-    if (exists(u, v) && color(v) == WHITE) {
-      parent(v) = u;
-      _dfs(v, time);
+    if (exists(u, v)) {
+      switch (status(v)) {
+        case UNDISCOVERED:
+          type(u, v) = TREE;
+          parent(v) = u;
+          _dfs(v, clock);
+          break;
+        case DISCOVERED:
+          type(u, v) = BACKWARD;
+          break;
+        default:
+          type(u, v) = (d_time(u) < d_time(v)) ? FORWARD : CROSS;
+          break;
+      }
     }
   }
-  color(u) = BLACK;
-  time += 1;
-  f_time(u) = time;
+  status(u) = VISITED;
+  f_time(u) = ++clock;
 }
 
 template<class Tv, class Te>
-void graph<Tv, Te>::_bcc(int, int &, stack<int> &) {
+void graph<Tv, Te>::_bcc(int, int &, std::stack<int> &) {
 }
 
 template<class Tv, class Te>
-bool graph<Tv, Te>::_tsort(int, int &, stack<Tv> *) {
-  return false;
+bool graph<Tv, Te>::_tsort(int u, int &clock, std::stack<Tv> *stk) {
+  d_time(u) = ++clock;
+  status(u) = DISCOVERED;
+  for (int v = 0; v < this->n; v++) {
+    if (exists(u, v)) {
+      switch (status(v)) {
+        case UNDISCOVERED:
+          parent(v) = u;
+          type(u, v) = TREE;
+          if (!_tsort(v, clock, stk)) {
+            return false;
+          }
+          break ;
+        case DISCOVERED:
+          type(u, v) = BACKWARD;
+          return false;
+        default:
+          type(u, v) = (d_time(u) < d_time(v)) ? FORWARD : CROSS;
+          break ;
+      }
+    }
+  }
+  status(u) = VISITED;
+  stk->push(vertex(u));
+  return true;
 }
 
 template<class Tv, class Te>
@@ -133,34 +186,25 @@ void graph<Tv, Te>::_pfs(int, Pu) {
 template<class Tv, class Te>
 void graph<Tv, Te>::bfs(int s) {
   reset();
-  color(s) = GRAY;
-  d_time(s) = 0;
-  queue<int> q;
-  q.push(s);
-  while (!q.empty()) {
-    int u = q.front();
-    q.pop();
-    for (int v = 0; v < this->n; v++) {
-      if (exists(u, v) && color(v) == WHITE) {
-        color(v) = GRAY;
-        d_time(v) = d_time(u) + 1;
-        parent(v) = u;
-        q.push(v);
-      }
+  int clock = 0;
+  int v = s;
+  do {
+    if (status(v) == UNDISCOVERED) {
+      _bfs(v, clock);
     }
-    color(u) = BLACK;
-  }
+  } while (s != (v = (++v % this->n)));
 }
 
 template<class Tv, class Te>
-void graph<Tv, Te>::dfs() {
+void graph<Tv, Te>::dfs(int s) {
   reset();
-  int time = 0;
-  for (int u = 0; u < this->n; u++) {
-    if (color(u) == WHITE) {
-      _dfs(u, time);
+  int clock = 0;
+  int v = s;
+  do {
+    if (status(v) == UNDISCOVERED) {
+      _dfs(v, clock);
     }
-  }
+  } while (s != (v = (++v % n)));
 }
 
 template<class Tv, class Te>
@@ -168,8 +212,22 @@ void graph<Tv, Te>::bcc(int) {
 }
 
 template<class Tv, class Te>
-stack<Tv> *graph<Tv, Te>::tsort(int) {
-  return nullptr;
+std::stack<Tv> *graph<Tv, Te>::tsort(int s) {
+  reset();
+  int clock = 0;
+  int v = s;
+  std::stack<Tv> *stk = new std::stack<Tv>;
+  do {
+    if (status(v) == UNDISCOVERED) {
+      if (!_tsort(v, clock, stk)) {
+        while (!stk->empty()) {
+          stk->pop();
+        }
+        break;
+      }
+    }
+  } while (s != (v = (++v % n)));
+  return stk;
 }
 
 template<class Tv, class Te>
@@ -190,14 +248,14 @@ struct _vertex {
   Tv data;
   int in_degree;
   int out_degree;
-  v_color color;
+  v_status status;
   int d_time;
   int f_time;
   int parent;
   int prior;
 
   _vertex(const Tv &d = (Tv) 0)
-      : data(d), in_degree(0), out_degree(0), color(WHITE),
+      : data(d), in_degree(0), out_degree(0), status(UNDISCOVERED),
         d_time(-1), f_time(-1), parent(-1), prior(INT_MAX) {}
 };
 
@@ -229,8 +287,8 @@ public:
     }
   }
 
-  v_color &color(int i) override {
-    return V[i].color;
+  v_status &status(int i) override {
+    return V[i].status;
   }
 
   Tv &vertex(int i) override {
@@ -252,7 +310,7 @@ public:
   int next_nbr(int i, int j) override {
     while ((j > -1) && !exists(i, --j))
       ;
-    return V[i].color;
+    return V[i].status;
   }
 
   int &d_time(int i) override {
@@ -294,7 +352,8 @@ public:
     Tv back = vertex(i);
     V.erase(V.begin() + i);
     for (int j = 0; j < this->n; j++) {
-      _edge<Te> *e = *(E[j].erase(E[j].begin() + i));
+      _edge<Te> *e = *(E[j].begin() + i);
+      E[j].erase(E[j].begin() + i);
       if (e != NULL) {
         this->e--;
         V[j].out_degree--;
@@ -330,6 +389,9 @@ public:
   }
 
   Te remove(int i, int j) override {
+    if (exists(i, j)) {
+      return NULL;
+    }
     Te back = edge(i, j);
     E[i][j] = NULL;
     this->e--;
@@ -424,6 +486,19 @@ void generate_dfs_graph(stl::graph_matrix<char, int> &g) {
   g.insert(8, 2, 5, 6);
   g.insert(9, 3, 6, 0);
   g.insert(10, 5, 6, 2);
+}
+
+void generate_tsort_graph(stl::graph_matrix<char, int> &g) {
+  for (int i = 0; i < 6; i++) {
+    g.insert('A' + i);
+  }
+  g.insert(1, 1, 0, 2);
+  g.insert(2, 1, 0, 3);
+  g.insert(3, 1, 1, 2);
+  g.insert(4, 1, 2, 3);
+  g.insert(5, 1, 2, 4);
+  g.insert(6, 1, 2, 5);
+  g.insert(7, 1, 4, 5);
 }
 
 #endif//CPP_STL_GRAPH_H

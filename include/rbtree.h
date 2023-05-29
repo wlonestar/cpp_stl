@@ -20,7 +20,7 @@
 namespace stl {
 
 /**
- * rbtree color type
+ * rbtree status type
  */
 enum rb_color {
   RB_RED,

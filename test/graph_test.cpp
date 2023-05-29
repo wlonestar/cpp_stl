@@ -28,7 +28,15 @@ TEST(graph_test, graph_dfs) {
   stl::graph_matrix<char, int> g;
   generate_dfs_graph(g);
   g.print();
-  g.dfs();
+  g.dfs(0);
   g.print();
   g.print_path(0, 6);
+}
+
+TEST(graph_test, graph_tsort) {
+  stl::graph_matrix<char, int> g;
+  generate_tsort_graph(g);
+  g.print();
+  std::stack<char> *stk = g.tsort(0);
+  g.print();
 }

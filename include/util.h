@@ -6,6 +6,7 @@
 #define CPP_STL_UTIL_H
 
 #include <cstdio>
+#include <algorithm>
 
 namespace stl {
 

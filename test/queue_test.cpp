@@ -2,8 +2,8 @@
 // Created by wjl on 2023/4/25.
 //
 
-#include <gtest/gtest.h>
 #include "queue.h"
+#include <gtest/gtest.h>
 
 TEST(test_queue, test_queue_init) {
   Log("==> test queue constructor");
@@ -65,10 +65,9 @@ TEST(test_queue, test_queue_emplace) {
     Point2d() = default;
     Point2d(int x, int y) : x(x), y(y) {}
   };
-  stl::queue<Point2d> s({
-    {1, 1},
-    {2, 2},
-    {3, 3}});
+  stl::queue<Point2d> s({{1, 1},
+                         {2, 2},
+                         {3, 3}});
   auto p = s.emplace(5, 5);
   EXPECT_EQ(p.x, 5);
   EXPECT_EQ(p.y, 5);

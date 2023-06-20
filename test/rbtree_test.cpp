@@ -6,7 +6,7 @@
 #include <gtest/gtest.h>
 
 TEST(tree_test, tree_insert) {
-  Log("==> test tree insert...");
+  Log("==> test tree insert()");
   stl::rbtree<int> t1;
   for (int i = 0; i < 18; i++) {
     t1.insert(i);
@@ -22,7 +22,7 @@ TEST(tree_test, tree_insert) {
 }
 
 TEST(tree_test, tree_erase) {
-  Log("==> test tree erase...");
+  Log("==> test tree erase()");
   stl::rbtree<int> t;
   for (int i = 0; i < 12; i++) {
     t.insert(i);
@@ -48,7 +48,7 @@ TEST(tree_test, tree_erase) {
 }
 
 TEST(tree_test, tree_traverse) {
-  Log("==> test tree insert...");
+  Log("==> test tree insert()");
   stl::rbtree<int> t;
   t.pre_order();
   t.in_order();

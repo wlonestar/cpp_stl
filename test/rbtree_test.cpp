@@ -17,13 +17,21 @@ TEST(tree_test, tree_insert) {
     t2.insert(i);
   }
   t2.print();
-  t2.in_order();
+
+  stl::vector<int> v;
+  t2.in_order(v);
+  v.for_each(v.begin(), v.end(), [](const int &value) {
+    std::cout << value << " ";
+  });
+  std::cout << "\n";
+
   Log("==> pass!");
 }
 
 TEST(tree_test, tree_erase) {
   Log("==> test tree erase()");
   stl::rbtree<int> t;
+  stl::vector<int> v;
   for (int i = 0; i < 12; i++) {
     t.insert(i);
   }
@@ -31,37 +39,62 @@ TEST(tree_test, tree_erase) {
   t.erase(t._root);
   t.erase(t._root->left);
   t.print();
-  t.in_order();
+
   t.erase(0);
-  t.in_order();
   t.erase(12);
-  t.in_order();
   t.clear();
   EXPECT_EQ(t.size(), 0);
   for (int i = 0; i < 12; i++) {
     t.insert(i);
   }
-  t.in_order();
   t.insert(1);
-  t.in_order();
+  t.in_order(v);
+  v.for_each(v.begin(), v.end(), [](const int &value) {
+    std::cout << value << " ";
+  });
+  std::cout << "\n";
   Log("==> pass!");
 }
 
 TEST(tree_test, tree_traverse) {
   Log("==> test tree insert()");
   stl::rbtree<int> t;
-  t.pre_order();
-  t.in_order();
-  t.post_order();
-  t.level_order();
+  stl::vector<int> v;
+
   for (int i = 1; i <= 7; i++) {
     t.insert(i);
   }
   t.print();
+
   EXPECT_EQ(t.size(), 7);
-  t.pre_order();
-  t.in_order();
-  t.post_order();
-  t.level_order();
+
+  t.pre_order(v);
+  v.for_each(v.begin(), v.end(), [](const int &value) {
+    std::cout << value << " ";
+  });
+  std::cout << "\n";
+  v.clear();
+
+  t.in_order(v);
+  v.for_each(v.begin(), v.end(), [](const int &value) {
+    std::cout << value << " ";
+  });
+  std::cout << "\n";
+  v.clear();
+
+  t.post_order(v);
+  v.for_each(v.begin(), v.end(), [](const int &value) {
+    std::cout << value << " ";
+  });
+  std::cout << "\n";
+  v.clear();
+
+  t.level_order(v);
+  v.for_each(v.begin(), v.end(), [](const int &value) {
+    std::cout << value << " ";
+  });
+  std::cout << "\n";
+  v.clear();
+
   Log("==> pass!");
 }

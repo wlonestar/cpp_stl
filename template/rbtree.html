@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>rbtree</title>
+  <style>
+    #contextMenu {
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div id="diagram-div" style="background-color: #fafafa; border: solid 1px black; width:800px; height:800px;">
+  </div>
+  <div style="margin-top: 20px;">
+    <!-- <button onclick="stepOver()">step over</button> -->
+  </div>
+  <div id="contextMenu"></div>
+
+  <script src="https://unpkg.com/gojs/release/go-debug.js"></script>
+  <script src="rbtree_data.js"></script>
+  
+  <script>
+  const $ = go.GraphObject.make
+  const diagram = $(go.Diagram, 'diagram-div', { 
+    "undoManager.isEnabled": true,
+    "toolManager.hoverDelay": 300,
+    layout: $(go.TreeLayout, { 
+      treeStyle: go.TreeLayout.StyleLayered,
+      layerStyle: go.TreeLayout.LayerIndividual,
+      angle: 90,
+      alignment: go.TreeLayout.AlignmentCenterChildren,
+      nodeSpacing: 50,
+      nodeIndent: 0,
+      nodeIndentPastParent: 0,
+      layerSpacing: 50,
+      layerSpacingParentOverlap: 0,
+      sorting: go.TreeLayout.SortingForwards,
+      compaction: go.TreeLayout.CompactionBlock,
+      breadthLimit: 0,
+      rowSpacing: 25,
+      rowIndent: 10,
+      setsPortSpot: true,
+      setsChildPortSpot: true,
+    })
+  })
+  
+  function diagramInfo(model) {
+    return "Model:\n" + model.nodeDataArray.length + " nodes, " + 
+                        model.linkDataArray.length + " links"
+  } 
+
+  diagram.toolTip = 
+    $('ToolTip', 
+      $(go.TextBlock, { margin: 4 }, new go.Binding('text', '', diagramInfo))
+    )
+  
+  diagram.nodeTemplate = 
+    $(go.Node, 'Spot',
+      new go.Binding('location', 'loc', go.Point.parse),
+      $(go.Panel, 'Auto',
+        $(go.Shape, 'RoundedRectangle',
+          { fill: null, strokeWidth: 2 },
+          new go.Binding('fill', 'color')),
+        $(go.TextBlock, { margin: 8, stroke: 'white' }, new go.Binding('text', 'key'))
+      ),
+    )
+
+  diagram.linkTemplate = 
+    $(go.Link,
+      $(go.Shape, { isPanelMain: true, stroke: 'transparent', strokeWidth: 8 }),
+      $(go.Shape, { isPanelMain: true, stroke: 'black', strokeWidth: 2 },
+        new go.Binding('strokeDashArray', '', function(link) {
+          return link.data.color === 'yellow' ? [4, 4] : [0, 0]
+        }).ofObject()
+      ),
+      $(go.Shape, { toArrow: 'OpenTriangle', fill: null }),
+      {
+        mouseEnter: (e, link) => link.elt(0).stroke = 'rgba(0, 90, 156, 0.3)',
+        mouseLeave: (e, link) => link.elt(0).stroke = 'transparent',
+      }
+    )
+
+  diagram.model.nodeDataArray = nodeDataArray
+  diagram.model.linkDataArray = linkDataArray
+
+  let index = 0
+
+  stepOver = () => {
+    // diagram.commit(d => {
+    //   index++
+    //   if (index >= states.length) {
+    //     index = 0
+    //   }
+    //   console.log(index)
+    //   diagram.model.setDataProperty(diagram.model, 'nodeDataArray', states[index].vertices)
+    //   diagram.model.setDataProperty(diagram.model, 'linkDataArray', states[index].edges)
+    // })
+  }
+
+  // var text = diagram.model.toJson()
+  // console.log(text)
+
+  // const modelJson = '{"class":"GraphLinksModel","nodeDataArray":[{"key":"Alpha","color":"lightblue"},{"key":"Beta","color":"orange"},{"key":"Gamma","color":"lightgreen"},{"key":"Delta","color":"pink"}],"linkDataArray":[{"from":"Alpha","to":"Beta"},{"from":"Alpha","to":"Gamma"},{"from":"Beta","to":"Beta"},{"from":"Gamma","to":"Delta"}]}'
+  // diagram.model = go.Model.fromJson(modelJson)
+  // var text = diagram.model.toJson()
+  // console.log(text)
+  </script>
+</body>
+</html>
+
+

@@ -9,12 +9,15 @@
 
 #include <initializer_list>
 #include <iostream>
+#include <string>
 #include <tuple>
 
-#include "queue.h"
-#include "stack.h"
-#include "util.h"
-#include "vector.h"
+#include <nlohmann/json.hpp>
+
+#include <queue.h>
+#include <stack.h>
+#include <util.h>
+#include <vector.h>
 
 namespace stl {
 
@@ -49,6 +52,45 @@ public:
               rbtree_node<T> *left = nullptr, rbtree_node<T> *right = nullptr,
               rb_color color = RB_RED)
       : value(val), parent(parent), left(left), right(right), color(color) {}
+
+  friend void to_json(nlohmann::json &j, const rbtree_node<T> &n) {
+    j["value"] = n.value;
+    j["key"] = n.value;
+
+    j["color"] = n.color == RB_BLACK ? "black" : "red";
+
+//    j["parent"] = (n.parent != nullptr) ? n.parent->value : -1;
+//    j["left"] = (n.left != nullptr) ? n.left->value : -1;
+//    j["right"] = (n.right != nullptr) ? n.right->value : -1;
+
+    if (n.parent != nullptr) {
+      j["parent"] = n.parent->value;
+    } else {
+      j["parent"] = "null";
+    }
+    if (n.left != nullptr) {
+      j["left"] = n.left->value;
+    } else {
+      j["left"] = "null";
+    }
+    if (n.right != nullptr) {
+      j["right"] = n.right->value;
+    } else {
+      j["right"] = "null";
+    }
+  }
+};
+
+template<class U>
+struct link {
+  U from;
+  U to;
+  link() = default;
+  link(U f, U t) : from(f), to(t) {}
+  friend void to_json(nlohmann::json &j, const link &t) {
+    j["from"] = t.from;
+    j["to"] = t.to;
+  }
 };
 
 /**
@@ -477,6 +519,48 @@ public:
 
   void print() {
     print(_root, 0);
+  }
+
+  friend void to_json(nlohmann::json &j, const rbtree<T> &t) {
+    // same as in order traverse, but need to get all nodes
+    stl::vector<rbtree_node<T>> nodes;
+    rbtree_node<T> *p = t._root;
+    stl::stack<rbtree_node<T> *> s;
+    while (true) {
+      while (p != t.nil && p != nullptr) {
+        s.push(p);
+        p = p->left;
+      }
+      if (s.empty()) {
+        break;
+      }
+      p = s.top();
+      s.pop();
+      nodes.push_back(*p);
+      p = p->right;
+    }
+
+    // loop all nodes, find all links between nodes
+    // if it has parent, add a link from parent to itself,
+    // if it has child, add a link from itself to its child
+    stl::vector<link<T>> links;
+    for (rbtree_node<T> &node: nodes) {
+      if (node.parent != nullptr) {
+        link<T> *l = new link(node.parent->value, node.value);
+        links.push_back(*l);
+      }
+      if (node.left != nullptr) {
+        link<T> *l = new link(node.value, node.left->value);
+        links.push_back(*l);
+      }
+      if (node.parent != nullptr) {
+        link<T> *l = new link(node.value, node.right->value);
+        links.push_back(*l);
+      }
+    }
+    j["n"] = t._size;
+    j["nodes"] = nodes;
+    j["links"] = links;
   }
 };
 

@@ -8,8 +8,8 @@
 #pragma once
 
 #include "queue.h"
-#include <stack>
 #include <climits>
+#include <stack>
 #include <vector>
 
 namespace stl {
@@ -163,13 +163,13 @@ bool graph<Tv, Te>::_tsort(int u, int &clock, std::stack<Tv> *stk) {
           if (!_tsort(v, clock, stk)) {
             return false;
           }
-          break ;
+          break;
         case DISCOVERED:
           type(u, v) = BACKWARD;
           return false;
         default:
           type(u, v) = (d_time(u) < d_time(v)) ? FORWARD : CROSS;
-          break ;
+          break;
       }
     }
   }

@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdio>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <random>
 
@@ -22,6 +24,7 @@ namespace stl {
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
+// [0, n)
 int random_int(int n) {
   std::random_device dev;
   std::mt19937 rng(dev());
@@ -29,6 +32,21 @@ int random_int(int n) {
   return dist(rng);
 }
 
+float random_data(float n) {
+  std::random_device dev;
+  std::mt19937 rng(dev());
+  std::uniform_real_distribution<float> dist(0, n);
+  return dist(rng);
+}
+
+double random_data(double n) {
+  std::random_device dev;
+  std::mt19937 rng(dev());
+  std::uniform_real_distribution<double> dist(0, n);
+  return dist(rng);
+}
+
+// [a, b]
 int random_int(int a, int b) {
   std::random_device dev;
   std::mt19937 rng(dev());
@@ -53,16 +71,24 @@ private:
   double _totalTime;
 
 public:
+  struct return_type {
+    size_t count;
+    double totalTime;
+    double averageTime;
+    return_type(size_t c, double t, double a) : count(c), totalTime(t), averageTime(a) {}
+  };
+
+public:
+  simple_timer(): _count(0), _totalTime(0) {}
+
   explicit simple_timer(size_t count) {
     _count = count;
     _totalTime = 0;
-    printf("start count %4zu times ==>\n", _count);
   }
 
   void reset(size_t count) {
     _count = count;
     _totalTime = 0;
-    printf("start count %4zu times ==>\n", _count);
   }
 
   void continu() {
@@ -74,14 +100,9 @@ public:
     _totalTime += std::chrono::duration<double, std::milli>(_end - _start).count();
   }
 
-  void stop() {
+  return_type stop() {
     double average = _totalTime / (double) _count;
-    printf("end count %4zu times ==> total = %.4f ms, average = %.4f ms\n", _count, _totalTime, average);
-  }
-
-  std::tuple<size_t, double, double> stop() const {
-    double average = _totalTime / (double) _count;
-    return {_count, _totalTime, average};
+    return { _count, _totalTime, average };
   }
 };
 

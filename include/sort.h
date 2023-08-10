@@ -7,70 +7,15 @@
 
 #pragma once
 
-#include "util.h"
-#include "vector.h"
+#include <util.h>
+#include <vector.h>
 
 namespace stl {
 
+namespace sort {
+
 /**
  * insertion sort
- */
-
-template<class T>
-void insertion_sort(vector<T> &v, int lo, int hi);
-
-template<class T>
-void insertion_sort(vector<T> &v);
-
-template<class T>
-void insertion_sort(T *v, int lo, int hi);
-
-template<class T>
-void insertion_sort(T *v, int size);
-
-/**
- * merge sort
- */
-
-template<class T>
-void merge_sort(vector<T> &v, int lo, int hi);
-
-template<class T>
-void merge_sort(vector<T> &v);
-
-template<class T>
-void merge_sort(T *v, int lo, int hi);
-
-template<class T>
-void merge_sort(T *v, int size);
-
-/**
- * heap sort
- */
-
-template<class T>
-void heap_sort(T *a, int n);
-
-/**
- * quick sort
- */
-
-template<class T>
-void quick_sort(vector<T> &v, int lo, int hi);
-
-template<class T>
-void quick_sort(vector<T> &v);
-
-template<class T>
-void quick_sort(T *a, int lo, int hi);
-
-template<class T>
-void quick_sort(T *a, int size);
-
-///////////////////////////////////////////////////////////
-
-/**
- * insertion sort implementation
  */
 
 template<class T>
@@ -111,7 +56,7 @@ void insertion_sort(T *v, int size) {
 }
 
 /**
- * merge sort implementation
+ * merge sort
  */
 
 template<class T>
@@ -201,7 +146,7 @@ void merge_sort(T *v, int size) {
 }
 
 /**
- * heap sort implementation
+ * heap sort
  */
 
 #define left(i) (2 * i + 1)
@@ -243,7 +188,7 @@ void heap_sort(T *a, int n) {
 }
 
 /**
- * quick sort implementation
+ * quick sort
  */
 
 template<class T>
@@ -300,6 +245,8 @@ void quick_sort(T *a, int lo, int hi) {
 template<class T>
 void quick_sort(T *a, int size) {
   quick_sort(a, 0, size);
+}
+
 }
 
 }// namespace stl

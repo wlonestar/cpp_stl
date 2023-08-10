@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "util.h"
-#include "vector.h"
+#include <util.h>
+#include <vector.h>
 
 namespace stl {
 
@@ -101,18 +101,28 @@ private:
   Compare comp;
 
 public:
-  priority_queue() : priority_queue(Compare(), Container()) {}
-  explicit priority_queue(const Compare &compare) : priority_queue(compare, Container()) {}
-  priority_queue(const Compare &compare, const Container &cont) : comp(compare), c(cont) {}
-  priority_queue(const Compare &compare, Container &&cont) : comp(compare), c(cont) {}
+  priority_queue()
+      : priority_queue(Compare(), Container()) {}
+
+  explicit priority_queue(const Compare &compare)
+      : priority_queue(compare, Container()) {}
+
+  priority_queue(const Compare &compare, const Container &cont)
+      : comp(compare), c(cont) {}
+
+  priority_queue(const Compare &compare, Container &&cont)
+      : comp(compare), c(cont) {}
+
   priority_queue(const priority_queue &other) {
     c = other.c;
     comp = other.comp;
   }
+
   priority_queue(priority_queue &&other) {
     c = std::move(other.c);
     comp = std::move(other.comp);
   }
+
   ~priority_queue() = default;
 
   priority_queue &operator=(const priority_queue &other) {
@@ -120,6 +130,7 @@ public:
     comp = other.comp;
     return *this;
   }
+
   priority_queue &operator=(priority_queue &&other) {
     c = std::move(other.c);
     comp = std::move(other.comp);
@@ -141,6 +152,7 @@ public:
   void push(const value_type &value) {
     max_heap_insert(c, value);
   }
+
   void push(value_type &&value) {
     max_heap_insert(c, std::move(value));
   }

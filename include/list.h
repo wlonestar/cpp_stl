@@ -12,7 +12,7 @@
 #include <iostream>
 #include <iterator>
 
-#include "util.h"
+#include <util.h>
 
 namespace stl {
 
@@ -471,6 +471,7 @@ public:
   reference front() {
     return _head->next->data;
   }
+
   const_reference front() const {
     return _head->next->data;
   }
@@ -484,6 +485,7 @@ public:
   reference back() {
     return _head->prev->data;
   }
+
   const_reference back() const {
     return _head->prev->data;
   }
@@ -501,9 +503,11 @@ public:
   iterator begin() noexcept {
     return iterator(_head->next);
   }
+
   const_iterator begin() const noexcept {
     return const_iterator(_head->next);
   }
+
   const_iterator cbegin() const noexcept {
     return const_iterator(_head->next);
   }
@@ -518,9 +522,11 @@ public:
   iterator end() noexcept {
     return iterator(_head);
   }
+
   const_iterator end() const noexcept {
     return const_iterator(_head);
   }
+
   const_iterator cend() const noexcept {
     return const_iterator(_head);
   }
@@ -535,9 +541,11 @@ public:
   reverse_iterator rbegin() noexcept {
     return reverse_iterator(end());
   }
+
   const_reverse_iterator rbegin() const noexcept {
     return const_reverse_iterator(end());
   }
+
   const_reverse_iterator crbegin() const noexcept {
     return const_reverse_iterator(cend());
   }
@@ -553,9 +561,11 @@ public:
   reverse_iterator rend() noexcept {
     return reverse_iterator(begin());
   }
+
   const_reverse_iterator rend() const noexcept {
     return const_reverse_iterator(begin());
   }
+
   const_reverse_iterator crend() const noexcept {
     return const_reverse_iterator(cbegin());
   }
@@ -615,6 +625,7 @@ public:
     _size++;
     return pos;
   }
+
   iterator insert(iterator pos, T &&value) {
     node *newp = new list_node<T>(std::move(value));
     newp->insert(pos._node->prev, pos._node);
@@ -769,6 +780,7 @@ public:
     newp->insert(_head, _head->next);
     _size++;
   }
+
   void push_front(T &&value) {
     auto newp = new list_node<T>(std::move(value));
     newp->insert(_head, _head->next);

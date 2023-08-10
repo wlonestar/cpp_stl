@@ -59,9 +59,9 @@ public:
 
     j["color"] = n.color == RB_BLACK ? "black" : "red";
 
-//    j["parent"] = (n.parent != nullptr) ? n.parent->value : -1;
-//    j["left"] = (n.left != nullptr) ? n.left->value : -1;
-//    j["right"] = (n.right != nullptr) ? n.right->value : -1;
+    //    j["parent"] = (n.parent != nullptr) ? n.parent->value : -1;
+    //    j["left"] = (n.left != nullptr) ? n.left->value : -1;
+    //    j["right"] = (n.right != nullptr) ? n.right->value : -1;
 
     if (n.parent != nullptr) {
       j["parent"] = n.parent->value;

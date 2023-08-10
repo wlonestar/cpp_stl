@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "list.h"
+#include <list.h>
 
 namespace stl {
 
@@ -119,6 +119,7 @@ public:
   reference top() {
     return c.back();
   }
+
   const_reference top() const {
     return c.back();
   }
@@ -157,6 +158,7 @@ public:
   void push(const value_type &value) {
     c.push_back(value);
   }
+
   void push(value_type &&value) {
     c.push_back(std::move(value));
   }

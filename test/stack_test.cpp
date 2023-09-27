@@ -6,9 +6,9 @@
 #define BOOST_TEST_MODULE stack_test
 #include <boost/test/included/unit_test.hpp>
 
-#include "stack.h"
+#include <stack.h>
 
-BOOST_AUTO_TEST_CASE(test_stack_init) {
+BOOST_AUTO_TEST_CASE(stack_init) {
   Log("==> test stack constructor");
   stl::stack<int> s1;
   s1.print();
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(test_stack_init) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_stack_assignment) {
+BOOST_AUTO_TEST_CASE(stack_assignment) {
   Log("==> test stack operator =");
   stl::stack<int> s1({1, 2, 3});
   s1.print();
@@ -33,14 +33,14 @@ BOOST_AUTO_TEST_CASE(test_stack_assignment) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_stack_top) {
+BOOST_AUTO_TEST_CASE(stack_top) {
   Log("==> test stack top()");
   stl::stack<int> s({1, 2, 3});
   BOOST_CHECK(s.top() == 3);
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_stack_capacity) {
+BOOST_AUTO_TEST_CASE(stack_capacity) {
   Log("==> test stack capacity");
   stl::stack<int> s({1, 2, 3});
   BOOST_CHECK(s.empty() == false);
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(test_stack_capacity) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_stack_push) {
+BOOST_AUTO_TEST_CASE(stack_push) {
   Log("==> test stack push()");
   stl::stack<int> s;
   BOOST_CHECK(s.empty() == true);
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(test_stack_push) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_stack_emplace) {
+BOOST_AUTO_TEST_CASE(stack_emplace) {
   Log("==> test stack emplace()");
   struct Point2d {
     int x, y;
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(test_stack_emplace) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_stack_pop) {
+BOOST_AUTO_TEST_CASE(stack_pop) {
   Log("==> test stack pop()");
   stl::stack<int> s({1, 2, 3});
   for (int i = 0; i < 3; i++) {
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(test_stack_pop) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_stack_swap) {
+BOOST_AUTO_TEST_CASE(stack_swap) {
   Log("==> test stack swap()");
   stl::stack<int> s1({1, 2, 3});
   stl::stack<int> s2({4, 5, 6});

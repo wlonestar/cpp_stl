@@ -6,7 +6,7 @@
 #define BOOST_TEST_MODULE btree_test
 #include <boost/test/included/unit_test.hpp>
 
-#include "btree.h"
+#include <btree.h>
 
 BOOST_AUTO_TEST_CASE(simple_btree_test) {
   stl::btree<int> t;

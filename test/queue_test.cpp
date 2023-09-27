@@ -6,9 +6,9 @@
 #define BOOST_TEST_MODULE queue_test
 #include <boost/test/included/unit_test.hpp>
 
-#include "queue.h"
+#include <queue.h>
 
-BOOST_AUTO_TEST_CASE(test_queue_init) {
+BOOST_AUTO_TEST_CASE(queue_init) {
   Log("==> test queue constructor");
   stl::queue<int> s1;
   s1.print();
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(test_queue_init) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_queue_assignment) {
+BOOST_AUTO_TEST_CASE(queue_assignment) {
   Log("==> test queue operator =");
   stl::queue<int> s1({1, 2, 3});
   s1.print();
@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(test_queue_assignment) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_queue_front_back) {
+BOOST_AUTO_TEST_CASE(queue_front_back) {
   Log("==> test queue front() and back()");
   stl::queue<int> s({1, 2, 3});
   BOOST_CHECK(s.front() == 1);
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(test_queue_front_back) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_queue_capacity) {
+BOOST_AUTO_TEST_CASE(queue_capacity) {
   Log("==> test queue capacity");
   stl::queue<int> s({1, 2, 3});
   BOOST_CHECK(s.empty() == false);
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(test_queue_capacity) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_queue_push) {
+BOOST_AUTO_TEST_CASE(queue_push) {
   Log("==> test queue push()");
   stl::queue<int> s;
   BOOST_CHECK(s.empty() == true);
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(test_queue_push) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_queue_emplace) {
+BOOST_AUTO_TEST_CASE(queue_emplace) {
   Log("==> test queue emplace()");
   struct Point2d {
     int x, y;
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(test_queue_emplace) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_queue_pop) {
+BOOST_AUTO_TEST_CASE(queue_pop) {
   Log("==> test queue pop()");
   stl::queue<int> s({1, 2, 3});
   for (int i = 0; i < 3; i++) {
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(test_queue_pop) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_queue_swap) {
+BOOST_AUTO_TEST_CASE(queue_swap) {
   Log("==> test queue swap()");
   stl::queue<int> s1({1, 2, 3});
   stl::queue<int> s2({4, 5, 6});

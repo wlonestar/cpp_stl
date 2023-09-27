@@ -6,7 +6,7 @@
 #define BOOST_TEST_MODULE sort_test
 #include <boost/test/included/unit_test.hpp>
 
-#include "sort.h"
+#include <sort.h>
 
 BOOST_AUTO_TEST_CASE(insertion_sort) {
   stl::vector<int> v{4, 5, 3, 6, 2, 1};

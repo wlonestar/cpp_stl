@@ -7,10 +7,11 @@
 
 #pragma once
 
-#include "queue.h"
 #include <climits>
 #include <stack>
 #include <vector>
+
+#include <queue.h>
 
 namespace stl {
 

@@ -6,9 +6,9 @@
 #define BOOST_TEST_MODULE list_test
 #include <boost/test/included/unit_test.hpp>
 
-#include "list.h"
+#include <list.h>
 
-BOOST_AUTO_TEST_CASE(test_list_init) {
+BOOST_AUTO_TEST_CASE(list_init) {
   Log("==> test list constructor");
   stl::list<int> l1;
   BOOST_CHECK(l1.empty() == true);
@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(test_list_init) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_operator_equal) {
+BOOST_AUTO_TEST_CASE(list_operator_equal) {
   Log("==> test list operator =");
   stl::list<int> l1{1, 2, 3};
   stl::list<int> l2 = l1;
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(test_list_operator_equal) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_assign) {
+BOOST_AUTO_TEST_CASE(list_assign) {
   Log("==> test list assign()");
   stl::list<int> l{1, 2, 3, 4, 5};
   l.assign(2, 3);
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(test_list_assign) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_front_back) {
+BOOST_AUTO_TEST_CASE(list_front_back) {
   Log("==> test list front() back()");
   stl::list<int> l{5, 3, 7};
   BOOST_CHECK(l.front() == 5);
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(test_list_front_back) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_iterator) {
+BOOST_AUTO_TEST_CASE(list_iterator) {
   Log("==> test list iterator");
   stl::list<int> l{1, 2, 3, 4, 5};
   int i = 1;
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(test_list_iterator) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_capacity) {
+BOOST_AUTO_TEST_CASE(list_capacity) {
   Log("==> test list capacity");
   stl::list<int> l;
   BOOST_CHECK(l.empty() == true);
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(test_list_capacity) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_clear) {
+BOOST_AUTO_TEST_CASE(list_clear) {
   Log("==> test list clear()");
   stl::list<int> l{3, 4, 5};
   BOOST_CHECK(l.size() == 3);
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(test_list_clear) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_insert) {
+BOOST_AUTO_TEST_CASE(list_insert) {
   Log("==> test list insert()");
   stl::list<int> l{2, 3, 4};
   BOOST_CHECK(l.front() == 2);
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(test_list_insert) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_emplace) {
+BOOST_AUTO_TEST_CASE(list_emplace) {
   Log("==> test list emplace()");
   struct Point2d {
     int x, y;
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(test_list_emplace) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_erase) {
+BOOST_AUTO_TEST_CASE(list_erase) {
   Log("==> test list erase()");
   stl::list<int> l{1, 3, 5, 7, 9};
   BOOST_CHECK(l.back() == 9);
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(test_list_erase) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_push_back) {
+BOOST_AUTO_TEST_CASE(list_push_back) {
   Log("==> test list push_back()");
   stl::list<int> l{1, 2, 3};
   for (int i = 0; i < 3; i++) {
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(test_list_push_back) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_emplace_back) {
+BOOST_AUTO_TEST_CASE(list_emplace_back) {
   Log("==> test list emplace_back()");
   struct Point2d {
     int x, y;
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(test_list_emplace_back) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_pop_back) {
+BOOST_AUTO_TEST_CASE(list_pop_back) {
   Log("==> test list pop_back()");
   stl::list<int> l{1, 2, 3};
   BOOST_CHECK(l.back() == 3);
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(test_list_pop_back) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_push_front) {
+BOOST_AUTO_TEST_CASE(list_push_front) {
   Log("==> test list push_front()");
   stl::list<int> l{1, 2, 3};
   for (int i = 1; i <= 3; i++) {
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(test_list_push_front) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_emplace_front) {
+BOOST_AUTO_TEST_CASE(list_emplace_front) {
   Log("==> test list emplace_front()");
   struct Point2d {
     int x, y;
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(test_list_emplace_front) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_pop_front) {
+BOOST_AUTO_TEST_CASE(list_pop_front) {
   Log("==> test list pop_front()");
   stl::list<int> l{1, 2, 3};
   BOOST_CHECK(l.front() == 1);
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE(test_list_pop_front) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_resize) {
+BOOST_AUTO_TEST_CASE(list_resize) {
   Log("==> test list resize()");
   stl::list<int> l{1, 2, 3};
   BOOST_CHECK(l.size() == 3);
@@ -277,7 +277,7 @@ BOOST_AUTO_TEST_CASE(test_list_resize) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_swap) {
+BOOST_AUTO_TEST_CASE(list_swap) {
   Log("==> test list swap()");
   stl::list<int> l1{1, 2, 3, 4, 5};
   stl::list<int> l2{6, 7, 8, 9};
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE(test_list_swap) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_merge) {
+BOOST_AUTO_TEST_CASE(list_merge) {
   Log("==> test list merge()");
   stl::list<int> l1{1, 3, 5, 7, 9};
   stl::list<int> l2{2, 4, 6, 8, 10};
@@ -329,7 +329,7 @@ BOOST_AUTO_TEST_CASE(test_list_merge) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_splice) {
+BOOST_AUTO_TEST_CASE(list_splice) {
   Log("==> test list splice()");
   stl::list<int> l1{1, 2, 3};
   stl::list<int> l2{4, 5, 6};
@@ -348,7 +348,7 @@ BOOST_AUTO_TEST_CASE(test_list_splice) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_remove) {
+BOOST_AUTO_TEST_CASE(list_remove) {
   Log("==> test list remove()");
   stl::list<int> l{1, 1, 4, 5, 1, 4};
   l.remove(1);
@@ -361,7 +361,7 @@ BOOST_AUTO_TEST_CASE(test_list_remove) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_reverse) {
+BOOST_AUTO_TEST_CASE(list_reverse) {
   Log("==> test list reverse()");
   stl::list<int> l{1, 1, 4, 5, 1, 4};
   BOOST_CHECK(l.front() == 1);
@@ -372,7 +372,7 @@ BOOST_AUTO_TEST_CASE(test_list_reverse) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_unique) {
+BOOST_AUTO_TEST_CASE(list_unique) {
   Log("==> test list unique()");
   stl::list<int> l{1, 1, 4, 5, 1, 4, 4, 7, 7, 7, 7, 8, 9};
   l.unique();
@@ -383,7 +383,7 @@ BOOST_AUTO_TEST_CASE(test_list_unique) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_sort) {
+BOOST_AUTO_TEST_CASE(list_sort) {
   Log("==> test list sort()");
   stl::list<int> l{4, 5, 3, 6, 2, 1};
   l.print();
@@ -422,7 +422,7 @@ BOOST_AUTO_TEST_CASE(test_erase_if) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_list_print) {
+BOOST_AUTO_TEST_CASE(list_print) {
   class Point3d {
   public:
     double x;

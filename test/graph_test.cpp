@@ -6,7 +6,7 @@
 #define BOOST_TEST_MODULE graph_test
 #include <boost/test/included/unit_test.hpp>
 
-#include "graph.h"
+#include <graph.h>
 
 BOOST_AUTO_TEST_CASE(graph_init) {
   srand(time(NULL));

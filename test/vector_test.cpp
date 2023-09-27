@@ -6,9 +6,9 @@
 #define BOOST_TEST_MODULE vector_test
 #include <boost/test/included/unit_test.hpp>
 
-#include "vector.h"
+#include <vector.h>
 
-BOOST_AUTO_TEST_CASE(test_vector_init) {
+BOOST_AUTO_TEST_CASE(vector_init) {
   Log("==> test vector constructor");
   stl::vector<int> v1;
   BOOST_CHECK(v1.empty() == true);
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(test_vector_init) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_operator_equal) {
+BOOST_AUTO_TEST_CASE(vector_operator_equal) {
   Log("==> test vector operator =");
   stl::vector<int> v1(5, 1);
   stl::vector<int> v2 = v1;
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(test_vector_operator_equal) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_assign) {
+BOOST_AUTO_TEST_CASE(vector_assign) {
   Log("==> test vector assign()");
   stl::vector<int> v1(5, 1);
   BOOST_CHECK(v1.size() == 5);
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(test_vector_assign) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_at) {
+BOOST_AUTO_TEST_CASE(vector_at) {
   Log("==> test vector at()");
   stl::vector<int> v1{1, 2, 3, 4, 5};
   v1.at(0) = 3;
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(test_vector_at) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_operator_pos) {
+BOOST_AUTO_TEST_CASE(vector_operator_pos) {
   Log("==> test vector operator []");
   stl::vector<int> numbers{2, 4, 6, 8};
   BOOST_CHECK(numbers[1] == 4);
@@ -76,21 +76,21 @@ BOOST_AUTO_TEST_CASE(test_vector_operator_pos) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_front) {
+BOOST_AUTO_TEST_CASE(vector_front) {
   Log("==> test vector front()");
   stl::vector<int> v{1, 2, 3, 4, 5};
   BOOST_CHECK(v.front() == 1);
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_back) {
+BOOST_AUTO_TEST_CASE(vector_back) {
   Log("==> test vector back()");
   stl::vector<int> v{1, 2, 3, 4, 5, 6, 7, 8, 9, 11};
   BOOST_CHECK(v.back() == 11);
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_data) {
+BOOST_AUTO_TEST_CASE(vector_data) {
   Log("==> test vector data()");
   stl::vector<int> container{1, 2, 3, 4};
   for (std::size_t i = 0; i < 4; i++) {
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(test_vector_data) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_iterator) {
+BOOST_AUTO_TEST_CASE(vector_iterator) {
   Log("==> test vector iterator");
   stl::vector<int> nums{1, 2, 3, 4, 5, 6};
   BOOST_CHECK(*nums.begin() == 1);
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(test_vector_iterator) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_empty) {
+BOOST_AUTO_TEST_CASE(vector_empty) {
   Log("==> test vector empty()");
   stl::vector<int> v;
   BOOST_CHECK(v.empty() == true);
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(test_vector_empty) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_reserve) {
+BOOST_AUTO_TEST_CASE(vector_reserve) {
   Log("==> test vector reserve()");
   stl::vector<int> v{1, 2, 3, 4};
   v.reserve(4);
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(test_vector_reserve) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_capacity) {
+BOOST_AUTO_TEST_CASE(vector_capacity) {
   Log("==> test vector capacity()");
   stl::vector<int> v{1, 2, 3};
   BOOST_CHECK(v.capacity() == 5);
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(test_vector_capacity) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_shrink_to_fit) {
+BOOST_AUTO_TEST_CASE(vector_shrink_to_fit) {
   Log("==> test vector shrink_to_fit()");
   stl::vector<int> v{1, 2, 3, 4, 5, 6, 7};
   v.reserve(100);
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(test_vector_shrink_to_fit) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_clear) {
+BOOST_AUTO_TEST_CASE(vector_clear) {
   Log("==> test vector clear()");
   stl::vector<int> v{1, 2, 3};
   BOOST_CHECK(v.size() == 3);
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(test_vector_clear) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_insert) {
+BOOST_AUTO_TEST_CASE(vector_insert) {
   Log("==> test vector insert()");
   stl::vector<int> v1{1, 2, 3, 4};
   int a = 5;
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(test_vector_insert) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_emplace) {
+BOOST_AUTO_TEST_CASE(vector_emplace) {
   Log("==> test vector emplace()");
   stl::vector<int> v{1, 2, 3};
   v.emplace(v.end(), 5);
@@ -217,7 +217,7 @@ BOOST_AUTO_TEST_CASE(test_vector_emplace) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_erase) {
+BOOST_AUTO_TEST_CASE(vector_erase) {
   Log("==> test vector erase()");
   stl::vector<int> c{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
   BOOST_CHECK(c.size() == 10);
@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE(test_vector_erase) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_push_back) {
+BOOST_AUTO_TEST_CASE(vector_push_back) {
   Log("==> test vector push_back()");
   stl::vector<std::string> letters;
   std::string a = "abc";
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(test_vector_push_back) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_emplace_back) {
+BOOST_AUTO_TEST_CASE(vector_emplace_back) {
   Log("==> test vector emplace_back()");
   struct Point {
     int x;
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(test_vector_emplace_back) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_pop_back) {
+BOOST_AUTO_TEST_CASE(vector_pop_back) {
   Log("==> test vector pop_back()");
   stl::vector<int> v{3, 2, 1};
   BOOST_CHECK(v.size() == 3);
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE(test_vector_pop_back) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_resize) {
+BOOST_AUTO_TEST_CASE(vector_resize) {
   Log("==> test vector resize()");
   stl::vector<int> v = {1, 2, 3};
   v.resize(5);
@@ -308,7 +308,7 @@ BOOST_AUTO_TEST_CASE(test_vector_resize) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_swap) {
+BOOST_AUTO_TEST_CASE(vector_swap) {
   Log("==> test vector swap()");
   stl::vector<int> a1{1, 2, 3}, a2{4, 5};
   auto it1 = a1.begin() + 1;
@@ -358,7 +358,7 @@ BOOST_AUTO_TEST_CASE(test_erase_if) {
   Log("==> pass!");
 }
 
-BOOST_AUTO_TEST_CASE(test_vector_print) {
+BOOST_AUTO_TEST_CASE(vector_print) {
   class Point3d {
   public:
     double x;

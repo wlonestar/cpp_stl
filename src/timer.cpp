@@ -2,12 +2,12 @@
 // Created by wjl on 2023/8/10.
 //
 
-#include <sort.h>
 #include <iostream>
+#include <sort.h>
 
 template<class T>
 bool exists(stl::vector<T> &v, T val) {
-  for (T &item : v) {
+  for (T &item: v) {
     if (item == val) {
       return true;
     }
@@ -28,14 +28,14 @@ void random_vector(stl::vector<T> &v, int size) {
 template<class T>
 void common_test(int times, void (*sort)(stl::vector<T> &v), stl::vector<int> test_range, const char *name) {
   stl::simple_timer timer;
-  for (int &range : test_range) {
+  for (int &range: test_range) {
     timer.reset(times);
     stl::vector<T> v;
     random_vector(v, range);
     timer.continu();
     sort(v);
     timer.pause();
-    auto [count, total,  avg] = timer.stop();
+    auto [count, total, avg] = timer.stop();
     printf("[%s]: %8d %s elements, %4ld times, total time: %15.8fms, average time: %15.8fms.\n",
            name, range, typeid(T).name(), count, total, avg);
   }
@@ -56,5 +56,4 @@ int main() {
   common_test<int>(times, stl::sort::quick_sort, range, " quick sort");
   common_test<float>(times, stl::sort::quick_sort, range, " quick sort");
   common_test<double>(times, stl::sort::quick_sort, range, " quick sort");
-
 }

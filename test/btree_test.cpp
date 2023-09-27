@@ -2,10 +2,13 @@
 // Created by wjl on 2023/5/21.
 //
 
-#include "btree.h"
-#include <gtest/gtest.h>
+#define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MODULE btree_test
+#include <boost/test/included/unit_test.hpp>
 
-TEST(btree_test, btree_init) {
+#include "btree.h"
+
+BOOST_AUTO_TEST_CASE(simple_btree_test) {
   stl::btree<int> t;
   for (int i = 0; i < 10; i++) {
     t.insert(i);

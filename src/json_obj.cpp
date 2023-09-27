@@ -8,8 +8,9 @@ private:
   std::string name;
   std::string address;
   int age;
+
 public:
-  person(std::string n, std::string addr, int a): name(n), address(addr), age(a) {}
+  person(std::string n, std::string addr, int a) : name(n), address(addr), age(a) {}
 
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(person, name, address, age)
 };
@@ -29,7 +30,6 @@ struct node {
       j["next"] = -1;
     }
   }
-
 };
 
 //template<class T>
@@ -61,7 +61,6 @@ public:
     j["data"] = v;
     j["size"] = t.size;
   }
-
 };
 
 int main() {

@@ -247,7 +247,7 @@ void quick_sort(T *a, int size) {
   quick_sort(a, 0, size);
 }
 
-}
+}// namespace sort
 
 }// namespace stl
 

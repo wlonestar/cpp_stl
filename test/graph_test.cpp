@@ -2,10 +2,13 @@
 // Created by wjl on 2023/5/22.
 //
 
-#include "graph.h"
-#include <gtest/gtest.h>
+#define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MODULE graph_test
+#include <boost/test/included/unit_test.hpp>
 
-TEST(graph_test, graph_init) {
+#include "graph.h"
+
+BOOST_AUTO_TEST_CASE(graph_init) {
   srand(time(NULL));
   stl::graph_matrix<char, char> g;
   int n = 5, e = 10;
@@ -13,7 +16,7 @@ TEST(graph_test, graph_init) {
   g.print();
 }
 
-TEST(graph_test, graph_bfs) {
+BOOST_AUTO_TEST_CASE(graph_bfs) {
   srand(time(NULL));
   stl::graph_matrix<char, int> g;
   generate_bfs_graph(g);
@@ -23,7 +26,7 @@ TEST(graph_test, graph_bfs) {
   g.print_path(0, 7);
 }
 
-TEST(graph_test, graph_dfs) {
+BOOST_AUTO_TEST_CASE(graph_dfs) {
   srand(time(NULL));
   stl::graph_matrix<char, int> g;
   generate_dfs_graph(g);
@@ -33,7 +36,7 @@ TEST(graph_test, graph_dfs) {
   g.print_path(0, 6);
 }
 
-TEST(graph_test, graph_tsort) {
+BOOST_AUTO_TEST_CASE(graph_tsort) {
   stl::graph_matrix<char, int> g;
   generate_tsort_graph(g);
   g.print();

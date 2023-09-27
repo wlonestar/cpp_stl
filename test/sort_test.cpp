@@ -2,36 +2,39 @@
 // Created by wjl on 2023/5/29.
 //
 
-#include "sort.h"
-#include <gtest/gtest.h>
+#define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MODULE sort_test
+#include <boost/test/included/unit_test.hpp>
 
-TEST(sort_test, insertion_sort) {
+#include "sort.h"
+
+BOOST_AUTO_TEST_CASE(insertion_sort) {
   stl::vector<int> v{4, 5, 3, 6, 2, 1};
-  stl::insertion_sort(v);
+  stl::sort::insertion_sort(v);
   for (const auto &item: v) {
     std::cout << item << " ";
   }
   std::cout << "\n";
 
-  int a[] = {4, 5, 3 ,6, 2, 1};
+  int a[] = {4, 5, 3, 6, 2, 1};
   int *p = a;
-  stl::insertion_sort(p, 6);
+  stl::sort::insertion_sort(p, 6);
   for (const auto &item: a) {
     std::cout << item << " ";
   }
   std::cout << "\n";
 }
 
-TEST(sort_test, merge_sort) {
+BOOST_AUTO_TEST_CASE(merge_sort) {
   stl::vector<int> v{1, 3, 2};
-  stl::merge_sort(v);
+  stl::sort::merge_sort(v);
   for (const auto &item: v) {
     std::cout << item << " ";
   }
   std::cout << "\n";
 
   stl::vector<int> v1{4, 5, 3, 6, 2, 1};
-  stl::merge_sort(v1);
+  stl::sort::merge_sort(v1);
   for (const auto &item: v1) {
     std::cout << item << " ";
   }
@@ -39,17 +42,17 @@ TEST(sort_test, merge_sort) {
 
   int a[] = {4, 5, 3, 6, 2, 1};
   int *p = a;
-  stl::merge_sort(p, 6);
+  stl::sort::merge_sort(p, 6);
   for (const auto &item: a) {
     std::cout << item << " ";
   }
   std::cout << "\n";
 }
 
-TEST(sort_test, heap_sort) {
+BOOST_AUTO_TEST_CASE(heap_sort) {
   int a[] = {4, 5, 3, 6, 2, 1};
   int *p = a;
-  stl::heap_sort(p, 6);
+  stl::sort::heap_sort(p, 6);
   for (const auto &item: a) {
     std::cout << item << " ";
   }
@@ -57,16 +60,16 @@ TEST(sort_test, heap_sort) {
 
   int b[] = {5, 4, 3, 2, 1};
   int *q = b;
-  stl::heap_sort(q, 5);
+  stl::sort::heap_sort(q, 5);
   for (const auto &item: b) {
     std::cout << item << " ";
   }
   std::cout << "\n";
 }
 
-TEST(sort_test, quick_sort) {
+BOOST_AUTO_TEST_CASE(quick_sort) {
   stl::vector<int> v1{4, 5, 3, 6, 2, 1};
-  stl::quick_sort(v1);
+  stl::sort::quick_sort(v1);
   for (const auto &item: v1) {
     std::cout << item << " ";
   }
@@ -74,7 +77,7 @@ TEST(sort_test, quick_sort) {
 
   int a[] = {4, 5, 3, 6, 2, 1};
   int *p = a;
-  stl::quick_sort(p, 6);
+  stl::sort::quick_sort(p, 6);
   for (const auto &item: a) {
     std::cout << item << " ";
   }
@@ -82,7 +85,7 @@ TEST(sort_test, quick_sort) {
 
   int b[] = {5, 4, 3, 2, 1};
   int *q = b;
-  stl::quick_sort(q, 5);
+  stl::sort::quick_sort(q, 5);
   for (const auto &item: b) {
     std::cout << item << " ";
   }

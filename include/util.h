@@ -79,7 +79,7 @@ public:
   };
 
 public:
-  simple_timer(): _count(0), _totalTime(0) {}
+  simple_timer() : _count(0), _totalTime(0) {}
 
   explicit simple_timer(size_t count) {
     _count = count;
@@ -102,7 +102,7 @@ public:
 
   return_type stop() {
     double average = _totalTime / (double) _count;
-    return { _count, _totalTime, average };
+    return {_count, _totalTime, average};
   }
 };
 

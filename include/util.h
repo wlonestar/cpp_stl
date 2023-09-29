@@ -19,7 +19,7 @@ namespace stl {
   printf("Not implemented!"); \
   exit(-1)
 
-#define Log(format, ...) printf(format "\n", ##__VA_ARGS__)
+#define Log(format, ...) printf("\033[32m" format "\033[0m\n", ##__VA_ARGS__)
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))

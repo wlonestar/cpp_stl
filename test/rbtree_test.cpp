@@ -33,9 +33,6 @@ BOOST_AUTO_TEST_CASE(tree_erase) {
     t.insert(i);
   }
   t.print();
-  t.erase(t._root);
-  t.erase(t._root->left);
-  t.print();
 
   t.erase(0);
   t.erase(12);

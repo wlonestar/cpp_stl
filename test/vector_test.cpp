@@ -12,18 +12,23 @@ BOOST_AUTO_TEST_CASE(vector_init) {
   Log("==> test vector constructor");
   stl::vector<int> v1;
   BOOST_CHECK(v1.empty() == true);
+
   stl::vector<int> v2(5, 1);
   BOOST_CHECK(v2.size() == 5);
   BOOST_CHECK(v2[0] == 1);
+  
   stl::vector<int> v3(5);
   BOOST_CHECK(v3.size() == 5);
   BOOST_CHECK(v3[0] == 0);
+  
   stl::vector<int> v4(v2);
   BOOST_CHECK(v4.size() == 5);
   BOOST_CHECK(v4[0] == 1);
+
   stl::vector<int> v5(v3);
   BOOST_CHECK(v5.size() == 5);
   BOOST_CHECK(v5[0] == 0);
+  
   std::initializer_list<int> ilist{1, 2, 3, 4, 5, 6, 7};
   stl::vector<int> v6(ilist);
   BOOST_CHECK(v6.size() == 7);
@@ -349,7 +354,7 @@ BOOST_AUTO_TEST_CASE(test_erase_if) {
     cnt.push_back(i);
   }
   BOOST_CHECK(cnt.size() == 10);
-  BOOST_CHECK(cnt.back() != '9');
+  BOOST_CHECK(cnt.back() == '9');
   stl::erase(cnt, '3');
   BOOST_CHECK(cnt.size() == 9);
   BOOST_CHECK(cnt[3] == '4');
@@ -384,4 +389,5 @@ BOOST_AUTO_TEST_CASE(vector_print) {
   v.print([](const Point3d &p) {
     printf("(%.4g, %.4g, %.4g)", p.x, p.y, p.z);
   });
+  Log("==> pass!");
 }

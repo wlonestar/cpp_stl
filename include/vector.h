@@ -140,6 +140,9 @@ public:
     _capacity = default_capacity < count ? (count * 2) : default_capacity;
     _size = count;
     _elem = new T[_capacity];
+    for (size_type i = 0; i < count; i++) {
+      _elem[i] = T();
+    }
   }
 
   /**

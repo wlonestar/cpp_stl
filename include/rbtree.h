@@ -42,7 +42,7 @@ public:
   this_type *left;
   this_type *right;
   char color;
-  T value;
+  T data;
 
 public:
   rbtree_node()
@@ -51,30 +51,24 @@ public:
   rbtree_node(const T &val, rbtree_node<T> *parent = nullptr,
               rbtree_node<T> *left = nullptr, rbtree_node<T> *right = nullptr,
               rb_color color = RB_RED)
-      : value(val), parent(parent), left(left), right(right), color(color) {}
+      : data(val), parent(parent), left(left), right(right), color(color) {}
 
   friend void to_json(nlohmann::json &j, const rbtree_node<T> &n) {
-    j["value"] = n.value;
-    j["key"] = n.value;
-
+    j["value"] = n.data;
+    j["key"] = n.data;
     j["color"] = n.color == RB_BLACK ? "black" : "red";
-
-    //    j["parent"] = (n.parent != nullptr) ? n.parent->value : -1;
-    //    j["left"] = (n.left != nullptr) ? n.left->value : -1;
-    //    j["right"] = (n.right != nullptr) ? n.right->value : -1;
-
     if (n.parent != nullptr) {
-      j["parent"] = n.parent->value;
+      j["parent"] = n.parent->data;
     } else {
       j["parent"] = "null";
     }
     if (n.left != nullptr) {
-      j["left"] = n.left->value;
+      j["left"] = n.left->data;
     } else {
       j["left"] = "null";
     }
     if (n.right != nullptr) {
-      j["right"] = n.right->value;
+      j["right"] = n.right->data;
     } else {
       j["right"] = "null";
     }
@@ -85,8 +79,10 @@ template<class U>
 struct link {
   U from;
   U to;
+
   link() = default;
   link(U f, U t) : from(f), to(t) {}
+  
   friend void to_json(nlohmann::json &j, const link &t) {
     j["from"] = t.from;
     j["to"] = t.to;
@@ -115,13 +111,11 @@ public:
 
 private:
   node_type *nil;
-
-public:
   node_type *_root;
   size_type _size;
   Compare comp;
 
-public:
+private:
   /**
    * Node operation
    */
@@ -190,11 +184,14 @@ public:
     _root = nil;
   }
 
-  rbtree(const Compare &compare) : _root(), _size(0), comp(compare) {}
+  rbtree(const Compare &compare) 
+      : _root(), _size(0), comp(compare) {}
 
-  rbtree(const this_type &x) : _root(x._root), _size(0), comp(x.comp) {}
+  rbtree(const this_type &x) 
+      : _root(x._root), _size(0), comp(x.comp) {}
 
-  rbtree(this_type &&x) : _root(), _size(0), comp() {
+  rbtree(this_type &&x) 
+      : _root(), _size(0), comp() {
     swap(x);
   }
 
@@ -263,7 +260,7 @@ public:
     node_type *x = _root;
     while (x != nil) {
       y = x;
-      if (comp(p->value, x->value)) {
+      if (comp(p->data, x->data)) {
         x = x->left;
       } else {
         x = x->right;
@@ -272,7 +269,7 @@ public:
     p->parent = y;
     if (y == nil) {
       _root = p;
-    } else if (comp(p->value, y->value)) {
+    } else if (comp(p->data, y->data)) {
       y->left = p;
     } else {
       y->right = p;
@@ -402,8 +399,8 @@ public:
    */
 
   node_type *find(node_type *p, const value_type &value) {
-    while (p != nullptr && value != p->value) {
-      if (comp(value, p->value)) {
+    while (p != nullptr && value != p->data) {
+      if (comp(value, p->data)) {
         p = p->left;
       } else {
         p = p->right;
@@ -425,7 +422,7 @@ public:
     stack<rbtree_node<T> *> s;
     while (true) {
       while (p != nil && p != nullptr) {
-        T val = p->value;
+        T val = p->data;
         v.push_back(val);
         s.push(p->right);
         p = p->left;
@@ -451,7 +448,7 @@ public:
       }
       p = s.top();
       s.pop();
-      T val = p->value;
+      T val = p->data;
       v.push_back(val);
       p = p->right;
     }
@@ -463,7 +460,7 @@ public:
     }
     _post_order(p->left, v);
     _post_order(p->right, v);
-    v.push_back(p->value);
+    v.push_back(p->data);
   }
 
   void post_order(stl::vector<T> &v) {
@@ -480,7 +477,7 @@ public:
     while (!q.empty()) {
       p = q.front();
       q.pop();
-      T val = p->value;
+      T val = p->data;
       v.push_back(val);
       if (p->left != nil) {
         q.push(p->left);
@@ -509,9 +506,9 @@ public:
       std::cout << "=>";
     }
     if (p->color == RB_RED) {
-      std::cout << "\033[31m" << p->value << "\033[0m\n";
+      std::cout << "\033[31m" << p->data << "\033[0m\n";
     } else {
-      std::cout << "\033[0m" << p->value << "\033[0m\n";
+      std::cout << "\033[0m" << p->data << "\033[0m\n";
     }
     print(p->left, prefix + 2);
     print(p->right, prefix + 2);
@@ -546,15 +543,15 @@ public:
     stl::vector<link<T>> links;
     for (rbtree_node<T> &node: nodes) {
       if (node.parent != nullptr) {
-        link<T> *l = new link(node.parent->value, node.value);
+        link<T> *l = new link(node.parent->data, node.data);
         links.push_back(*l);
       }
       if (node.left != nullptr) {
-        link<T> *l = new link(node.value, node.left->value);
+        link<T> *l = new link(node.data, node.left->data);
         links.push_back(*l);
       }
       if (node.parent != nullptr) {
-        link<T> *l = new link(node.value, node.right->value);
+        link<T> *l = new link(node.data, node.right->data);
         links.push_back(*l);
       }
     }

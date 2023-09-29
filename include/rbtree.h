@@ -82,7 +82,7 @@ struct link {
 
   link() = default;
   link(U f, U t) : from(f), to(t) {}
-  
+
   friend void to_json(nlohmann::json &j, const link &t) {
     j["from"] = t.from;
     j["to"] = t.to;
@@ -184,13 +184,13 @@ public:
     _root = nil;
   }
 
-  rbtree(const Compare &compare) 
+  rbtree(const Compare &compare)
       : _root(), _size(0), comp(compare) {}
 
-  rbtree(const this_type &x) 
+  rbtree(const this_type &x)
       : _root(x._root), _size(0), comp(x.comp) {}
 
-  rbtree(this_type &&x) 
+  rbtree(this_type &&x)
       : _root(), _size(0), comp() {
     swap(x);
   }

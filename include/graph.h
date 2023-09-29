@@ -1,5 +1,5 @@
 //
-// Created by wjl on 2023/5/22.
+// Created by wjl on 2023/9/29.
 //
 
 #ifndef CPP_STL_GRAPH_H
@@ -7,499 +7,199 @@
 
 #pragma once
 
-#include <climits>
-#include <stack>
 #include <vector>
-
-#include <queue.h>
+#include <queue>
+#include <iostream>
 
 namespace stl {
 
-typedef enum {
-  UNDISCOVERED,// white
-  DISCOVERED,  // gray
-  VISITED,     // black
-} v_status;
-
-typedef enum {
-  UNDETERMINED,
-  TREE,
-  CROSS,
-  FORWARD,
-  BACKWARD
-} e_type;
-
 /**
- * graph class
+ * 
+ * graph structure represented by adjacency list
+ * 
  */
 
-template<class Tv, class Te>
-class graph {
-private:
-  void reset();
-
-  void _bfs(int, int &);
-  void _dfs(int, int &);
-  void _bcc(int, int &, std::stack<int> &);
-  bool _tsort(int, int &, std::stack<Tv> *);
-  template<class Pu>
-  void _pfs(int, Pu);
-
-public:
-  int n;
-
-  virtual v_status &status(int) = 0;
-  virtual Tv &vertex(int) = 0;
-  virtual int in_degree(int) = 0;
-  virtual int out_degree(int) = 0;
-  virtual int first_nbr(int) = 0;
-  virtual int next_nbr(int, int) = 0;
-  virtual int &d_time(int) = 0;
-  virtual int &f_time(int) = 0;
-  virtual int &parent(int) = 0;
-  virtual int &prior(int) = 0;
-
-  virtual int insert(const Tv &) = 0;
-  virtual Tv remove(int) = 0;
-
-  int e;
-
-  virtual bool exists(int, int) = 0;
-  virtual e_type &type(int, int) = 0;
-  virtual Te &edge(int, int) = 0;
-  virtual int &weight(int, int) = 0;
-
-  virtual void insert(const Te &, int, int, int) = 0;
-  virtual Te remove(int, int) = 0;
-
-  void bfs(int);
-  void dfs(int);
-  void bcc(int);
-  std::stack<Tv> *tsort(int);
-  void prim(int);
-  void dijkstra(int);
-  template<class Pu>
-  void pfs(int, Pu);
-};
-
-template<class Tv, class Te>
-void graph<Tv, Te>::reset() {
-  for (int i = 0; i < n; i++) {
-    status(i) = UNDISCOVERED;
-    d_time(i) = f_time(i) = -1;
-    parent(i) = -1;
-    prior(i) = INT_MAX;
-    for (int j = 0; j < n; j++) {
-      if (exists(i, j)) {
-        type(i, j) = UNDETERMINED;
-      }
-    }
-  }
-}
-
-template<class Tv, class Te>
-void graph<Tv, Te>::_bfs(int s, int &clock) {
-  queue<int> q;
-  status(s) = DISCOVERED;
-  q.push(s);
-  while (!q.empty()) {
-    int u = q.front();
-    q.pop();
-    d_time(u) = ++clock;
-    for (int v = 0; v < this->n; v++) {
-      if (exists(u, v)) {
-        if (status(v) == UNDISCOVERED) {
-          status(v) = DISCOVERED;
-          q.push(v);
-          type(u, v) = TREE;
-          parent(v) = u;
-        } else {
-          type(u, v) = CROSS;
-        }
-      }
-    }
-    status(u) = VISITED;
-  }
-}
-
-template<class Tv, class Te>
-void graph<Tv, Te>::_dfs(int u, int &clock) {
-  d_time(u) = ++clock;
-  status(u) = DISCOVERED;
-  for (int v = 0; v < this->n; v++) {
-    if (exists(u, v)) {
-      switch (status(v)) {
-        case UNDISCOVERED:
-          type(u, v) = TREE;
-          parent(v) = u;
-          _dfs(v, clock);
-          break;
-        case DISCOVERED:
-          type(u, v) = BACKWARD;
-          break;
-        default:
-          type(u, v) = (d_time(u) < d_time(v)) ? FORWARD : CROSS;
-          break;
-      }
-    }
-  }
-  status(u) = VISITED;
-  f_time(u) = ++clock;
-}
-
-template<class Tv, class Te>
-void graph<Tv, Te>::_bcc(int, int &, std::stack<int> &) {
-}
-
-template<class Tv, class Te>
-bool graph<Tv, Te>::_tsort(int u, int &clock, std::stack<Tv> *stk) {
-  d_time(u) = ++clock;
-  status(u) = DISCOVERED;
-  for (int v = 0; v < this->n; v++) {
-    if (exists(u, v)) {
-      switch (status(v)) {
-        case UNDISCOVERED:
-          parent(v) = u;
-          type(u, v) = TREE;
-          if (!_tsort(v, clock, stk)) {
-            return false;
-          }
-          break;
-        case DISCOVERED:
-          type(u, v) = BACKWARD;
-          return false;
-        default:
-          type(u, v) = (d_time(u) < d_time(v)) ? FORWARD : CROSS;
-          break;
-      }
-    }
-  }
-  status(u) = VISITED;
-  stk->push(vertex(u));
-  return true;
-}
-
-template<class Tv, class Te>
-template<class Pu>
-void graph<Tv, Te>::_pfs(int, Pu) {
-}
-
-template<class Tv, class Te>
-void graph<Tv, Te>::bfs(int s) {
-  reset();
-  int clock = 0;
-  int v = s;
-  do {
-    if (status(v) == UNDISCOVERED) {
-      _bfs(v, clock);
-    }
-  } while (s != (v = (++v % this->n)));
-}
-
-template<class Tv, class Te>
-void graph<Tv, Te>::dfs(int s) {
-  reset();
-  int clock = 0;
-  int v = s;
-  do {
-    if (status(v) == UNDISCOVERED) {
-      _dfs(v, clock);
-    }
-  } while (s != (v = (++v % n)));
-}
-
-template<class Tv, class Te>
-void graph<Tv, Te>::bcc(int) {
-}
-
-template<class Tv, class Te>
-std::stack<Tv> *graph<Tv, Te>::tsort(int s) {
-  reset();
-  int clock = 0;
-  int v = s;
-  std::stack<Tv> *stk = new std::stack<Tv>;
-  do {
-    if (status(v) == UNDISCOVERED) {
-      if (!_tsort(v, clock, stk)) {
-        while (!stk->empty()) {
-          stk->pop();
-        }
-        break;
-      }
-    }
-  } while (s != (v = (++v % n)));
-  return stk;
-}
-
-template<class Tv, class Te>
-void graph<Tv, Te>::prim(int) {
-}
-
-template<class Tv, class Te>
-void graph<Tv, Te>::dijkstra(int) {
-}
-
-template<class Tv, class Te>
-template<class Pu>
-void graph<Tv, Te>::pfs(int, Pu) {
-}
-
-template<class Tv>
-struct _vertex {
-  Tv data;
-  int in_degree;
-  int out_degree;
-  v_status status;
-  int d_time;
-  int f_time;
-  int parent;
-  int prior;
-
-  _vertex(const Tv &d = (Tv) 0)
-      : data(d), in_degree(0), out_degree(0), status(UNDISCOVERED),
-        d_time(-1), f_time(-1), parent(-1), prior(INT_MAX) {}
-};
-
+/**
+ * arc node
+ */
 template<class Te>
-struct _edge {
+struct arc_node {
   Te data;
-  int weight;
-  e_type type;
+  int vec;
+  arc_node *next_arc;
 
-  _edge(const Te &d, int w) : data(d), weight(w), type(UNDETERMINED) {}
+  arc_node(const Te &e, int v, arc_node<Te> *next = nullptr)
+      : data(e), vec(v), next_arc(next) {}
 };
 
+/**
+ * vertex node
+ */
 template<class Tv, class Te>
-class graph_matrix : public graph<Tv, Te> {
+struct vertex_node {
+  Tv data;
+  arc_node<Tv> *first_arc;
+
+  vertex_node(const Tv &e, arc_node<Tv> *first = nullptr)
+      : data(e), first_arc(first) {}
+};
+
+/**
+ * graph
+ */
+template<class Tv, class Te>
+class arc_graph {
 private:
-  std::vector<_vertex<Tv>> V;
-  std::vector<std::vector<_edge<Te> *>> E;
+  int n, e;
+  std::vector<vertex_node<Tv, Te>> adjlist;
+
+private:
+  std::vector<int> visited;
+
+  void reset() {
+    visited.assign(n, 0);
+  }
 
 public:
-  graph_matrix() {
-    this->n = this->e = 0;
-  }
 
-  ~graph_matrix() {
-    for (int j = 0; j < this->n; j++) {
-      for (int k = 0; k < this->n; k++) {
-        E[j][k] = NULL;
+  arc_graph() : n(0), e(0) {}
+
+  bool exists(int x, int y) {
+    if (x >= n || y >= n) {
+      return false;
+    }
+    arc_node<Te> *first = adjlist[x].first_arc;
+    while (first != nullptr) {
+      if (first->vec != y) {
+        first = first->next_arc;   
+      } else {
+        return true;
       }
     }
+    return false;
   }
 
-  v_status &status(int i) override {
-    return V[i].status;
+  void insert_vertex(const Tv &data) {
+    vertex_node<Tv, Te> new_vertex(data);
+    adjlist.push_back(new_vertex);
+    n++;
   }
 
-  Tv &vertex(int i) override {
-    return V[i].data;
-  }
-
-  int in_degree(int i) override {
-    return V[i].in_degree;
-  }
-
-  int out_degree(int i) override {
-    return V[i].out_degree;
-  }
-
-  int first_nbr(int i) override {
-    return next_nbr(i, this->n);
-  }
-
-  int next_nbr(int i, int j) override {
-    while ((j > -1) && !exists(i, --j))
-      ;
-    return V[i].status;
-  }
-
-  int &d_time(int i) override {
-    return V[i].d_time;
-  }
-
-  int &f_time(int i) override {
-    return V[i].f_time;
-  }
-
-  int &parent(int i) override {
-    return V[i].parent;
-  }
-
-  int &prior(int i) override {
-    return V[i].prior;
-  }
-
-  int insert(const Tv &tv) override {
-    for (int j = 0; j < this->n; j++) {
-      E[j].push_back(NULL);
-    }
-    this->n++;
-    E.push_back(std::vector<_edge<Te> *>(this->n, (_edge<Te> *) NULL));
-    V.emplace_back(tv);
-    return V.size() - 1;
-  }
-
-  Tv remove(int i) override {
-    for (int j = 0; j < this->n; j++) {
-      if (exists(i, j)) {
-        E[i][j] = NULL;
-        this->e--;
-        V[j].in_degree--;
-      }
-    }
-    E.erase(E.begin() + i);
-    this->n--;
-    Tv back = vertex(i);
-    V.erase(V.begin() + i);
-    for (int j = 0; j < this->n; j++) {
-      _edge<Te> *e = *(E[j].begin() + i);
-      E[j].erase(E[j].begin() + i);
-      if (e != NULL) {
-        this->e--;
-        V[j].out_degree--;
-      }
-    }
-    return back;
-  }
-
-  bool exists(int i, int j) override {
-    return (i >= 0) && (i < this->n) && (j >= 0) && (j < this->n) && E[i][j] != NULL;
-  }
-
-  e_type &type(int i, int j) override {
-    return E[i][j]->type;
-  }
-
-  Te &edge(int i, int j) override {
-    return E[i][j]->data;
-  }
-
-  int &weight(int i, int j) override {
-    return E[i][j]->weight;
-  }
-
-  void insert(const Te &te, int w, int i, int j) override {
-    if (exists(i, j)) {
-      return;
-    }
-    E[i][j] = new _edge<Te>(te, w);
-    this->e++;
-    V[i].out_degree++;
-    V[j].in_degree++;
-  }
-
-  Te remove(int i, int j) override {
-    if (exists(i, j)) {
-      return NULL;
-    }
-    Te back = edge(i, j);
-    E[i][j] = NULL;
-    this->e--;
-    V[i].out_degree--;
-    V[i].in_degree--;
-    return back;
-  }
-
-  void print_path(int s, int v) {
-    if (v == s) {
-      std::cout << s << " ";
-    } else if (parent(v) == -1) {
-      std::cout << "no path ";
+  void insert_arc(const Te &data, int from, int to) {
+    arc_node<Te> *new_arc = new arc_node(data, to);
+    arc_node<Te> *first = adjlist[from].first_arc;
+    if (first == nullptr) {
+      adjlist[from].first_arc = new_arc;
     } else {
-      print_path(s, parent(v));
-      std::cout << v << " ";
+      while (first->next_arc != nullptr) {
+        first = first->next_arc;
+      }
+      first->next_arc = new_arc;
+    }
+    e++;
+  }
+
+  int first_nbr(int x) {
+    if (x >= n) {
+      return -1;
+    }
+    return adjlist[x].first_arc->vec;
+  }
+
+  int next_nbr(int x, int y) {
+    if (x >= n || y >= n) {
+      return -1;
+    }
+    arc_node<Te> *y_arc = adjlist[x].first_arc;
+    while (y_arc != nullptr) {
+      if (y_arc->vec == y) {
+        if (y_arc->next_arc != nullptr) {
+          return y_arc->next_arc->vec;
+        } else {
+          break;
+        }
+      } else {
+        y_arc = y_arc->next_arc;
+      }
+    }
+    return -1;
+  }
+
+private:
+
+  void _bfs(int v, std::vector<int> &seq) {
+    seq.push_back(v);
+    visited[v] = 1;
+    std::queue<int> q;
+    q.push(v);
+    while (!q.empty()) {
+      v = q.front();
+      q.pop();
+      for (int w = first_nbr(v); w >= 0; w = next_nbr(v, w)) {
+        if (!visited[w]) {
+          seq.push_back(w);
+          visited[w] = 1;
+          q.push(w);
+        }
+      }
     }
   }
 
+  void _dfs(int v, std::vector<int> &seq) {
+    seq.push_back(v);
+    visited[v] = 1;
+    for (int w = first_nbr(v); w >= 0; w = next_nbr(v, w)) {
+      if (!visited[w]) {
+        _dfs(w, seq);
+      }
+    }
+  }
+
+public:
+
+  std::vector<int> bfs() {
+    std::vector<int> seq;
+    reset();
+    for (int i = 0; i < n; i++) {
+      if (!visited[i]) {
+        _bfs(i, seq);
+      }
+    }
+    return seq;
+  }
+
+  std::vector<int> dfs() {
+    std::vector<int> seq;
+    reset();
+    for (int i = 0; i < n; i++) {
+      if (!visited[i]) {
+        _dfs(i, seq);
+      }
+    }
+    return seq;
+  }
+
+  // for debug
   void print() {
-    std::cout << "graph(" << this->n << ", " << this->e << "): \n";
-    std::cout << "vertex: \n";
-    for (int i = 0; i < V.size(); i++) {
-      std::cout << "[" << i << ":parent=" << parent(i) << "] ";
+    printf("graph(n=%d,e=%d)\n", n, e);
+    printf("vertex:\n");
+    for (int i = 0; i < n; i++) {
+      std::cout << i << " ";
     }
     std::cout << "\n";
-    std::cout << "edge: \n";
-    for (int i = 0; i < V.size(); i++) {
-      for (int j = 0; j < V.size(); j++) {
-        if (exists(i, j)) {
-          std::cout << "[1] ";
-        } else {
-          std::cout << "[ ] ";
-        }
+    printf("arc:\n");
+    for (int i = 0; i < n; i++) {
+      arc_node<Te> *first = adjlist[i].first_arc;
+      std::cout << i << "->";
+      while (first != nullptr) {
+        std::cout << first->vec << "->";
+        first = first->next_arc;
       }
       std::cout << "\n";
     }
-    std::cout << "\n";
   }
 };
 
 }// namespace stl
 
-template<class Tv, class Te>
-void generate_graph(stl::graph_matrix<Tv, Te> &g, int n, int e) {
-  while (g.n < n || g.e < e) {
-    if (g.n < n) {
-      Tv vertex = (Tv) ('A' + rand() % 26);
-      g.insert(vertex);
-    }
-    if (g.n > 1 && g.e < e) {
-      int i = rand() % g.n;
-      int j = rand() % g.n;
-      Te te = (Te) ('a' + rand() % 26);
-      int weight = rand() % (3 * n);
-      if (!g.exists(i, j) && i != j) {
-        g.insert(te, weight, i, j);
-      }
-    }
-  }
-}
-
-void generate_bfs_graph(stl::graph_matrix<char, int> &g) {
-  g.insert('S');
-  for (int i = 0; i < 7; i++) {
-    g.insert('A' + i);
-  }
-  g.insert(1, 1, 0, 1);
-  g.insert(2, 2, 0, 3);
-  g.insert(3, 3, 0, 4);
-  g.insert(4, 4, 1, 3);
-  g.insert(5, 3, 1, 5);
-  g.insert(6, 2, 3, 2);
-  g.insert(7, 1, 4, 2);
-  g.insert(8, 2, 5, 6);
-  g.insert(9, 3, 5, 7);
-  g.insert(10, 5, 7, 2);
-  g.insert(11, 5, 7, 6);
-}
-
-void generate_dfs_graph(stl::graph_matrix<char, int> &g) {
-  for (int i = 0; i < 7; i++) {
-    g.insert('A' + i);
-  }
-  g.insert(1, 1, 0, 1);
-  g.insert(2, 2, 0, 2);
-  g.insert(3, 3, 0, 5);
-  g.insert(4, 4, 1, 2);
-  g.insert(5, 3, 3, 0);
-  g.insert(6, 2, 3, 4);
-  g.insert(7, 1, 4, 5);
-  g.insert(8, 2, 5, 6);
-  g.insert(9, 3, 6, 0);
-  g.insert(10, 5, 6, 2);
-}
-
-void generate_tsort_graph(stl::graph_matrix<char, int> &g) {
-  for (int i = 0; i < 6; i++) {
-    g.insert('A' + i);
-  }
-  g.insert(1, 1, 0, 2);
-  g.insert(2, 1, 0, 3);
-  g.insert(3, 1, 1, 2);
-  g.insert(4, 1, 2, 3);
-  g.insert(5, 1, 2, 4);
-  g.insert(6, 1, 2, 5);
-  g.insert(7, 1, 4, 5);
-}
-
-#endif//CPP_STL_GRAPH_H
+#endif

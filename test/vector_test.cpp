@@ -16,11 +16,11 @@ BOOST_AUTO_TEST_CASE(vector_init) {
   stl::vector<int> v2(5, 1);
   BOOST_CHECK(v2.size() == 5);
   BOOST_CHECK(v2[0] == 1);
-  
+
   stl::vector<int> v3(5);
   BOOST_CHECK(v3.size() == 5);
   BOOST_CHECK(v3[0] == 0);
-  
+
   stl::vector<int> v4(v2);
   BOOST_CHECK(v4.size() == 5);
   BOOST_CHECK(v4[0] == 1);
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(vector_init) {
   stl::vector<int> v5(v3);
   BOOST_CHECK(v5.size() == 5);
   BOOST_CHECK(v5[0] == 0);
-  
+
   std::initializer_list<int> ilist{1, 2, 3, 4, 5, 6, 7};
   stl::vector<int> v6(ilist);
   BOOST_CHECK(v6.size() == 7);

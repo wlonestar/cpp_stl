@@ -40,7 +40,7 @@ public:
  * avl tree
  */
 template<typename T>
-class avl_tree {
+class avl {
 public:
   /**
    * Member types
@@ -54,7 +54,7 @@ public:
   typedef value_type *pointer;
   typedef const value_type *const_pointer;
   typedef avl_node<value_type> node_type;
-  typedef avl_tree<T> this_type;
+  typedef avl<T> this_type;
 
 private:
   node_type *_root;
@@ -65,15 +65,15 @@ private:
    * Node operation
    */
 
-  size_type height(avl_node<T> *head) {
+  size_type height(node_type *head) {
     if (head == nullptr) {
       return 0;
     }
     return head->height;
   }
 
-  avl_node<T> *right_rotate(avl_node<T> *p) {
-    avl_node<T> *t = p->left;
+  node_type *right_rotate(node_type *p) {
+    node_type *t = p->left;
     p->left = t->right;
     t->right = p;
     p->height = 1 + std::max(height(p->left), height(p->right));
@@ -81,8 +81,8 @@ private:
     return t;
   }
 
-  avl_node<T> *left_rotate(avl_node<T> *p) {
-    avl_node<T> *t = p->right;
+  node_type *left_rotate(node_type *p) {
+    node_type *t = p->right;
     p->right = t->left;
     t->left = p;
     p->height = 1 + std::max(height(p->left), height(p->right));
@@ -90,10 +90,10 @@ private:
     return t;
   }
 
-  avl_node<T> *_insert(avl_node<T> *p, T e) {
+  node_type *_insert(node_type *p, T e) {
     if (p == nullptr) {
       _size += 1;
-      avl_node<T> *temp = new avl_node<T>(e);
+      node_type *temp = new node_type(e);
       return temp;
     }
     if (e < p->data) {
@@ -121,7 +121,7 @@ private:
     return p;
   }
 
-  avl_node<T> *_erase(avl_node<T> *p, T e) {
+  node_type *_erase(node_type *p, T e) {
     if (p == nullptr) {
       return nullptr;
     }
@@ -130,9 +130,9 @@ private:
     } else if (e > p->data) {
       p->right = _erase(p->right, e);
     } else {
-      avl_node<T> *r = p->right;
+      node_type *r = p->right;
       if (p->right == nullptr) {
-        avl_node<T> *l = p->left;
+        node_type *l = p->left;
         delete (p);
         p = l;
       } else if (p->left == nullptr) {
@@ -169,7 +169,7 @@ private:
     return p;
   }
 
-  avl_node<T> *_search(avl_node<T> *p, T e) {
+  node_type *_search(node_type *p, T e) {
     if (p == nullptr) {
       return nullptr;
     }
@@ -190,9 +190,9 @@ public:
    * Member functions
    */
 
-  avl_tree() : _root(nullptr), _size(0) {}
+  avl() : _root(nullptr), _size(0) {}
 
-  ~avl_tree() {
+  ~avl() {
     clear();
   }
 
@@ -208,9 +208,6 @@ public:
    */
 
   void clear() noexcept {
-    // while (_size > 0) {
-    //   erase(_root);
-    // }
     // TODO
   }
 
@@ -226,11 +223,11 @@ public:
    * Look up
    */
 
-  avl_node<T> *find(T e) {
+  node_type *find(T e) {
     return _search(_root, e);
   }
 
-  void print(avl_node<T> *p, int prefix) {
+  void print(node_type *p, int prefix) {
     char prefix_str[prefix + 1];
     for (int i = 0; i < prefix; i++) {
       prefix_str[i] = ' ';

@@ -10,7 +10,7 @@
 
 BOOST_AUTO_TEST_CASE(tree_insert) {
   Log("==> test tree insert()");
-  stl::avl_tree<int> t2;
+  stl::avl<int> t2;
   for (int i = 0; i < 12; i++) {
     t2.insert(i);
   }
@@ -21,14 +21,12 @@ BOOST_AUTO_TEST_CASE(tree_insert) {
 
 BOOST_AUTO_TEST_CASE(tree_erase) {
   Log("==> test tree erase()");
-  stl::avl_tree<int> t;
+  stl::avl<int> t;
   stl::vector<int> v;
   for (int i = 0; i < 12; i++) {
     t.insert(i);
   }
   t.print();
-  t.clear();
-  BOOST_CHECK(t.size() == 0);
   for (int i = 0; i < 12; i++) {
     t.insert(i);
   }

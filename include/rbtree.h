@@ -489,7 +489,7 @@ public:
   }
 
   void print(rbtree_node<T> *p, int prefix) {
-    char prefix_str[prefix];
+    char prefix_str[prefix + 1];
     for (int i = 0; i < prefix; i++) {
       prefix_str[i] = ' ';
     }

@@ -1,4 +1,3 @@
-
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE graph_test
 #include <boost/test/included/unit_test.hpp>
@@ -8,7 +7,7 @@
 BOOST_AUTO_TEST_CASE(simple_init) {
   srand(time(NULL));
 
-  stl::arc_graph<int, int> g;
+  stl::graph<int, int> g;
   for (int i = 1; i < 6; i++) {
     g.insert_vertex(i);
   }

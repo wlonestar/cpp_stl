@@ -818,6 +818,15 @@ public:
     }
     std::cout << "]\n";
   }
+
+  friend std::ostream &operator<<(std::ostream &os, const vector<T> &v) {
+    os << "vector: [ ";
+    for (auto p = v.begin(); p != v.end(); ++p) {
+      os << *p << " ";
+    }
+    os << "]";
+    return os;
+  }
 };
 
 /**

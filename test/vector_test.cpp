@@ -363,17 +363,20 @@ BOOST_AUTO_TEST_CASE(test_erase_if) {
   Log("==> pass!");
 }
 
+class Point3d {
+public:
+  double x, y, z;
+  Point3d() = default;
+  Point3d(double x, double y, double z) : x(x), y(y), z(z) {}
+  Point3d(Point3d &&other) noexcept : x(other.x), y(other.y), z(other.z) {}
+  Point3d &operator=(const Point3d &other) = default;
+  friend std::ostream &operator<<(std::ostream &os, const Point3d &p) {
+    os << "(" << p.x << ", " << p.y << ", " << p.z << ")";
+    return os;
+  }
+};
+
 BOOST_AUTO_TEST_CASE(vector_print) {
-  class Point3d {
-  public:
-    double x;
-    double y;
-    double z;
-    Point3d() = default;
-    Point3d(double x, double y, double z) : x(x), y(y), z(z) {}
-    Point3d(Point3d &&other) noexcept : x(other.x), y(other.y), z(other.z) {}
-    Point3d &operator=(const Point3d &other) = default;
-  };
   stl::vector<Point3d> v;
   for (int i = 0; i < 5; i++) {
     double rand = 0.05 * i;
@@ -386,8 +389,9 @@ BOOST_AUTO_TEST_CASE(vector_print) {
   v.for_each(v.cbegin(), v.cend(), lambda);
   v.for_each(v.rbegin(), v.rend(), lambda);
   v.for_each(v.crbegin(), v.crend(), lambda);
-  v.print([](const Point3d &p) {
-    printf("(%.4g, %.4g, %.4g)", p.x, p.y, p.z);
-  });
+  // v.print([](const Point3d &p) {
+  //   printf("(%.4g, %.4g, %.4g)", p.x, p.y, p.z);
+  // });
+  std::cout << v << "\n";
   Log("==> pass!");
 }

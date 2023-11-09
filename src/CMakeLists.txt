@@ -1,3 +1,6 @@
 add_executable(timer timer.cpp)
 add_executable(json_obj json_obj.cpp)
 add_executable(rbtree rbtree.cpp)
+add_executable(rbtree_exec rbtree_exec.cpp)
+add_executable(avl_exec avl_exec.cpp)
+add_executable(btree_exec btree_exec.cpp)

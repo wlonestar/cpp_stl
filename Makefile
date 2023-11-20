@@ -13,11 +13,11 @@ BUILD_DIR := build
 .DEFAULT_GOAL := build
 
 build: $(INCLUDE_FILES) $(SRC_FILES) $(TEST_FILES)
-	$(ENV) cmake -B $(BUILD_DIR)
-	cd $(BUILD_DIR) && make -j$(nproc)
+	$(ENV) cmake -B $(BUILD_DIR) -G Ninja
+	@cd $(BUILD_DIR) && ninja -j 8
 
 rbtree: build
-	cd #(BUILD_DIR) && $(SRC_DIR)/rbtree
+	cd $(BUILD_DIR) && $(SRC_DIR)/rbtree
 
 # default test target
 TEST_NAME ?= vector

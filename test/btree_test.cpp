@@ -16,7 +16,8 @@ BOOST_AUTO_TEST_CASE(simple_btree_test) {
   t.print();
   for (int i = 0; i < 10; i++) {
     auto [node, index] = t.search(i);
-    std::cout << node->keys.size() << "-" << node->children.size() << ":" << index << "\n";
+    std::cout << node->keys.size() << "-" << node->children.size() << ":"
+              << index << "\n";
   }
   for (int i = 0; i < 10; i++) {
     t.erase(i);

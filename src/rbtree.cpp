@@ -38,7 +38,8 @@ std::string write_to_file(json &j) {
   using namespace stl::visual;
 
   // create directory if not exists
-  auto directory = fs::path(fs::current_path().parent_path().string() + "/result");
+  auto directory =
+    fs::path(fs::current_path().parent_path().string() + "/result");
   if (!fs::exists(directory)) {
     fs::create_directory(directory);
   }
@@ -47,13 +48,16 @@ std::string write_to_file(json &j) {
   // data file path
   auto data_file = directory.string() + "/rbtree_data_" + dh_string + ".js";
   // content
-  auto content = "const tree = " + j.dump(2) + "\n\n" + "const nodeDataArray = tree.nodes\nconst linkDataArray = tree.links";
+  auto content =
+    "const tree = " + j.dump(2) + "\n\n" +
+    "const nodeDataArray = tree.nodes\nconst linkDataArray = tree.links";
   // write into data file
   std::ofstream ofs(data_file);
   ofs << content;
   ofs.close();
   // template and target html file path
-  auto template_file = fs::path(fs::current_path().parent_path().string() + "/template/rbtree.html");
+  auto template_file = fs::path(fs::current_path().parent_path().string() +
+                                "/template/rbtree.html");
   auto html_file = directory.string() + "/rbtree_" + dh_string + ".html";
   // copy from template to html file
   fs::copy(template_file, html_file);
@@ -74,9 +78,8 @@ int main(int argc, char *argv[]) {
   stl::vector<int> v;
   t.in_order(v);
   std::cout << "generate " << n << " different node into a rbtree: [ ";
-  v.for_each(v.begin(), v.end(), [](const int &val) {
-    std::cout << val << " ";
-  });
+  v.for_each(v.begin(), v.end(),
+             [](const int &val) { std::cout << val << " "; });
   std::cout << "]\n";
 
   json j;

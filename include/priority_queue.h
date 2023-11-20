@@ -101,8 +101,7 @@ public:
    * Default constructor. Value-initializes the comparator
    * and the underlying container.
    */
-  priority_queue()
-      : priority_queue(Compare(), Container()) {}
+  priority_queue() : priority_queue(Compare(), Container()) {}
 
   /**
    * Copy-constructs the comparison functor comp with the contents of compare.
@@ -126,8 +125,8 @@ public:
       : comp(compare), c(cont) {}
 
   /**
-   * Copy constructor. The underlying container is copy-constructed with other.c.
-   * The comparison functor is copy-constructed with other.comp.
+   * Copy constructor. The underlying container is copy-constructed with
+   * other.c. The comparison functor is copy-constructed with other.comp.
    */
   priority_queue(const priority_queue &other) {
     c = other.c;
@@ -187,40 +186,30 @@ public:
    *
    * @return - reference to the top element
    */
-  const_reference top() const {
-    return c.front();
-  }
+  const_reference top() const { return c.front(); }
 
   /**
    * Checks if the underlying container has no elements.
    *
    * @return - true if the underlying container is empty, false otherwise
    */
-  bool empty() const {
-    return c.empty();
-  }
+  bool empty() const { return c.empty(); }
 
   /**
    * Returns the number of elements in the underlying container.
    *
    * @return - the number of elements in the container
    */
-  size_type size() const {
-    return c.size();
-  }
+  size_type size() const { return c.size(); }
 
   /**
    * Pushes the given element value to the priority queue.
    *
    * @value -the value of the element to push
    */
-  void push(const value_type &value) {
-    heap_insert(value);
-  }
+  void push(const value_type &value) { heap_insert(value); }
 
-  void push(value_type &&value) {
-    heap_insert(std::move(value));
-  }
+  void push(value_type &&value) { heap_insert(std::move(value)); }
 
   /**
    * Pushes a new element to the priority queue. The element is constructed
@@ -239,9 +228,7 @@ public:
   /**
    * Removes the top element from the priority queue.
    */
-  void pop() {
-    heap_extract_first();
-  }
+  void pop() { heap_extract_first(); }
 
   /**
    * Exchanges the contents of the container adaptor with those of other.
@@ -262,4 +249,4 @@ void swap(stl::priority_queue<T, Container, Compare> &lhs,
 
 }// namespace stl
 
-#endif//CPP_STL_PRIORITY_QUEUE_H
+#endif// CPP_STL_PRIORITY_QUEUE_H

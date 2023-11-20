@@ -57,19 +57,15 @@ public:
    * @cont - container to be used as source to initialize the underlying
    *         container
    */
-  explicit queue(const Container &cont) {
-    c = cont;
-  }
+  explicit queue(const Container &cont) { c = cont; }
 
   /**
    * Move-constructs the underlying container c with std::move(cont).
    *
    * @param cont - container to be used as source to initialize the underlying
-*                  container
+   *                  container
    */
-  explicit queue(Container &&cont) {
-    c = std::move(cont);
-  }
+  explicit queue(Container &&cont) { c = std::move(cont); }
 
   /**
    * Destructs the queue.
@@ -116,29 +112,21 @@ public:
    *
    * @return - reference to the first element
    */
-  reference front() {
-    return c.front();
-  }
+  reference front() { return c.front(); }
 
-  const_reference front() const {
-    return c.front();
-  }
+  const_reference front() const { return c.front(); }
 
   /**
-   * Returns reference to the last element in the queue. This is the most recently
-   * pushed element.
+   * Returns reference to the last element in the queue. This is the most
+   * recently pushed element.
    *
    * Effectively calls c.back().
    *
    * @return - reference to the last element
    */
-  reference back() {
-    return c.back();
-  }
+  reference back() { return c.back(); }
 
-  const_reference back() const {
-    return c.back();
-  }
+  const_reference back() const { return c.back(); }
 
   /**
    * Capacity
@@ -149,18 +137,14 @@ public:
    *
    * @return - true if the underlying container is empty, false otherwise
    */
-  bool empty() const {
-    return c.empty();
-  }
+  bool empty() const { return c.empty(); }
 
   /**
    * Returns the number of elements in the underlying container.
    *
    * @return - the number of elements in the container
    */
-  size_type size() const {
-    return c.size();
-  }
+  size_type size() const { return c.size(); }
 
   /**
    * Modifiers
@@ -171,18 +155,15 @@ public:
    *
    * @value - the value of the element to push
    */
-  void push(const value_type &value) {
-    c.push_back(value);
-  }
+  void push(const value_type &value) { c.push_back(value); }
 
-  void push(value_type &&value) {
-    c.push_back(std::move(value));
-  }
+  void push(value_type &&value) { c.push_back(std::move(value)); }
 
   /**
-   * Pushes a new element on top of the queue. The element is constructed in-place,
-   * no copy or move operations are performed. The constructor of the element is
-   * called with exactly the same arguments as supplied to the function.
+   * Pushes a new element on top of the queue. The element is constructed
+   * in-place, no copy or move operations are performed. The constructor of the
+   * element is called with exactly the same arguments as supplied to the
+   * function.
    *
    * @args - arguments to forward to the constructor of the element
    * @return - the value or reference
@@ -195,18 +176,14 @@ public:
   /**
    * Removes the top element from the queue
    */
-  void pop() {
-    c.pop_front();
-  }
+  void pop() { c.pop_front(); }
 
   /**
    * Exchanges the contents of the container adaptor with those of @other.
    *
    * @other - container adaptor to exchange the contents with
    */
-  void swap(queue &other) noexcept {
-    std::swap(this->c, other.c);
-  }
+  void swap(queue &other) noexcept { std::swap(this->c, other.c); }
 
   void print() {
     std::cout << "queue: [ ";
@@ -239,11 +216,10 @@ inline bool operator==(const stl::queue<T, Container> &lhs,
  * @lhs, @rhs - containers whose contents to swap
  */
 template<class T, class Container>
-void swap(stl::queue<T, Container> &lhs,
-          stl::queue<T, Container> &rhs) {
+void swap(stl::queue<T, Container> &lhs, stl::queue<T, Container> &rhs) {
   lhs.swap(rhs);
 }
 
 }// namespace stl
 
-#endif//CPP_STL_QUEUE_H
+#endif// CPP_STL_QUEUE_H

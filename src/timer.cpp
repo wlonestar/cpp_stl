@@ -27,7 +27,8 @@ void random_vector(stl::vector<T> &v, int size) {
 }
 
 template<class T>
-void common_test(int times, void (*sort)(stl::vector<T> &v), stl::vector<int> test_range, const char *name) {
+void common_test(int times, void (*sort)(stl::vector<T> &v),
+                 stl::vector<int> test_range, const char *name) {
   stl::simple_timer timer;
   for (int &range: test_range) {
     timer.reset(times);
@@ -37,7 +38,8 @@ void common_test(int times, void (*sort)(stl::vector<T> &v), stl::vector<int> te
     sort(v);
     timer.pause();
     auto [count, total, avg] = timer.stop();
-    printf("[%s]: %8d %s elements, %4ld times, total time: %15.8fms, average time: %15.8fms.\n",
+    printf("[%s]: %8d %s elements, %4ld times, total time: %15.8fms, average "
+           "time: %15.8fms.\n",
            name, range, typeid(T).name(), count, total, avg);
   }
 }

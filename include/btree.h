@@ -32,11 +32,10 @@ private:
   size_type _t;
 
 public:
-  btree(size_type t = 3) : _t(t) {
-    _root = new btree_node<T>(true);
-  }
+  btree(size_type t = 3) : _t(t) { _root = new btree_node<T>(true); }
 
-  std::pair<node_type *, size_type> search(const value_type &value, node_type *node) {
+  std::pair<node_type *, size_type> search(const value_type &value,
+                                           node_type *node) {
     size_type i = 0;
     while (i < node->keys.size() && value > node->keys[i]) {
       i += 1;
@@ -143,7 +142,8 @@ public:
       x->keys[i - 1] = lsnode->keys.back();
       lsnode->keys.pop_back();
       if (lsnode->children.size() > 0) {
-        cnode->children.insert(cnode->children.begin(), lsnode->children.back());
+        cnode->children.insert(cnode->children.begin(),
+                               lsnode->children.back());
         lsnode->children.pop_back();
       }
     }
@@ -281,9 +281,7 @@ public:
     }
   }
 
-  void erase(const value_type &k) {
-    erase(_root, k);
-  }
+  void erase(const value_type &k) { erase(_root, k); }
 
   void print(node_type *x, size_type level = 0) {
     std::cout << "level " << level << ": ";
@@ -299,11 +297,9 @@ public:
     }
   }
 
-  void print() {
-    print(_root);
-  }
+  void print() { print(_root); }
 };
 
 }// namespace stl
 
-#endif//CPP_STL_BTREE_H
+#endif// CPP_STL_BTREE_H

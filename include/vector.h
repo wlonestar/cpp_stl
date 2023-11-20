@@ -43,8 +43,8 @@ namespace stl {
  * The complexity (efficiency) of common operations on vectors is as follows:
  *  - Random access - constant O(1)
  *  - Insertion or removal of elements at the end - amortized constant O(1)
- *  - Insertion or removal of elements - linear in the distance to the end of the
- *    vector O(n)
+ *  - Insertion or removal of elements - linear in the distance to the end of
+ * the vector O(n)
  */
 
 template<class T>
@@ -94,10 +94,8 @@ private:
     if (n < _size) {
       return true;
     } else {
-      throw std::out_of_range(
-        "vector::range_check: n (which is " +
-        std::to_string(n) +
-        ") >= this->size()");
+      throw std::out_of_range("vector::range_check: n (which is " +
+                              std::to_string(n) + ") >= this->size()");
     }
   }
 
@@ -170,7 +168,8 @@ public:
    * @init - initializer list to initialize the elements of the container with
    */
   constexpr vector(std::initializer_list<T> init) {
-    _capacity = default_capacity < init.size() ? (2 * init.size()) : default_capacity;
+    _capacity =
+      default_capacity < init.size() ? (2 * init.size()) : default_capacity;
     _size = init.size();
     _elem = new T[_capacity];
     size_type i = 0;
@@ -186,9 +185,7 @@ public:
    * Note, that if the elements are pointers, the pointed-to objects are not
    * destroyed.
    */
-  constexpr ~vector() {
-    delete[] _elem;
-  }
+  constexpr ~vector() { delete[] _elem; }
 
   /**
    * Copy assignment operator. Replaces the contents with a copy of the contents
@@ -229,7 +226,8 @@ public:
    * @return - *this
    */
   constexpr vector &operator=(std::initializer_list<T> ilist) {
-    _capacity = default_capacity < ilist.size() ? (2 * ilist.size()) : default_capacity;
+    _capacity =
+      default_capacity < ilist.size() ? (2 * ilist.size()) : default_capacity;
     _size = ilist.size();
     _elem = new T[_capacity];
     size_type i = 0;
@@ -297,9 +295,7 @@ public:
    * @pos - position of the element to return
    * @return - reference to the requested element
    */
-  constexpr reference operator[](size_type pos) {
-    return _elem[pos];
-  }
+  constexpr reference operator[](size_type pos) { return _elem[pos]; }
 
   constexpr const_reference operator[](size_type pos) const {
     return _elem[pos];
@@ -310,26 +306,18 @@ public:
    *
    * @return - reference to the first element
    */
-  constexpr reference front() {
-    return _elem[0];
-  }
+  constexpr reference front() { return _elem[0]; }
 
-  constexpr const_reference front() const {
-    return _elem[0];
-  }
+  constexpr const_reference front() const { return _elem[0]; }
 
   /**
    * Returns a reference to the last element in the container.
    *
    * @return - reference to the last element
    */
-  constexpr reference back() {
-    return _elem[_size - 1];
-  }
+  constexpr reference back() { return _elem[_size - 1]; }
 
-  constexpr const_reference back() const {
-    return _elem[_size - 1];
-  }
+  constexpr const_reference back() const { return _elem[_size - 1]; }
 
   /**
    * Returns pointer to the underlying array serving as element storage.
@@ -343,13 +331,9 @@ public:
    *
    * Note: if size() is 0, data() may or may not return a null pointer.
    */
-  constexpr T *data() noexcept {
-    return _elem;
-  }
+  constexpr T *data() noexcept { return _elem; }
 
-  constexpr const T *data() const noexcept {
-    return _elem;
-  }
+  constexpr const T *data() const noexcept { return _elem; }
 
   /**
    * Iterators
@@ -361,9 +345,7 @@ public:
    *
    * @return - iterator to the first element
    */
-  constexpr iterator begin() noexcept {
-    return iterator(_elem + 0);
-  }
+  constexpr iterator begin() noexcept { return iterator(_elem + 0); }
 
   constexpr const_iterator begin() const noexcept {
     return const_iterator(_elem + 0);
@@ -374,15 +356,13 @@ public:
   }
 
   /**
-   * Returns an iterator to the element following the last element of the vector.
-   * This element acts as a placeholder; attempting to access it results in
-   * undefined behavior.
+   * Returns an iterator to the element following the last element of the
+   * vector. This element acts as a placeholder; attempting to access it results
+   * in undefined behavior.
    *
    * @return - iterator to the element following the last element.
    */
-  constexpr iterator end() noexcept {
-    return iterator(_elem + _size);
-  }
+  constexpr iterator end() noexcept { return iterator(_elem + _size); }
 
   constexpr const_iterator end() const noexcept {
     return const_iterator(_elem + _size);
@@ -440,18 +420,14 @@ public:
    *
    * @return - true if the container is empty, false otherwise
    */
-  [[nodiscard]] constexpr bool empty() const noexcept {
-    return _size == 0;
-  }
+  [[nodiscard]] constexpr bool empty() const noexcept { return _size == 0; }
 
   /**
    * Returns the number of the elements in the container.
    *
    * @return - the number of elements in the container
    */
-  [[nodiscard]] constexpr size_type size() const noexcept {
-    return _size;
-  }
+  [[nodiscard]] constexpr size_type size() const noexcept { return _size; }
 
   /**
    * Increase the capacity of the vector (the total number of elements that the
@@ -504,12 +480,10 @@ public:
    * the implementation whether the request is fulfilled.
    *
    * If reallocation occurs, all iterators, including the past the end iterator,
-   * and all references to the elements are invalidated. If no reallocation takes
-   * place, no iterator or references are invalidated.
+   * and all references to the elements are invalidated. If no reallocation
+   * takes place, no iterator or references are invalidated.
    */
-  constexpr void shrink_to_fit() {
-    shrink();
-  }
+  constexpr void shrink_to_fit() { shrink(); }
 
   /**
    * Modifiers
@@ -696,9 +670,7 @@ public:
    * Iterators and references to the last element, as well as the end()
    * iterator, are invalidated.
    */
-  constexpr void pop_back() {
-    _size--;
-  }
+  constexpr void pop_back() { _size--; }
 
   /**
    * Resizes the container to contain @count element, does nothing
@@ -785,14 +757,16 @@ public:
   }
 
   template<class Lambda>
-  void for_each(reverse_iterator first, reverse_iterator last, Lambda &&lambda) {
+  void for_each(reverse_iterator first, reverse_iterator last,
+                Lambda &&lambda) {
     for (auto it = first; it != last; ++it) {
       lambda(*it);
     }
   }
 
   template<class Lambda>
-  void for_each(const_reverse_iterator first, const_reverse_iterator last, Lambda &&lambda) {
+  void for_each(const_reverse_iterator first, const_reverse_iterator last,
+                Lambda &&lambda) {
     for (auto it = first; it != last; ++it) {
       lambda(*it);
     }
@@ -836,11 +810,13 @@ public:
  * @return - true if the contents of the vectors are equal, false otherwise
  */
 template<class T>
-constexpr bool operator==(const stl::vector<T> &lhs, const stl::vector<T> &rhs) {
+constexpr bool operator==(const stl::vector<T> &lhs,
+                          const stl::vector<T> &rhs) {
   if (lhs.size() != rhs.size()) {
     return false;
   }
-  for (auto liter = lhs.begin(), riter = rhs.begin(); liter != lhs.end(); ++liter, ++riter) {
+  for (auto liter = lhs.begin(), riter = rhs.begin(); liter != lhs.end();
+       ++liter, ++riter) {
     if (!(*liter == *riter)) {
       return false;
     }
@@ -867,7 +843,8 @@ constexpr void swap(stl::vector<T> &lhs, stl::vector<T> &rhs) noexcept {
  * @return - the number of erased elements
  */
 template<class T, class U>
-constexpr typename stl::vector<T>::size_type erase(stl::vector<T> &c, const U &value) {
+constexpr typename stl::vector<T>::size_type erase(stl::vector<T> &c,
+                                                   const U &value) {
   typename stl::vector<T>::size_type size = 0;
   for (typename vector<T>::iterator it = c.begin(); it != c.end(); it++) {
     if (*it == value) {
@@ -887,7 +864,8 @@ constexpr typename stl::vector<T>::size_type erase(stl::vector<T> &c, const U &v
  * @return - the number of erased elements
  */
 template<class T, class Pred>
-constexpr typename stl::vector<T>::size_type erase_if(stl::vector<T> &c, Pred pred) {
+constexpr typename stl::vector<T>::size_type erase_if(stl::vector<T> &c,
+                                                      Pred pred) {
   typename stl::vector<T>::size_type size = 0;
   for (typename vector<T>::iterator it = c.begin(); it != c.end(); it++) {
     if (pred(*it)) {
@@ -901,4 +879,4 @@ constexpr typename stl::vector<T>::size_type erase_if(stl::vector<T> &c, Pred pr
 
 }// namespace stl
 
-#endif//CPP_STL_VECTOR_H
+#endif// CPP_STL_VECTOR_H

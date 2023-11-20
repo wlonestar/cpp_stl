@@ -184,16 +184,11 @@ public:
     _root = nil;
   }
 
-  rbtree(const Compare &compare)
-      : _root(), _size(0), comp(compare) {}
+  rbtree(const Compare &compare) : _root(), _size(0), comp(compare) {}
 
-  rbtree(const this_type &x)
-      : _root(x._root), _size(0), comp(x.comp) {}
+  rbtree(const this_type &x) : _root(x._root), _size(0), comp(x.comp) {}
 
-  rbtree(this_type &&x)
-      : _root(), _size(0), comp() {
-    swap(x);
-  }
+  rbtree(this_type &&x) : _root(), _size(0), comp() { swap(x); }
 
   ~rbtree() {
     clear();
@@ -409,9 +404,7 @@ public:
     return p;
   }
 
-  node_type *find(const value_type &value) {
-    return find(_root, value);
-  }
+  node_type *find(const value_type &value) { return find(_root, value); }
 
   /**
    * Traverse
@@ -463,9 +456,7 @@ public:
     v.push_back(p->data);
   }
 
-  void post_order(stl::vector<T> &v) {
-    _post_order(_root, v);
-  }
+  void post_order(stl::vector<T> &v) { _post_order(_root, v); }
 
   void level_order(stl::vector<T> &v) {
     rbtree_node<T> *p = _root;
@@ -514,9 +505,7 @@ public:
     print(p->right, prefix + 2);
   }
 
-  void print() {
-    print(_root, 0);
-  }
+  void print() { print(_root, 0); }
 
   friend void to_json(nlohmann::json &j, const rbtree<T> &t) {
     // same as in order traverse, but need to get all nodes
@@ -563,4 +552,4 @@ public:
 
 }// namespace stl
 
-#endif//CPP_STL_RBTREE_H
+#endif// CPP_STL_RBTREE_H

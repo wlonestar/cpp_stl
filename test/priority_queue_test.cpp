@@ -23,9 +23,7 @@ BOOST_AUTO_TEST_CASE(stl_pq) {
   }
 
   {
-    stl::priority_queue<int, stl::vector<int>,
-                        std::greater<int>>
-      q;
+    stl::priority_queue<int, stl::vector<int>, std::greater<int>> q;
     for (int i = 0; i < 10; i++) {
       q.push(i);
     }

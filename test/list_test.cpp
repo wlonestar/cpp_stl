@@ -148,10 +148,7 @@ BOOST_AUTO_TEST_CASE(list_emplace) {
     Point2d() = default;
     Point2d(int x, int y) : x(x), y(y) {}
   };
-  stl::list<Point2d> l{
-    {1, 1},
-    {2, 2},
-    {3, 3}};
+  stl::list<Point2d> l{{1, 1}, {2, 2}, {3, 3}};
   l.emplace(l.end(), 5, 5);
   BOOST_CHECK(l.back().x == 5);
   BOOST_CHECK(l.back().y == 5);
@@ -191,10 +188,7 @@ BOOST_AUTO_TEST_CASE(list_emplace_back) {
     Point2d() = default;
     Point2d(int x, int y) : x(x), y(y) {}
   };
-  stl::list<Point2d> l{
-    {1, 1},
-    {2, 2},
-    {3, 3}};
+  stl::list<Point2d> l{{1, 1}, {2, 2}, {3, 3}};
   auto p = l.emplace_back(5, 5);
   BOOST_CHECK(p.x == 5);
   BOOST_CHECK(p.y == 5);
@@ -237,10 +231,7 @@ BOOST_AUTO_TEST_CASE(list_emplace_front) {
     Point2d() = default;
     Point2d(int x, int y) : x(x), y(y) {}
   };
-  stl::list<Point2d> l{
-    {1, 1},
-    {2, 2},
-    {3, 3}};
+  stl::list<Point2d> l{{1, 1}, {2, 2}, {3, 3}};
   auto p = l.emplace_front(5, 5);
   BOOST_CHECK(p.x == 5);
   BOOST_CHECK(p.y == 5);
@@ -316,15 +307,11 @@ BOOST_AUTO_TEST_CASE(list_merge) {
       return this->x == other.x && this->y == other.y;
     }
   };
-  stl::list<Point2d> p1{
-    {1, 1},
-    {3, 3},
-    {5, 5}};
-  stl::list<Point2d> p2{
-    {2, 2},
-    {3, 4},
-    {5, 6}};
-  p1.merge(p2, [](const Point2d &p1, const Point2d &p2) { return (p1.x + p1.y) < (p2.x + p2.y); });
+  stl::list<Point2d> p1{{1, 1}, {3, 3}, {5, 5}};
+  stl::list<Point2d> p2{{2, 2}, {3, 4}, {5, 6}};
+  p1.merge(p2, [](const Point2d &p1, const Point2d &p2) {
+    return (p1.x + p1.y) < (p2.x + p2.y);
+  });
   BOOST_CHECK(p1.size() == 6);
   Log("==> pass!");
 }
@@ -414,9 +401,7 @@ BOOST_AUTO_TEST_CASE(test_erase_if) {
   stl::erase(cnt, '3');
   cnt.print();
   BOOST_CHECK(cnt.size() == 9);
-  auto erased = stl::erase_if(cnt, [](char x) {
-    return (x - '0') % 2 == 0;
-  });
+  auto erased = stl::erase_if(cnt, [](char x) { return (x - '0') % 2 == 0; });
   cnt.print();
   BOOST_CHECK(erased == 5);
   Log("==> pass!");
@@ -445,7 +430,6 @@ BOOST_AUTO_TEST_CASE(list_print) {
   l.for_each(l.cbegin(), l.cend(), lambda);
   l.for_each(l.rbegin(), l.rend(), lambda);
   l.for_each(l.crbegin(), l.crend(), lambda);
-  l.print([](const Point3d &p) {
-    printf("(%.4g, %.4g, %.4g)", p.x, p.y, p.z);
-  });
+  l.print(
+    [](const Point3d &p) { printf("(%.4g, %.4g, %.4g)", p.x, p.y, p.z); });
 }

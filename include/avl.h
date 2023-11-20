@@ -192,9 +192,7 @@ public:
 
   avl() : _root(nullptr), _size(0) {}
 
-  ~avl() {
-    clear();
-  }
+  ~avl() { clear(); }
 
   /**
    * Capacity
@@ -211,21 +209,15 @@ public:
     // TODO
   }
 
-  void insert(T e) {
-    _root = _insert(_root, e);
-  }
+  void insert(T e) { _root = _insert(_root, e); }
 
-  void erase(T e) {
-    _root = _erase(_root, e);
-  }
+  void erase(T e) { _root = _erase(_root, e); }
 
   /**
    * Look up
    */
 
-  node_type *find(T e) {
-    return _search(_root, e);
-  }
+  node_type *find(T e) { return _search(_root, e); }
 
   void print(node_type *p, int prefix) {
     char prefix_str[prefix + 1];
@@ -248,4 +240,4 @@ public:
 
 }// namespace stl
 
-#endif//CPP_STL_AVL_H
+#endif// CPP_STL_AVL_H

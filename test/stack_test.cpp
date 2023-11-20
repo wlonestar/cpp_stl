@@ -67,9 +67,7 @@ BOOST_AUTO_TEST_CASE(stack_emplace) {
     Point2d() = default;
     Point2d(int x, int y) : x(x), y(y) {}
   };
-  stl::stack<Point2d> s({{1, 1},
-                         {2, 2},
-                         {3, 3}});
+  stl::stack<Point2d> s({{1, 1}, {2, 2}, {3, 3}});
   auto p = s.emplace(5, 5);
   BOOST_CHECK(p.x == 5);
   BOOST_CHECK(p.y == 5);

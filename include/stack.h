@@ -57,19 +57,15 @@ public:
    * @cont - container to be used as source to initialize the underlying
    *         container
    */
-  explicit stack(const Container &cont) {
-    c = cont;
-  }
+  explicit stack(const Container &cont) { c = cont; }
 
   /**
    * Move-constructs the underlying container c with std::move(cont).
    *
    * @param cont - container to be used as source to initialize the underlying
-*                  container
+   *                  container
    */
-  explicit stack(Container &&cont) {
-    c = std::move(cont);
-  }
+  explicit stack(Container &&cont) { c = std::move(cont); }
 
   /**
    * Destructs the stack.
@@ -109,20 +105,16 @@ public:
    */
 
   /**
-   * Returns reference to the top element in the stack. This is the most recently
-   * pushed element. This element will be removed on a call to pop().
+   * Returns reference to the top element in the stack. This is the most
+   * recently pushed element. This element will be removed on a call to pop().
    *
    * Effectively calls c.back().
    *
    * @return - reference to the last element
    */
-  reference top() {
-    return c.back();
-  }
+  reference top() { return c.back(); }
 
-  const_reference top() const {
-    return c.back();
-  }
+  const_reference top() const { return c.back(); }
 
   /**
    * Capacity
@@ -133,18 +125,14 @@ public:
    *
    * @return - true if the underlying container is empty, false otherwise
    */
-  bool empty() const {
-    return c.empty();
-  }
+  bool empty() const { return c.empty(); }
 
   /**
    * Returns the number of elements in the underlying container.
    *
    * @return - the number of elements in the container
    */
-  size_type size() const {
-    return c.size();
-  }
+  size_type size() const { return c.size(); }
 
   /**
    * Modifiers
@@ -155,18 +143,15 @@ public:
    *
    * @value - the value of the element to push
    */
-  void push(const value_type &value) {
-    c.push_back(value);
-  }
+  void push(const value_type &value) { c.push_back(value); }
 
-  void push(value_type &&value) {
-    c.push_back(std::move(value));
-  }
+  void push(value_type &&value) { c.push_back(std::move(value)); }
 
   /**
-   * Pushes a new element on top of the stack. The element is constructed in-place,
-   * no copy or move operations are performed. The constructor of the element is
-   * called with exactly the same arguments as supplied to the function.
+   * Pushes a new element on top of the stack. The element is constructed
+   * in-place, no copy or move operations are performed. The constructor of the
+   * element is called with exactly the same arguments as supplied to the
+   * function.
    *
    * @args - arguments to forward to the constructor of the element
    * @return - the value or reference
@@ -179,18 +164,14 @@ public:
   /**
    * Removes the top element from the stack
    */
-  void pop() {
-    c.pop_back();
-  }
+  void pop() { c.pop_back(); }
 
   /**
    * Exchanges the contents of the container adaptor with those of @other.
    *
    * @other - container adaptor to exchange the contents with
    */
-  void swap(stack &other) noexcept {
-    std::swap(this->c, other.c);
-  }
+  void swap(stack &other) noexcept { std::swap(this->c, other.c); }
 
   void print() {
     std::cout << "stack: [ ";
@@ -223,11 +204,10 @@ inline bool operator==(const stl::stack<T, Container> &lhs,
  * @lhs, @rhs - containers whose contents to swap
  */
 template<class T, class Container>
-void swap(stl::stack<T, Container> &lhs,
-          stl::stack<T, Container> &rhs) {
+void swap(stl::stack<T, Container> &lhs, stl::stack<T, Container> &rhs) {
   lhs.swap(rhs);
 }
 
 }// namespace stl
 
-#endif//CPP_STL_STACK_H
+#endif// CPP_STL_STACK_H

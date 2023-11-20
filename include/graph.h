@@ -40,8 +40,7 @@ struct vertex {
   Tv data;
   arc<Tv> *first_arc;
 
-  vertex(const Tv &e, arc<Tv> *first = nullptr)
-      : data(e), first_arc(first) {}
+  vertex(const Tv &e, arc<Tv> *first = nullptr) : data(e), first_arc(first) {}
 };
 
 }// namespace __graph
@@ -58,9 +57,7 @@ private:
 private:
   std::vector<int> visited;
 
-  void reset() {
-    visited.assign(n, 0);
-  }
+  void reset() { visited.assign(n, 0); }
 
 public:
   graph() : n(0), e(0) {}

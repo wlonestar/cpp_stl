@@ -10,12 +10,13 @@ private:
   int age;
 
 public:
-  person(std::string n, std::string addr, int a) : name(n), address(addr), age(a) {}
+  person(std::string n, std::string addr, int a)
+      : name(n), address(addr), age(a) {}
 
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(person, name, address, age)
 };
 
-//template<class T>
+// template<class T>
 struct node {
   int data;
   node *next;
@@ -32,16 +33,14 @@ struct node {
   }
 };
 
-//template<class T>
+// template<class T>
 class list {
 private:
   node *head;
   int size;
 
 public:
-  list() : size(0) {
-    head = new node(-1);
-  }
+  list() : size(0) { head = new node(-1); }
 
   void insert(int val) {
     assert(val > -1);

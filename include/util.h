@@ -54,10 +54,8 @@ int random_int(int a, int b) {
   return dist(rng);
 }
 
-
-typedef std::chrono::time_point<
-  std::chrono::system_clock,
-  std::chrono::duration<double, std::milli>>
+typedef std::chrono::time_point<std::chrono::system_clock,
+                                std::chrono::duration<double, std::milli>>
   timer_t__;
 
 /**
@@ -75,7 +73,8 @@ public:
     size_t count;
     double totalTime;
     double averageTime;
-    return_type(size_t c, double t, double a) : count(c), totalTime(t), averageTime(a) {}
+    return_type(size_t c, double t, double a)
+        : count(c), totalTime(t), averageTime(a) {}
   };
 
 public:
@@ -91,13 +90,12 @@ public:
     _totalTime = 0;
   }
 
-  void continu() {
-    _start = std::chrono::high_resolution_clock::now();
-  }
+  void continu() { _start = std::chrono::high_resolution_clock::now(); }
 
   void pause() {
     _end = std::chrono::high_resolution_clock::now();
-    _totalTime += std::chrono::duration<double, std::milli>(_end - _start).count();
+    _totalTime +=
+      std::chrono::duration<double, std::milli>(_end - _start).count();
   }
 
   return_type stop() {
@@ -127,7 +125,8 @@ std::string get_current_time() {
 /**
  * replace file specified char
  */
-void replace_string_of_file(const std::string &file, std::string replace, std::string replace_with) {
+void replace_string_of_file(const std::string &file, std::string replace,
+                            std::string replace_with) {
   std::fstream f(file, std::ios::in);
   if (f.is_open()) {
     std::string line;
@@ -152,4 +151,4 @@ void replace_string_of_file(const std::string &file, std::string replace, std::s
 
 }// namespace stl
 
-#endif//CPP_STL_UTIL_H
+#endif// CPP_STL_UTIL_H

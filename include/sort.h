@@ -98,9 +98,7 @@ void merge_sort(vector<T> &v, int lo, int hi) {
 }
 
 template<class T>
-void merge_sort(vector<T> &v) {
-  merge_sort(v, 0, v.size());
-}
+void merge_sort(vector<T> &v) { merge_sort(v, 0, v.size()); }
 
 template<class T>
 static void merge(T *v, int lo, int mi, int hi) {
@@ -141,9 +139,7 @@ void merge_sort(T *v, int lo, int hi) {
 }
 
 template<class T>
-void merge_sort(T *v, int size) {
-  merge_sort(v, 0, size);
-}
+void merge_sort(T *v, int size) { merge_sort(v, 0, size); }
 
 /**
  * heap sort
@@ -215,9 +211,7 @@ void quick_sort(vector<T> &v, int lo, int hi) {
 }
 
 template<class T>
-void quick_sort(vector<T> &v) {
-  quick_sort(v, 0, v.size());
-}
+void quick_sort(vector<T> &v) { quick_sort(v, 0, v.size()); }
 
 template<class T>
 static int partition(T *a, int lo, int hi) {
@@ -243,12 +237,10 @@ void quick_sort(T *a, int lo, int hi) {
 }
 
 template<class T>
-void quick_sort(T *a, int size) {
-  quick_sort(a, 0, size);
-}
+void quick_sort(T *a, int size) { quick_sort(a, 0, size); }
 
 }// namespace sort
 
 }// namespace stl
 
-#endif//CPP_STL_SORT_H
+#endif// CPP_STL_SORT_H

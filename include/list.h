@@ -73,13 +73,9 @@ struct list_iterator {
 
   self _const_cast() const { return *this; }
 
-  reference operator*() const {
-    return _node->data;
-  }
+  reference operator*() const { return _node->data; }
 
-  pointer operator->() const {
-    return _node->data;
-  }
+  pointer operator->() const { return _node->data; }
 
   self &operator++() {
     _node = _node->next;
@@ -125,17 +121,11 @@ struct list_const_iterator {
   explicit list_const_iterator(node *x) : _node(x) {}
   explicit list_const_iterator(const iterator &x) : _node(x._node) {}
 
-  iterator _const_cast() const {
-    return iterator(const_cast<node *>(_node));
-  }
+  iterator _const_cast() const { return iterator(const_cast<node *>(_node)); }
 
-  reference operator*() const {
-    return _node->data;
-  }
+  reference operator*() const { return _node->data; }
 
-  pointer operator->() const {
-    return _node->data;
-  }
+  pointer operator->() const { return _node->data; }
 
   self &operator++() {
     _node = _node->next;
@@ -316,11 +306,11 @@ public:
   }
 
   /**
-   * Move constructor. Constructs the container with the contents of @other using
-   * move semantics.
+   * Move constructor. Constructs the container with the contents of @other
+   * using move semantics.
    *
    * @other - another container to be used as source to initialize the elements
-*             of the container with
+   *             of the container with
    */
   list(list &&other) noexcept : _head(other._head) {
     _size = other._size;
@@ -468,13 +458,9 @@ public:
    *
    * @return - reference to the first element
    */
-  reference front() {
-    return _head->next->data;
-  }
+  reference front() { return _head->next->data; }
 
-  const_reference front() const {
-    return _head->next->data;
-  }
+  const_reference front() const { return _head->next->data; }
 
   /**
    * Returns a reference to the last element in the container.
@@ -482,13 +468,9 @@ public:
    *
    * @return - reference to the last element
    */
-  reference back() {
-    return _head->prev->data;
-  }
+  reference back() { return _head->prev->data; }
 
-  const_reference back() const {
-    return _head->prev->data;
-  }
+  const_reference back() const { return _head->prev->data; }
 
   /**
    * Iterators
@@ -500,17 +482,11 @@ public:
    *
    * @return - iterator to the first element
    */
-  iterator begin() noexcept {
-    return iterator(_head->next);
-  }
+  iterator begin() noexcept { return iterator(_head->next); }
 
-  const_iterator begin() const noexcept {
-    return const_iterator(_head->next);
-  }
+  const_iterator begin() const noexcept { return const_iterator(_head->next); }
 
-  const_iterator cbegin() const noexcept {
-    return const_iterator(_head->next);
-  }
+  const_iterator cbegin() const noexcept { return const_iterator(_head->next); }
 
   /**
    * Returns an iterator to the element following the last element of the list.
@@ -519,17 +495,11 @@ public:
    *
    * @return - iterator of the element following the lase element
    */
-  iterator end() noexcept {
-    return iterator(_head);
-  }
+  iterator end() noexcept { return iterator(_head); }
 
-  const_iterator end() const noexcept {
-    return const_iterator(_head);
-  }
+  const_iterator end() const noexcept { return const_iterator(_head); }
 
-  const_iterator cend() const noexcept {
-    return const_iterator(_head);
-  }
+  const_iterator cend() const noexcept { return const_iterator(_head); }
 
   /**
    * Returns a reverse iterator to the first element of the reversed list.
@@ -538,9 +508,7 @@ public:
    *
    * @return - reverse iterator to the first element
    */
-  reverse_iterator rbegin() noexcept {
-    return reverse_iterator(end());
-  }
+  reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
 
   const_reverse_iterator rbegin() const noexcept {
     return const_reverse_iterator(end());
@@ -558,9 +526,7 @@ public:
    *
    * @return - reversed iterator to the element following the last element
    */
-  reverse_iterator rend() noexcept {
-    return reverse_iterator(begin());
-  }
+  reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
 
   const_reverse_iterator rend() const noexcept {
     return const_reverse_iterator(begin());
@@ -579,9 +545,7 @@ public:
    *
    * @return - true if the container is empty, false otherwise
    */
-  [[nodiscard]] bool empty() const noexcept {
-    return begin() == end();
-  }
+  [[nodiscard]] bool empty() const noexcept { return begin() == end(); }
 
   /**
    * Returns the number of elements in the container.
@@ -1283,14 +1247,16 @@ public:
   }
 
   template<class Lambda>
-  void for_each(reverse_iterator first, reverse_iterator last, Lambda &&lambda) {
+  void for_each(reverse_iterator first, reverse_iterator last,
+                Lambda &&lambda) {
     for (auto it = first; it != last; ++it) {
       lambda(*it);
     }
   }
 
   template<class Lambda>
-  void for_each(const_reverse_iterator first, const_reverse_iterator last, Lambda &&lambda) {
+  void for_each(const_reverse_iterator first, const_reverse_iterator last,
+                Lambda &&lambda) {
     for (auto it = first; it != last; ++it) {
       lambda(*it);
     }
@@ -1324,7 +1290,8 @@ bool operator==(const stl::list<T> &lhs, const stl::list<T> &rhs) {
   if (lhs.size() != rhs.size()) {
     return false;
   }
-  for (auto liter = lhs.begin(), riter = rhs.begin(); liter != lhs.end(); ++liter, ++riter) {
+  for (auto liter = lhs.begin(), riter = rhs.begin(); liter != lhs.end();
+       ++liter, ++riter) {
     if (!(*liter == *riter)) {
       return false;
     }
@@ -1377,4 +1344,4 @@ typename stl::list<T>::size_type erase_if(stl::list<T> &c, Pred pred) {
 
 }// namespace stl
 
-#endif//CPP_STL_LIST_H
+#endif// CPP_STL_LIST_H

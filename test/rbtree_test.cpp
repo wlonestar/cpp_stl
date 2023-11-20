@@ -18,9 +18,8 @@ BOOST_AUTO_TEST_CASE(tree_insert) {
 
   stl::vector<int> v;
   t2.in_order(v);
-  v.for_each(v.begin(), v.end(), [](const int &value) {
-    std::cout << value << " ";
-  });
+  v.for_each(v.begin(), v.end(),
+             [](const int &value) { std::cout << value << " "; });
   std::cout << "\n";
   Log("==> pass!");
 }
@@ -43,9 +42,8 @@ BOOST_AUTO_TEST_CASE(tree_erase) {
   }
   t.insert(1);
   t.in_order(v);
-  v.for_each(v.begin(), v.end(), [](const int &value) {
-    std::cout << value << " ";
-  });
+  v.for_each(v.begin(), v.end(),
+             [](const int &value) { std::cout << value << " "; });
   std::cout << "\n";
   Log("==> pass!");
 }
@@ -63,30 +61,26 @@ BOOST_AUTO_TEST_CASE(tree_traverse) {
   BOOST_CHECK(t.size() == 7);
 
   t.pre_order(v);
-  v.for_each(v.begin(), v.end(), [](const int &value) {
-    std::cout << value << " ";
-  });
+  v.for_each(v.begin(), v.end(),
+             [](const int &value) { std::cout << value << " "; });
   std::cout << "\n";
   v.clear();
 
   t.in_order(v);
-  v.for_each(v.begin(), v.end(), [](const int &value) {
-    std::cout << value << " ";
-  });
+  v.for_each(v.begin(), v.end(),
+             [](const int &value) { std::cout << value << " "; });
   std::cout << "\n";
   v.clear();
 
   t.post_order(v);
-  v.for_each(v.begin(), v.end(), [](const int &value) {
-    std::cout << value << " ";
-  });
+  v.for_each(v.begin(), v.end(),
+             [](const int &value) { std::cout << value << " "; });
   std::cout << "\n";
   v.clear();
 
   t.level_order(v);
-  v.for_each(v.begin(), v.end(), [](const int &value) {
-    std::cout << value << " ";
-  });
+  v.for_each(v.begin(), v.end(),
+             [](const int &value) { std::cout << value << " "; });
   std::cout << "\n";
   v.clear();
 
